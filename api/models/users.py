@@ -31,5 +31,9 @@ class User(Base):
     )
     last_login: Mapped[datetime] = mapped_column(DateTime, nullable = True)
 
+    company: Mapped["Company"] = relationship(
+        "Company", 
+        back_populates = "users"
+    )
 
 

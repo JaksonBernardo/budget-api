@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 from enum import Enum
 from datetime import datetime
 from sqlalchemy import String, Integer, ForeignKey, DateTime, Boolean, func
@@ -8,7 +8,12 @@ from api.models import Base
 
 if TYPE_CHECKING:
 
-    from api.models import Plan
+    from api.models import (
+        Plan,
+        User,
+        Client,
+        Supplier
+    )
 
 class State(str, Enum):
     AC = "AC"
@@ -49,6 +54,8 @@ class Company(Base):
     address: Mapped[str] = mapped_column(String(255), nullable = True)
     number: Mapped[int] = mapped_column(Integer, nullable=True)
     state: Mapped[State] = mapped_column(String(2), nullable = True)
+    cep: Mapped[int] = mapped_column(Integer, nullable = True)
+    city: Mapped[str] = mapped_column(String(255), nullable = True)
     cnpj: Mapped[str] = mapped_column(String(255), nullable = True)
     phone: Mapped[str] = mapped_column(String(255), nullable = True)
     whatsapp: Mapped[str] = mapped_column(String(255), nullable = True)
@@ -72,3 +79,17 @@ class Company(Base):
         back_populates = "companys"
     )
 
+    users: Mapped[List["User"]] = relationship(
+        "User",
+        back_populates = "company"
+    )
+
+    clients: Mapped[List["Client"]] = relationship(
+        "Client",
+        back_populates = "company"
+    )
+
+    suppliers: Mapped[List["Supplier"]] = relationship(
+        "Supplier",
+        back_populates = "company"
+    )
