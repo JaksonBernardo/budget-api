@@ -52,8 +52,17 @@ class Client(Base):
         ForeignKey("companys.id", ondelete = "CASCADE"),
         nullable = False
     )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        server_default = func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        server_default = func.now(),
+        onupdate = func.now()
+    )
 
-    legal_entity: Mapped["LegalEntity"] = mapped_column(
+    legal_entity: Mapped["LegalEntity"] = relationship(
         "LegalEntity",
         back_populates = "is_clients"
     )
@@ -78,8 +87,17 @@ class Supplier(Base):
         ForeignKey("companys.id", ondelete = "CASCADE"),
         nullable = False
     )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        server_default = func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        server_default = func.now(),
+        onupdate = func.now()
+    )
 
-    legal_entity: Mapped["LegalEntity"] = mapped_column(
+    legal_entity: Mapped["LegalEntity"] = relationship(
         "LegalEntity",
         back_populates = "is_suppliers"
     )
