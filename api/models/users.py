@@ -21,7 +21,7 @@ class User(Base):
     whatsapp: Mapped[str] = mapped_column(String(255), nullable = True)
     password: Mapped[str] = mapped_column(String(255), nullable = False)
     photo: Mapped[str] = mapped_column(String(255), nullable = True)
-    profile: Mapped[int]
+    profile: Mapped[int] = mapped_column(Integer, nullable=True)
     company_id: Mapped[int] = mapped_column(
         ForeignKey("companys.id")
     )

@@ -71,12 +71,12 @@ class Movementation(Base):
         back_populates = "movementations"
     )
 
-    entrys: Mapped[List["Entrys"]] = mapped_column(
+    entrys: Mapped[List["Entrys"]] = relationship(
         "Entrys",
         back_populates = "movementation"
     )
 
-    exits: Mapped[List["Exits"]] = mapped_column(
+    exits: Mapped[List["Exits"]] = relationship(
         "Exits",
         back_populates = "movementation"
     )

@@ -1,15 +1,17 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 from enum import Enum
 from datetime import datetime
 from sqlalchemy import String, Integer, ForeignKey, DateTime, Boolean, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from api.models import Base
+from api.models.companys import State
 
 if TYPE_CHECKING:
-
     from api.models import (
-        State, Company
+        Company,
+        Client,
+        Supplier
     )
 
 
@@ -28,13 +30,15 @@ class LegalEntity(Base):
     cep: Mapped[str] = mapped_column(String(30), nullable = True)
     city: Mapped[str] = mapped_column(String(100), nullable = True)
 
-    is_clients: Mapped["Client"] = mapped_column(
+    clients: Mapped[Optional["Client"]] = relationship(
         "Client",
-        back_populates = "legal_entity"
+        back_populates="legal_entity",
+        uselist=False
     )
-    is_suppliers: Mapped["Supplier"] = mapped_column(
+    suppliers: Mapped[Optional["Supplier"]] = relationship(
         "Supplier",
-        back_populates = "legal_entity"
+        back_populates="legal_entity",
+        uselist=False
     )
 
 
@@ -64,7 +68,7 @@ class Client(Base):
 
     legal_entity: Mapped["LegalEntity"] = relationship(
         "LegalEntity",
-        back_populates = "is_clients"
+        back_populates = "clients"
     )
 
     company: Mapped["Company"] = relationship(
@@ -99,7 +103,7 @@ class Supplier(Base):
 
     legal_entity: Mapped["LegalEntity"] = relationship(
         "LegalEntity",
-        back_populates = "is_suppliers"
+        back_populates = "suppliers"
     )
 
     company: Mapped["Company"] = relationship(
