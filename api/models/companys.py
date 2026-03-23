@@ -14,7 +14,8 @@ if TYPE_CHECKING:
         Client,
         Supplier,
         Material,
-        Employee
+        Employee,
+        Price
     )
 
 class State(str, Enum):
@@ -104,5 +105,10 @@ class Company(Base):
 
     employees: Mapped[List["Employee"]] = relationship(
         "Employee",
+        back_populates = "company"
+    )
+
+    prices: Mapped[List["Price"]] = relationship(
+        "Price",
         back_populates = "company"
     )

@@ -53,6 +53,15 @@ class Employee(Base):
         ForeignKey("companys.id", ondelete = "CASCADE"),
         nullable = False
     )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        server_default = func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        onupdate = func.now(),
+        server_default = func.now()
+    )
 
     user: Mapped["User"] = relationship(
         "User",
