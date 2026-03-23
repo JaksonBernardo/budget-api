@@ -15,7 +15,8 @@ if TYPE_CHECKING:
         Supplier,
         Material,
         Employee,
-        Price
+        Price,
+        Segment
     )
 
 class State(str, Enum):
@@ -110,5 +111,10 @@ class Company(Base):
 
     prices: Mapped[List["Price"]] = relationship(
         "Price",
+        back_populates = "company"
+    )
+
+    segments: Mapped[List["Segment"]] = relationship(
+        "Segment",
         back_populates = "company"
     )
