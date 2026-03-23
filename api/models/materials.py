@@ -59,7 +59,8 @@ class Movementation(Base):
     id: Mapped[int] = mapped_column(primary_key = True, autoincrement = True)
     qtd: Mapped[int]
     material_id: Mapped[int] = mapped_column(
-        ForeignKey("materials.id", ondelete = "SET NULL", onupdate = "SET NULL")
+        ForeignKey("materials.id", ondelete = "SET NULL", onupdate = "SET NULL"),
+        nullable = True
     )
     value: Mapped[Decimal] = mapped_column(
         Numeric(10, 2)

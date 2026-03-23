@@ -4,6 +4,7 @@ from api.models.companys import Company, State
 from api.models.users import User
 from api.models.legal_entity import LegalEntity, Client, Supplier
 from api.models.materials import Classificate, Material, Movementation, Entrys, Exits
+from api.models.employees import Employee
 
 __all__ = [
     "Base",
@@ -20,5 +21,6 @@ __all__ = [
     "Material",
     "Movementation",
     "Entrys",
-    "Exits"
+    "Exits",
+    "Employee"
 ]

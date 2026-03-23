@@ -13,7 +13,8 @@ if TYPE_CHECKING:
         User,
         Client,
         Supplier,
-        Material
+        Material,
+        Employee
     )
 
 class State(str, Enum):
@@ -63,7 +64,8 @@ class Company(Base):
     website: Mapped[str] = mapped_column(String(255), nullable = True)
     is_blocked: Mapped[bool] = mapped_column(Boolean, default = False)
     plan_id: Mapped[int] = mapped_column(
-        ForeignKey("plans.id", ondelete = "SET NULL", onupdate = "SET NULL")
+        ForeignKey("plans.id", ondelete = "SET NULL", onupdate = "SET NULL"),
+        nullable = True
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
@@ -97,5 +99,10 @@ class Company(Base):
 
     materials: Mapped[List["Material"]] = relationship(
         "Material",
+        back_populates = "company"
+    )
+
+    employees: Mapped[List["Employee"]] = relationship(
+        "Employee",
         back_populates = "company"
     )
