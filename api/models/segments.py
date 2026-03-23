@@ -8,7 +8,7 @@ from api.models import Base
 
 if TYPE_CHECKING:
 
-    from api.models import Company
+    from api.models import Company, Service
 
 
 class Segment(Base):
@@ -35,4 +35,9 @@ class Segment(Base):
     company: Mapped["Company"] = relationship(
         "Company",
         back_populates = "segments"
+    )
+
+    services: Mapped[List["Service"]] = relationship(
+        "Service",
+        back_populates = "segment"
     )

@@ -2,11 +2,12 @@ from api.models.base import Base
 from api.models.plans import Plan, Feature, PlanFeature
 from api.models.companys import Company, State
 from api.models.users import User
-from api.models.legal_entity import LegalEntity, Client, Supplier
+from api.models.legal_entitys import LegalEntity, Client, Supplier
 from api.models.materials import Classificate, Material, Movementation, Entrys, Exits
 from api.models.employees import Employee
 from api.models.prices import Price
 from api.models.segments import Segment
+from api.models.services import Service, ServiceMaterial, ServiceEmployee, ServicePrice
 
 __all__ = [
     "Base",
@@ -26,5 +27,9 @@ __all__ = [
     "Exits",
     "Employee",
     "Price",
-    "Segment"
+    "Segment",
+    "Service",
+    "ServiceMaterial",
+    "ServiceEmployee",
+    "ServicePrice"
 ]

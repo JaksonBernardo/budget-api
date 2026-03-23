@@ -9,7 +9,7 @@ from api.models import Base
 
 if TYPE_CHECKING:
 
-    from api.models import Company
+    from api.models import Company, ServiceMaterial
 
 class Classificate(str, Enum):
     DIRECT = "DIRECT"
@@ -44,6 +44,11 @@ class Material(Base):
     company: Mapped["Company"] = relationship(
         "Company",
         back_populates = "materials"
+    )
+
+    services: Mapped[List["ServiceMaterial"]] = relationship(
+        "ServiceMaterial",
+        back_populates = "material"
     )
 
     movementations: Mapped[List["Movementation"]] = relationship(

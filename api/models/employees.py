@@ -10,7 +10,7 @@ from api.models import Base
 
 if TYPE_CHECKING:
 
-    from api.models import Company, User
+    from api.models import Company, User, ServiceEmployee
 
 
 class Employee(Base):
@@ -71,4 +71,9 @@ class Employee(Base):
     company: Mapped["Company"] = relationship(
         "Company",
         back_populates = "employees"
+    )
+
+    services: Mapped[List["ServiceEmployee"]] = relationship(
+        "ServiceEmployee",
+        back_populates = "employee"
     )

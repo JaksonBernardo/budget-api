@@ -69,6 +69,3 @@ class PlanFeature(Base):
         ForeignKey("features.id", ondelete = "CASCADE", onupdate = "CASCADE")
     )
 
-    plan: Mapped["Plan"] = relationship(back_populates="features")
-    feature: Mapped["Feature"] = relationship(back_populates="plans")
-
