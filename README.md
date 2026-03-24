@@ -14,16 +14,16 @@ Sistema para gerenciamento de orçamentos, precificação de serviços, pagament
 ## Tecnologias
 
 - Python
-- FastAPI (ou Flask/Django - a definir)
+- FastAPI
 - SQLAlchemy
 - Alembic (migrations)
-- PostgreSQL/SQLite
+- MySQL
 
 ## Instalação
 
 ```bash
 # Clonar o repositório
-git clone <repository-url>
+git clone https://github.com/JaksonBernardo/budget-api.git
 
 # Criar ambiente virtual
 python -m venv venv
