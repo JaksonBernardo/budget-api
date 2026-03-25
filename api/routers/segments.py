@@ -8,9 +8,11 @@ from api.repositories import SegmentRepository, CompanyRepository
 from api.core.database import get_session
 from api.schemas import (
     SegmentSchema,
-    SegmentPublicSchema
+    SegmentPublicSchema,
+    ListSegmentPublicSchema
 )
 from api.services.segments.create_segment import CreateSegmentService
+from api.services.segments.list_segments import ListSegmentService
 
 segment_router = APIRouter(
     prefix = "/api/segments",
@@ -34,7 +36,7 @@ def get_company_repository(db: AsyncSession = Depends(get_session)) -> CompanyRe
 async def create_segment(
     segment_data: SegmentSchema,
     segment_repository: SegmentRepository = Depends(get_segment_repository),
-    company_repository: CompanyRepository = Depends(get_company_repository)
+    company_repository: CompanyRepository = Depends(get_company_repository),
 ):
 
     try:
@@ -50,4 +52,31 @@ async def create_segment(
     except (CompanyNotFound, SegmentInvalidName) as e:
         raise map_exception(e)
 
+
+@segment_router.get(
+    path = "/{company_id}",
+    status_code = status.HTTP_200_OK,
+    summary = "Listando todos os segmentos",
+    response_model = ListSegmentPublicSchema
+)
+async def list_segments(
+    company_id: int,
+    segment_repository: SegmentRepository = Depends(get_segment_repository),
+    company_repository: CompanyRepository = Depends(get_company_repository),
+):
     
+    try:
+
+        segments = await ListSegmentService(
+            segment_repository,
+            company_repository,
+            company_id
+        ).execute()
+
+        return {
+            "segments": segments
+        }
+    
+    except CompanyNotFound as e:
+        raise map_exception(e)
+
