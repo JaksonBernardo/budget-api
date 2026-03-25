@@ -12,11 +12,15 @@ class SegmentRepository:
     
     async def save(self, segment: Segment) -> Segment:
 
-        self.__db.add(segment)
-        await self.__db.commit()
-        await self.__db.refresh(segment)
+        try:
+            self.__db.add(segment)
+            await self.__db.commit()
+            await self.__db.refresh(segment)
 
-        return segment
+            return segment
+        except Exception:
+            await self.__db.rollback()
+            raise
     
     async def get_by_company_id(self, company_id: int, offset: int, limit: int, search: str | None) -> List[Segment]:
 
