@@ -18,3 +18,5 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str
     JWT_EXPIRATION_MINUTES: int
+
+    URL_CORS: str
