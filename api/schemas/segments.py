@@ -38,6 +38,7 @@ class SegmentSchema(BaseModel):
 class SegmentPublicSchema(BaseModel):
 
     id: int
+    name: str
     contract: str
     company_id: int
     created_at: datetime

@@ -1,6 +1,6 @@
 from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from api.models import Segment
 
 class SegmentRepository:
@@ -18,13 +18,38 @@ class SegmentRepository:
 
         return segment
     
-    async def get_by_company_id(self, company_id: int) -> List[Segment]:
+    async def get_by_company_id(self, company_id: int, offset: int, limit: int, search: str | None) -> List[Segment]:
+
+        query = select(Segment)
+
+        if search:
+
+            query = query.where(
+                Segment.name.ilike(search)
+            )
+
+        query = query.offset(offset).limit(limit)
+        
+        query = query.where(Segment.company_id == company_id)
 
         segments = await self.__db.execute(
-            select(Segment).where(Segment.company_id == company_id)
+            query
         )
 
         return segments.scalars().all()
+    
+    async def get_by_id(self, company_id: int, segment_id: int) -> Segment | None:
+
+        segment = await self.__db.execute(
+            select(Segment).where(
+                and_(
+                    Segment.company_id == company_id,
+                    Segment.id == segment_id
+                )
+            )
+        )
+
+        return segment.scalar_one_or_none()
     
 
 

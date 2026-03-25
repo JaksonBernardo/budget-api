@@ -1,8 +1,12 @@
-
-from fastapi import APIRouter, status, Depends, HTTPException
+from typing import Optional
+from fastapi import APIRouter, status, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.exceptions import CompanyNotFound, SegmentInvalidName
+from api.exceptions import (
+    CompanyNotFound, 
+    SegmentInvalidName,
+    SegmentNotFound
+)
 from api.exceptions.map_exceptions import map_exception
 from api.repositories import SegmentRepository, CompanyRepository
 from api.core.database import get_session
@@ -13,6 +17,7 @@ from api.schemas import (
 )
 from api.services.segments.create_segment import CreateSegmentService
 from api.services.segments.list_segments import ListSegmentService
+from api.services.segments.get_segment import GetSegmentService
 
 segment_router = APIRouter(
     prefix = "/api/segments",
@@ -63,6 +68,9 @@ async def list_segments(
     company_id: int,
     segment_repository: SegmentRepository = Depends(get_segment_repository),
     company_repository: CompanyRepository = Depends(get_company_repository),
+    offset: int = Query(0, ge = 0, description = "Registros a serem pulados"),
+    limit: int = Query(20, ge = 1, description = "Qtd máxima de registros apresentados"),
+    search: Optional[str] = Query(None, description = "Pesquisar pelo nome de algum segmento")
 ):
     
     try:
@@ -70,7 +78,10 @@ async def list_segments(
         segments = await ListSegmentService(
             segment_repository,
             company_repository,
-            company_id
+            company_id,
+            offset,
+            limit,
+            search
         ).execute()
 
         return {
@@ -78,5 +89,32 @@ async def list_segments(
         }
     
     except CompanyNotFound as e:
+        raise map_exception(e)
+    
+@segment_router.get(
+    path = "/{company_id}/{segment_id}",
+    status_code = status.HTTP_200_OK,
+    summary = "Selecionando um segmento específico",
+    response_model = SegmentPublicSchema
+)
+async def get_segment(
+    company_id: int,
+    segment_id: int,
+    segment_repository: SegmentRepository = Depends(get_segment_repository),
+    company_repository: CompanyRepository = Depends(get_company_repository),
+):
+    
+    try:
+
+        segment = await GetSegmentService(
+            segment_repository,
+            company_repository,
+            company_id,
+            segment_id
+        ).execute()
+
+        return segment
+    
+    except (CompanyNotFound, SegmentNotFound) as e:
         raise map_exception(e)
 
