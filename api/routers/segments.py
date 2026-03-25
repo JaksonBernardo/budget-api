@@ -18,6 +18,7 @@ from api.schemas import (
 from api.services.segments.create_segment import CreateSegmentService
 from api.services.segments.list_segments import ListSegmentService
 from api.services.segments.get_segment import GetSegmentService
+from api.services.segments.delete_segment import DeleteSegmentService
 
 segment_router = APIRouter(
     prefix = "/api/segments",
@@ -90,7 +91,8 @@ async def list_segments(
     
     except CompanyNotFound as e:
         raise map_exception(e)
-    
+
+
 @segment_router.get(
     path = "/{company_id}/{segment_id}",
     status_code = status.HTTP_200_OK,
@@ -115,6 +117,31 @@ async def get_segment(
 
         return segment
     
+    except (CompanyNotFound, SegmentNotFound) as e:
+        raise map_exception(e)
+
+
+@segment_router.delete(
+    path = "/{company_id}/{segment_id}",
+    status_code = status.HTTP_204_NO_CONTENT,
+    summary = "Deletando um segmento específico"
+)
+async def delete_segment(
+    company_id: int,
+    segment_id: int,
+    segment_repository: SegmentRepository = Depends(get_segment_repository),
+    company_repository: CompanyRepository = Depends(get_company_repository),
+):
+    
+    try:
+
+        await DeleteSegmentService(
+            segment_repository,
+            company_repository,
+            company_id,
+            segment_id
+        ).execute()
+
     except (CompanyNotFound, SegmentNotFound) as e:
         raise map_exception(e)
 

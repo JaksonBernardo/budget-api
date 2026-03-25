@@ -1,6 +1,6 @@
 from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, delete
 from api.models import Segment
 
 class SegmentRepository:
@@ -51,5 +51,19 @@ class SegmentRepository:
 
         return segment.scalar_one_or_none()
     
+    async def delete_by_id(self, company_id: int, segment_id: int) -> None:
 
+        try:
+            await self.__db.execute(
+                delete(Segment).where(
+                    and_(
+                        Segment.company_id == company_id,
+                        Segment.id == segment_id
+                    )
+                )
+            )
+            await self.__db.commit()
+        except Exception:
+            await self.__db.rollback()
+            raise
 
