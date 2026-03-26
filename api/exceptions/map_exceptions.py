@@ -3,6 +3,7 @@ from api.exceptions import (
     CompanyNotFound,
     SegmentInvalidName,
     SegmentNotFound,
+    SegmentAccesDenied,
     InvalidTypeCompanyId,
     ZeroCompanyId
 )
@@ -23,6 +24,10 @@ def map_exception(exception: Exception) -> HTTPException:
         ),
         SegmentInvalidName: lambda e: HTTPException(
             status_code=400,
+            detail=str(e)
+        ),
+        SegmentAccesDenied: lambda e: HTTPException(
+            status_code = getattr(e, "status_code", 403),
             detail=str(e)
         ),
         InvalidTypeCompanyId: lambda e: HTTPException(

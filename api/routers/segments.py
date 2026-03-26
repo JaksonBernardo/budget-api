@@ -5,7 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.exceptions import (
     CompanyNotFound, 
     SegmentInvalidName,
-    SegmentNotFound
+    SegmentNotFound,
+    SegmentAccesDenied
 )
 from api.exceptions.map_exceptions import map_exception
 from api.repositories import SegmentRepository, CompanyRepository
@@ -13,12 +14,14 @@ from api.core.database import get_session
 from api.schemas import (
     SegmentSchema,
     SegmentPublicSchema,
-    ListSegmentPublicSchema
+    ListSegmentPublicSchema,
+    SegmentUpdateSchema
 )
 from api.services.segments.create_segment import CreateSegmentService
 from api.services.segments.list_segments import ListSegmentService
 from api.services.segments.get_segment import GetSegmentService
 from api.services.segments.delete_segment import DeleteSegmentService
+from api.services.segments.update_segment import UpdateSegmentService
 
 segment_router = APIRouter(
     prefix = "/api/segments",
@@ -143,5 +146,35 @@ async def delete_segment(
         ).execute()
 
     except (CompanyNotFound, SegmentNotFound) as e:
+        raise map_exception(e)
+    
+
+@segment_router.put(
+    path = "/{segment_id}",
+    status_code = status.HTTP_200_OK,
+    summary = "Atualizando um segmento",
+    response_model = SegmentPublicSchema
+)
+async def update_segment(
+    segment_id: int,
+    segment_data: SegmentUpdateSchema,
+    segment_repository: SegmentRepository = Depends(get_segment_repository),
+    company_repository: CompanyRepository = Depends(get_company_repository),
+):
+    
+    try:
+
+        segment_info = segment_data.model_dump(exclude_unset = True)
+
+        segment = await UpdateSegmentService(
+            segment_repository,
+            company_repository,
+            segment_id,
+            segment_info
+        ).execute()
+
+        return segment
+
+    except (CompanyNotFound, SegmentNotFound, SegmentAccesDenied, SegmentInvalidName) as e:
         raise map_exception(e)
 

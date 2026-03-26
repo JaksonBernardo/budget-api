@@ -71,3 +71,13 @@ class SegmentRepository:
             await self.__db.rollback()
             raise
 
+    async def update(self, segment: Segment) -> Segment:
+
+        try:
+            await self.__db.commit()
+            await self.__db.refresh(segment)
+
+            return segment
+        except Exception:
+            await self.__db.rollback()
+            raise
