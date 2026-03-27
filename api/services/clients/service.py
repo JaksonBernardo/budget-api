@@ -2,7 +2,7 @@ from api.models import Segment
 from api.repositories import SegmentRepository
 
 
-class SegmentService:
+class ClientService:
 
     def __init__(self, segment_repository: SegmentRepository):
 

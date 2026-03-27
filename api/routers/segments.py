@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, status, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from api.exceptions import (
-    CompanyNotFound, 
+    CompanyNotFound,
     SegmentInvalidName,
     SegmentNotFound,
     SegmentAccesDenied
@@ -16,13 +16,7 @@ from api.schemas import (
     ListSegmentPublicSchema,
     SegmentUpdateSchema
 )
-from api.services.segments.service import (
-    CreateSegmentService,
-    ListSegmentService,
-    GetSegmentService,
-    DeleteSegmentService,
-    UpdateSegmentService
-)
+from api.services.segments.service import SegmentService
 
 segment_router = APIRouter(
     prefix = "/api/segments",
@@ -30,12 +24,17 @@ segment_router = APIRouter(
 )
 
 def get_segment_repository(db: AsyncSession = Depends(get_session)) -> SegmentRepository:
-
     return SegmentRepository(db)
 
 def get_company_repository(db: AsyncSession = Depends(get_session)) -> CompanyRepository:
-
     return CompanyRepository(db)
+
+def get_segment_service(
+    segment_repository: SegmentRepository = Depends(get_segment_repository),
+    company_repository: CompanyRepository = Depends(get_company_repository)
+) -> SegmentService:
+    return SegmentService(segment_repository, company_repository)
+
 
 @segment_router.post(
     path = "/",
@@ -45,20 +44,12 @@ def get_company_repository(db: AsyncSession = Depends(get_session)) -> CompanyRe
 )
 async def create_segment(
     segment_data: SegmentSchema,
-    segment_repository: SegmentRepository = Depends(get_segment_repository),
-    company_repository: CompanyRepository = Depends(get_company_repository),
+    service: SegmentService = Depends(get_segment_service),
 ):
-
     try:
-
-        new_segment = await CreateSegmentService(
-            segment_repository,
-            company_repository,
-            segment_data
-        ).execute()
-
+        new_segment = await service.create(segment_data)
         return new_segment
-    
+
     except (CompanyNotFound, SegmentInvalidName) as e:
         raise map_exception(e)
 
@@ -71,28 +62,17 @@ async def create_segment(
 )
 async def list_segments(
     company_id: int,
-    segment_repository: SegmentRepository = Depends(get_segment_repository),
-    company_repository: CompanyRepository = Depends(get_company_repository),
+    service: SegmentService = Depends(get_segment_service),
     offset: int = Query(0, ge = 0, description = "Registros a serem pulados"),
     limit: int = Query(20, ge = 1, description = "Qtd máxima de registros apresentados"),
     search: Optional[str] = Query(None, description = "Pesquisar pelo nome de algum segmento")
 ):
-    
     try:
-
-        segments = await ListSegmentService(
-            segment_repository,
-            company_repository,
-            company_id,
-            offset,
-            limit,
-            search
-        ).execute()
-
+        segments = await service.list(company_id, offset, limit, search)
         return {
             "segments": segments
         }
-    
+
     except CompanyNotFound as e:
         raise map_exception(e)
 
@@ -106,21 +86,12 @@ async def list_segments(
 async def get_segment(
     company_id: int,
     segment_id: int,
-    segment_repository: SegmentRepository = Depends(get_segment_repository),
-    company_repository: CompanyRepository = Depends(get_company_repository),
+    service: SegmentService = Depends(get_segment_service),
 ):
-    
     try:
-
-        segment = await GetSegmentService(
-            segment_repository,
-            company_repository,
-            company_id,
-            segment_id
-        ).execute()
-
+        segment = await service.get(company_id, segment_id)
         return segment
-    
+
     except (CompanyNotFound, SegmentNotFound) as e:
         raise map_exception(e)
 
@@ -133,22 +104,14 @@ async def get_segment(
 async def delete_segment(
     company_id: int,
     segment_id: int,
-    segment_repository: SegmentRepository = Depends(get_segment_repository),
-    company_repository: CompanyRepository = Depends(get_company_repository),
+    service: SegmentService = Depends(get_segment_service),
 ):
-    
     try:
-
-        await DeleteSegmentService(
-            segment_repository,
-            company_repository,
-            company_id,
-            segment_id
-        ).execute()
+        await service.delete(company_id, segment_id)
 
     except (CompanyNotFound, SegmentNotFound) as e:
         raise map_exception(e)
-    
+
 
 @segment_router.put(
     path = "/{segment_id}",
@@ -159,23 +122,12 @@ async def delete_segment(
 async def update_segment(
     segment_id: int,
     segment_data: SegmentUpdateSchema,
-    segment_repository: SegmentRepository = Depends(get_segment_repository),
-    company_repository: CompanyRepository = Depends(get_company_repository),
+    service: SegmentService = Depends(get_segment_service),
 ):
-    
     try:
-
         segment_info = segment_data.model_dump(exclude_unset = True)
-
-        segment = await UpdateSegmentService(
-            segment_repository,
-            company_repository,
-            segment_id,
-            segment_info
-        ).execute()
-
+        segment = await service.update(segment_id, segment_info)
         return segment
 
     except (CompanyNotFound, SegmentNotFound, SegmentAccesDenied, SegmentInvalidName) as e:
         raise map_exception(e)
-

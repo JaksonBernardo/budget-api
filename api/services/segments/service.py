@@ -1,5 +1,5 @@
 import pytz
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 from datetime import datetime
 from api.models import Segment
 from api.repositories import SegmentRepository, CompanyRepository
@@ -14,179 +14,100 @@ from api.exceptions import (
 
 class SegmentService:
 
-    def __init__(self, segment_repository: SegmentRepository):
-        self._segment_repository = segment_repository
-
-
-class CreateSegmentService(SegmentService):
-
     def __init__(
         self,
         segment_repository: SegmentRepository,
-        company_repository: CompanyRepository,
-        segment_data: SegmentSchema
+        company_repository: CompanyRepository
     ):
-        super().__init__(segment_repository)
-        self._segment_data = segment_data
+        self._segment_repository = segment_repository
         self._company_repository = company_repository
 
-    async def execute(self) -> Segment:
-        company = await self._company_repository.get_by_id(self._segment_data.company_id)
+    async def create(self, segment_data: SegmentSchema) -> Segment:
+        company = await self._company_repository.get_by_id(segment_data.company_id)
 
         if not company:
             raise CompanyNotFound()
 
-        segment_db = Segment(
-            name=self._segment_data.name,
-            contract=self._segment_data.contract,
-            company_id=self._segment_data.company_id
+        segment = Segment(
+            name=segment_data.name,
+            contract=segment_data.contract,
+            company_id=segment_data.company_id
         )
 
-        new_segment = await self._segment_repository.save(segment_db)
-        return new_segment
+        return await self._segment_repository.save(segment)
 
-
-class ListSegmentService(SegmentService):
-
-    def __init__(
+    async def list(
         self,
-        segment_repository: SegmentRepository,
-        company_repository: CompanyRepository,
         company_id: int,
         offset: int,
         limit: int,
-        search: str
-    ):
-        super().__init__(segment_repository)
-        self._company_id = company_id
-        self._offset = offset
-        self._limit = limit
-        self._search = search
-        self._company_repository = company_repository
-
-    async def execute(self):
-        company = await self._company_repository.get_by_id(self._company_id)
+        search: Optional[str]
+    ) -> List[Segment]:
+        company = await self._company_repository.get_by_id(company_id)
 
         if not company:
             raise CompanyNotFound()
 
-        if self._search:
-            self._search = f"%{self._search}%"
+        if search:
+            search = f"%{search}%"
 
-        segments = await self._segment_repository.get_by_company_id(
-            self._company_id,
-            self._offset,
-            self._limit,
-            self._search
+        return await self._segment_repository.get_by_company_id(
+            company_id,
+            offset,
+            limit,
+            search
         )
 
-        return segments
-
-
-class GetSegmentService(SegmentService):
-
-    def __init__(
-        self,
-        segment_repository: SegmentRepository,
-        company_repository: CompanyRepository,
-        company_id: int,
-        segment_id: int
-    ):
-        super().__init__(segment_repository)
-        self._company_id = company_id
-        self._segment_id = segment_id
-        self._company_repository = company_repository
-
-    async def execute(self) -> Segment:
-        company = await self._company_repository.get_by_id(self._company_id)
+    async def get(self, company_id: int, segment_id: int) -> Segment:
+        company = await self._company_repository.get_by_id(company_id)
 
         if not company:
             raise CompanyNotFound()
 
-        segment = await self._segment_repository.get_by_id(
-            self._company_id,
-            self._segment_id
-        )
+        segment = await self._segment_repository.get_by_id(company_id, segment_id)
 
         if not segment:
             raise SegmentNotFound()
 
         return segment
 
+    async def delete(self, company_id: int, segment_id: int) -> None:
+        company = await self._company_repository.get_by_id(company_id)
 
-class DeleteSegmentService(SegmentService):
+        if not company:
+            raise CompanyNotFound()
 
-    def __init__(
-        self,
-        segment_repository: SegmentRepository,
-        company_repository: CompanyRepository,
-        company_id: int,
-        segment_id: int
-    ):
-        super().__init__(segment_repository)
-        self._company_id = company_id
-        self._segment_id = segment_id
-        self._company_repository = company_repository
+        segment = await self._segment_repository.get_by_id(company_id, segment_id)
 
-    async def execute(self) -> Segment:
-        company = await self._company_repository.get_by_id(self._company_id)
+        if not segment:
+            raise SegmentNotFound()
+
+        await self._segment_repository.delete_by_id(company_id, segment_id)
+
+    async def update(self, segment_id: int, segment_data: Dict) -> Segment:
+        company = await self._company_repository.get_by_id(segment_data["company_id"])
 
         if not company:
             raise CompanyNotFound()
 
         segment = await self._segment_repository.get_by_id(
-            self._company_id,
-            self._segment_id
+            segment_data["company_id"],
+            segment_id
         )
 
         if not segment:
             raise SegmentNotFound()
 
-        await self._segment_repository.delete_by_id(
-            self._company_id,
-            self._segment_id
-        )
-
-
-class UpdateSegmentService(SegmentService):
-
-    def __init__(
-        self,
-        segment_repository: SegmentRepository,
-        company_repository: CompanyRepository,
-        segment_id: int,
-        segment_data: Dict
-    ):
-        super().__init__(segment_repository)
-        self._segment_id = segment_id
-        self._segment_data = segment_data
-        self._company_repository = company_repository
-
-    async def execute(self) -> Segment:
-        company = await self._company_repository.get_by_id(self._segment_data["company_id"])
-
-        if not company:
-            raise CompanyNotFound()
-
-        segment = await self._segment_repository.get_by_id(
-            self._segment_data["company_id"],
-            self._segment_id
-        )
-
-        if not segment:
-            raise SegmentNotFound()
-
-        if "name" in self._segment_data and not self._segment_data["name"]:
+        if "name" in segment_data and not segment_data["name"]:
             raise SegmentInvalidName()
 
-        if "company_id" in self._segment_data and segment.company_id != self._segment_data["company_id"]:
+        if "company_id" in segment_data and segment.company_id != segment_data["company_id"]:
             raise SegmentAccesDenied()
 
         _BRAZIL_TIMEZONE_ = pytz.timezone("America/Sao_Paulo")
-        segment.name = self._segment_data["name"]
-        segment.company_id = self._segment_data["company_id"]
-        segment.contract = self._segment_data["contract"]
+        segment.name = segment_data["name"]
+        segment.company_id = segment_data["company_id"]
+        segment.contract = segment_data["contract"]
         segment.updated_at = datetime.now(_BRAZIL_TIMEZONE_)
 
-        segment = await self._segment_repository.update(segment)
-        return segment
+        return await self._segment_repository.update(segment)
