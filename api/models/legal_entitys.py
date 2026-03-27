@@ -1,7 +1,6 @@
-from typing import TYPE_CHECKING, List, Optional
-from enum import Enum
+from typing import TYPE_CHECKING, Optional
 from datetime import datetime
-from sqlalchemy import String, Integer, ForeignKey, DateTime, Boolean, func
+from sqlalchemy import String, Integer, ForeignKey, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from api.models import Base
@@ -25,7 +24,7 @@ class LegalEntity(Base):
     email: Mapped[str] = mapped_column(String(255), nullable = True, unique = True)
     phone: Mapped[str] = mapped_column(String(50), nullable = True)
     address: Mapped[str] = mapped_column(String(255), nullable = True)
-    number: Mapped[int] = mapped_column(Integer, nullable = True)
+    number: Mapped[int] = mapped_column(Integer, nullable = True, default = None)
     state: Mapped[State] = mapped_column(String(2), nullable = True)
     cep: Mapped[str] = mapped_column(String(30), nullable = True)
     city: Mapped[str] = mapped_column(String(100), nullable = True)
@@ -51,7 +50,6 @@ class Client(Base):
         ForeignKey("person_entitys.id", ondelete = "CASCADE"),
         nullable = False
     )
-    payment_days: Mapped[int]
     company_id: Mapped[int] = mapped_column(
         ForeignKey("companys.id", ondelete = "CASCADE"),
         nullable = False
@@ -86,7 +84,6 @@ class Supplier(Base):
         ForeignKey("person_entitys.id", ondelete = "CASCADE"),
         nullable = False
     )
-    receive_days: Mapped[int]
     company_id: Mapped[int] = mapped_column(
         ForeignKey("companys.id", ondelete = "CASCADE"),
         nullable = False

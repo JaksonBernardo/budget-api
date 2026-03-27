@@ -1,7 +1,6 @@
 from typing import Optional
 from fastapi import APIRouter, status, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from api.exceptions import (
     CompanyNotFound, 
     SegmentInvalidName,

@@ -167,7 +167,11 @@ class ServicePrice(Base):
         Numeric(4, 2),
         nullable = False
     )
-
+    value: Mapped[Decimal] = mapped_column(
+        Numeric(10, 2),
+        nullable = False
+    )
+    
     service: Mapped["Service"] = relationship(
         "Service",
         back_populates = "prices"
