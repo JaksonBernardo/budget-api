@@ -3,10 +3,12 @@ from api.core.settings import Settings
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.routers.segments import segment_router
+from api.routers.clients import client_router
 
 app = FastAPI()
 
 app.include_router(segment_router)
+app.include_router(client_router)
 
 origins = [
     Settings().URL_CORS,

@@ -34,7 +34,7 @@ def get_company_repository(db: AsyncSession = Depends(get_session)) -> CompanyRe
     path = "/",
     status_code = status.HTTP_201_CREATED,
     summary = "Criando um cliente",
-    response_model=0
+    response_model = ClientPublicSchema
 )
 async def create_client(
     client_data: ClientSchema,

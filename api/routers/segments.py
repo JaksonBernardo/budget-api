@@ -16,11 +16,13 @@ from api.schemas import (
     ListSegmentPublicSchema,
     SegmentUpdateSchema
 )
-from api.services.segments.create_segment import CreateSegmentService
-from api.services.segments.list_segments import ListSegmentService
-from api.services.segments.get_segment import GetSegmentService
-from api.services.segments.delete_segment import DeleteSegmentService
-from api.services.segments.update_segment import UpdateSegmentService
+from api.services.segments.service import (
+    CreateSegmentService,
+    ListSegmentService,
+    GetSegmentService,
+    DeleteSegmentService,
+    UpdateSegmentService
+)
 
 segment_router = APIRouter(
     prefix = "/api/segments",
