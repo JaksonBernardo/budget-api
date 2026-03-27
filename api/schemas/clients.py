@@ -1,12 +1,12 @@
-import re
 from typing import Optional, List
 from pydantic import BaseModel, field_validator, EmailStr
 from datetime import datetime
 from validate_docbr import CNPJ
-
+from api.schemas import LegalEntityPublicSchema
 from api.exceptions.companys import InvalidTypeCompanyId, ZeroCompanyId
 
 cnpj_validator = CNPJ()
+
 
 class ClientSchema(BaseModel):
 
@@ -23,11 +23,12 @@ class ClientSchema(BaseModel):
 
     @field_validator("cpf_cnpj")
     def validate_cpf_cnpj(cls, value):
-    
+        if value is None:
+            return value
+
         if not cnpj_validator.validate(value):
-            
             raise ValueError("CNPJ inválido")
-        
+
         return value
     
 
@@ -47,18 +48,15 @@ class ClientSchema(BaseModel):
 class ClientPublicSchema(BaseModel):
 
     id: int
-    companie: str
-    cpf_cnpj: str
-    email: EmailStr
-    phone: str
-    address: str
-    number: Optional[int] = None
-    state: str
-    cep: str
-    city: str
+    id_person: int
     company_id: int
     created_at: datetime
     updated_at: datetime
+    legal_entity: LegalEntityPublicSchema
+
+    class Config:
+        from_attributes = True
+    
 
 class ClientUpdateSchema(BaseModel):
 
@@ -75,11 +73,12 @@ class ClientUpdateSchema(BaseModel):
 
     @field_validator("cpf_cnpj")
     def validate_cpf_cnpj(cls, value):
-    
+        if value is None:
+            return value
+
         if not cnpj_validator.validate(value):
-            
             raise ValueError("CNPJ inválido")
-        
+
         return value
     
 

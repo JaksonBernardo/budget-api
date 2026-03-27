@@ -4,6 +4,7 @@ from api.schemas.segments import (
     SegmentUpdateSchema, 
     ListSegmentPublicSchema
 )
+from api.schemas.legal_entity import LegalEntityPublicSchema
 from api.schemas.clients import (
     ClientSchema,
     ClientPublicSchema,
@@ -17,6 +18,7 @@ __all__ = [
     "SegmentPublicSchema",
     "SegmentUpdateSchema",
     "ListSegmentPublicSchema",
+    "LegalEntityPublicSchema",
     "ClientSchema",
     "ClientPublicSchema",
     "ClientUpdateSchema",
