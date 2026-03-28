@@ -24,7 +24,60 @@ class ClientRepository:
         result = await self.__db.execute(query)
 
         return result.scalar_one_or_none()
-    
+
+    async def get_by_id_and_company(self, company_id: int, client_id: int) -> Client | None:
+
+        query = select(Client).options(
+            selectinload(Client.legal_entity)
+        ).where(
+            and_(
+                Client.id == client_id,
+                Client.company_id == company_id
+            )
+        )
+
+        result = await self.__db.execute(query)
+
+        return result.scalar_one_or_none()
+
+    async def update(self, client: Client) -> Client:
+        try:
+            await self.__db.merge(client)
+            await self.__db.commit()
+            await self.__db.refresh(client)
+            return client
+        except Exception:
+            await self.__db.rollback()
+            raise
+
+    async def delete_by_id(self, company_id: int, client_id: int) -> None:
+
+        try:
+            client = await self.get_by_id_and_company(company_id, client_id)
+
+            if not client:
+                return
+
+            legal_entity_id = client.legal_entity.id if client.legal_entity else None
+
+            query = delete(Client).where(
+                and_(
+                    Client.id == client_id,
+                    Client.company_id == company_id
+                )
+            )
+
+            await self.__db.execute(query)
+
+            if legal_entity_id:
+                await self.__db.execute(
+                    delete(LegalEntity).where(LegalEntity.id == legal_entity_id)
+                )
+
+            await self.__db.commit()
+        except Exception:
+            await self.__db.rollback()
+            raise
 
     async def get_by_company_id(
         self,

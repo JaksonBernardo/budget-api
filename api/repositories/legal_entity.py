@@ -16,6 +16,17 @@ class LegalEntityRepository:
         return legal_entity
 
     async def get_by_id(self, legal_entity_id: int) -> LegalEntity | None:
-        
+
         result = await self.__db.get(LegalEntity, legal_entity_id)
         return result
+
+    async def update(self, legal_entity: LegalEntity) -> LegalEntity:
+        try:
+            merged = await self.__db.merge(legal_entity)
+            await self.__db.commit()
+            await self.__db.refresh(merged)
+
+            return merged
+        except Exception:
+            await self.__db.rollback()
+            raise

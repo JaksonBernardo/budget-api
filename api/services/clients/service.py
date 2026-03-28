@@ -6,9 +6,11 @@ from api.repositories import (
     CompanyRepository,
     LegalEntityRepository
 )
-from api.schemas import ClientSchema, ClientPublicSchema
+from api.schemas import ClientSchema, ClientPublicSchema, ClientUpdateSchema
 from api.exceptions import (
     CompanyNotFound,
+    ClientNotFound,
+    ClientAccesDenied
 )
 
 
@@ -55,7 +57,7 @@ class ClientService:
         new_client = await self._client_repository.get_by_id(new_client_db.id)
 
         return new_client
-    
+
     async def list(
         self,
         company_id: int,
@@ -74,5 +76,78 @@ class ClientService:
         )
 
         return clients
+
+    async def get(self, company_id: int, client_id: int) -> ClientPublicSchema:
+        company = await self._company_repository.get_by_id(company_id)
+
+        if not company:
+            raise CompanyNotFound()
+
+        client = await self._client_repository.get_by_id_and_company(company_id, client_id)
+
+        if not client:
+            raise ClientNotFound()
+
+        return client
+
+    async def delete(self, company_id: int, client_id: int) -> None:
+        company = await self._company_repository.get_by_id(company_id)
+
+        if not company:
+            raise CompanyNotFound()
+
+        client = await self._client_repository.get_by_id_and_company(company_id, client_id)
+
+        if not client:
+            raise ClientNotFound()
+
+        await self._client_repository.delete_by_id(company_id, client_id)
+
+    async def update(self, client_id: int, client_data: Dict) -> ClientPublicSchema:
+        company = await self._company_repository.get_by_id(client_data["company_id"])
+
+        if not company:
+            raise CompanyNotFound()
+
+        client = await self._client_repository.get_by_id_and_company(
+            client_data["company_id"],
+            client_id
+        )
+
+        if not client:
+            raise ClientNotFound()
+
+        if "company_id" in client_data and client.company_id != client_data["company_id"]:
+            raise ClientAccesDenied()
+
+        legal_entity = client.legal_entity
+
+        if "companie" in client_data:
+            legal_entity.companie = client_data["companie"]
+        if "cpf_cnpj" in client_data:
+            legal_entity.cpf_cnpj = client_data["cpf_cnpj"]
+        if "email" in client_data:
+            legal_entity.email = client_data["email"]
+        if "phone" in client_data:
+            legal_entity.phone = client_data["phone"]
+        if "address" in client_data:
+            legal_entity.address = client_data["address"]
+        if "number" in client_data:
+            legal_entity.number = client_data["number"]
+        if "state" in client_data:
+            legal_entity.state = client_data["state"]
+        if "cep" in client_data:
+            legal_entity.cep = client_data["cep"]
+        if "city" in client_data:
+            legal_entity.city = client_data["city"]
+
+        await self._legal_entity_repository.update(legal_entity)
+
+        updated_client = await self._client_repository.get_by_id_and_company(
+            client_data["company_id"],
+            client_id
+        )
+
+        return updated_client
 
         

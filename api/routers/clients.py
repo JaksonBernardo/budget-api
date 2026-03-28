@@ -3,12 +3,13 @@ from fastapi import APIRouter, status, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from api.exceptions import (
     CompanyNotFound,
-    ClientNotFound
+    ClientNotFound,
+    ClientAccesDenied
 )
 from api.exceptions.map_exceptions import map_exception
 from api.repositories import (
     LegalEntityRepository,
-    ClientRepository, 
+    ClientRepository,
     CompanyRepository
 )
 from api.core.database import get_session
@@ -62,7 +63,7 @@ async def create_client(
     client_service: ClientService = Depends(get_client_service)
 ):
     async with db.begin():
-        
+
         return await client_service.create(client_data)
 
 
@@ -87,5 +88,60 @@ async def list_clients(
         "clients": clients
     }
 
+
+@client_router.get(
+    path = "/{company_id}/{client_id}",
+    status_code = status.HTTP_200_OK,
+    summary = "Selecionando um cliente específico",
+    response_model = ClientPublicSchema
+)
+async def get_client(
+    company_id: int,
+    client_id: int,
+    service: ClientService = Depends(get_client_service),
+):
+    try:
+        client = await service.get(company_id, client_id)
+        return client
+
+    except (CompanyNotFound, ClientNotFound) as e:
+        raise map_exception(e)
+
+
+@client_router.delete(
+    path = "/{company_id}/{client_id}",
+    status_code = status.HTTP_204_NO_CONTENT,
+    summary = "Deletando um cliente específico"
+)
+async def delete_client(
+    company_id: int,
+    client_id: int,
+    service: ClientService = Depends(get_client_service),
+):
+    try:
+        await service.delete(company_id, client_id)
+
+    except (CompanyNotFound, ClientNotFound) as e:
+        raise map_exception(e)
+
+
+@client_router.put(
+    path = "/{client_id}",
+    status_code = status.HTTP_200_OK,
+    summary = "Atualizando um cliente",
+    response_model = ClientPublicSchema
+)
+async def update_client(
+    client_id: int,
+    client_data: ClientUpdateSchema,
+    service: ClientService = Depends(get_client_service),
+):
+    try:
+        client_info = client_data.model_dump(exclude_unset = True)
+        client = await service.update(client_id, client_info)
+        return client
+
+    except (CompanyNotFound, ClientNotFound, ClientAccesDenied) as e:
+        raise map_exception(e)
 
 

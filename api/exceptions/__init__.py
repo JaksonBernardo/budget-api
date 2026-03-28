@@ -1,6 +1,6 @@
 from api.exceptions.companys import ZeroCompanyId, InvalidTypeCompanyId, CompanyNotFound
 from api.exceptions.segments import SegmentInvalidName, SegmentNotFound, SegmentAccesDenied
-from api.exceptions.clients import ClientNotFound
+from api.exceptions.clients import ClientNotFound, ClientAccesDenied
 
 __all__ = [
     "ZeroCompanyId",
@@ -9,5 +9,6 @@ __all__ = [
     "SegmentInvalidName",
     "SegmentNotFound",
     "SegmentAccesDenied",
-    "ClientNotFound"
+    "ClientNotFound",
+    "ClientAccesDenied"
 ]
