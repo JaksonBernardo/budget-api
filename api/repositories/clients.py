@@ -16,10 +16,13 @@ class ClientRepository:
         return client
 
     async def get_by_id(self, client_id: int) -> Client | None:
-        stmt = select(Client).options(
+
+        query = select(Client).options(
             selectinload(Client.legal_entity)
         ).where(Client.id == client_id)
-        result = await self.__db.execute(stmt)
+
+        result = await self.__db.execute(query)
+
         return result.scalar_one_or_none()
     
     
