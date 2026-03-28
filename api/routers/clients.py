@@ -65,3 +65,27 @@ async def create_client(
         
         return await client_service.create(client_data)
 
+
+@client_router.get(
+    path = "/{company_id}",
+    status_code = status.HTTP_200_OK,
+    summary = "Listando os clientes",
+    response_model = ListClientPublicSchema
+)
+async def list_clients(
+    company_id: int,
+    client_service: ClientService = Depends(get_client_service),
+    offset: int = Query(0, ge = 0, description = "Registros a serem pulados"),
+    limit: int = Query(20, ge = 1, description = "Qtd máxima de registros apresentados"),
+    search: Optional[str] = Query(None, description = "Pesquisar pelo nome de algum cliente")
+):
+    clients = await client_service.list(
+        company_id, offset, limit, search
+    )
+
+    return {
+        "clients": clients
+    }
+
+
+

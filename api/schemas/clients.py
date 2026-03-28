@@ -56,7 +56,7 @@ class ClientPublicSchema(BaseModel):
 
     class Config:
         from_attributes = True
-    
+
 
 class ClientUpdateSchema(BaseModel):
 
@@ -98,6 +98,4 @@ class ClientUpdateSchema(BaseModel):
 class ListClientPublicSchema(BaseModel):
 
     clients: List[ClientPublicSchema]
-    offset: int
-    limit: int
 

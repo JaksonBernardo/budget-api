@@ -6,7 +6,7 @@ from api.repositories import (
     CompanyRepository,
     LegalEntityRepository
 )
-from api.schemas import ClientSchema
+from api.schemas import ClientSchema, ClientPublicSchema
 from api.exceptions import (
     CompanyNotFound,
 )
@@ -24,7 +24,7 @@ class ClientService:
         self._client_repository = client_repository
         self._company_repository = company_repository
 
-    async def create(self, client_data: ClientSchema) -> Client:
+    async def create(self, client_data: ClientSchema) -> ClientPublicSchema:
 
         company = await self._company_repository.get_by_id(client_data.company_id)
 
@@ -56,4 +56,23 @@ class ClientService:
 
         return new_client
     
+    async def list(
+        self,
+        company_id: int,
+        offset: int = 0,
+        limit: int = 20,
+        search: Optional[str] = None
+    ) -> List[ClientPublicSchema]:
+
+        company = await self._company_repository.get_by_id(company_id)
+
+        if not company:
+            raise CompanyNotFound()
+
+        clients = await self._client_repository.get_by_company_id(
+            company_id, offset, limit, search
+        )
+
+        return clients
+
         
