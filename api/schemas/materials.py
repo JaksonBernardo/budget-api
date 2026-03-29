@@ -91,6 +91,7 @@ class MaterialSchema(BaseModel):
 class MaterialPublicSchema(BaseModel):
 
     id: int
+    name: str
     unit_cost: Decimal
     stock: int
     classification: Classificate

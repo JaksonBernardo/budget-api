@@ -80,4 +80,37 @@ async def create_material(
     except (CompanyNotFound, SupplierNotFound) as e:
 
         raise map_exception(e)
+    
+@material_router.get(
+    path = "/{company_id}",
+    status_code = status.HTTP_200_OK,
+    summary = "Listando os materiais pelo company_id",
+    response_model = ListMaterialPublicSchema
+)
+async def list_materials(
+    company_id: int,
+    material_service: MaterialService = Depends(get_material_service),
+    offset: int = Query(0, ge = 0, description = "Registros a serem pulados"),
+    limit: int = Query(20, ge = 1, description = "Qtd máxima de registros apresentados"),
+    name: Optional[str] = Query(None, description = "Pesquisar pelo nome de algum material"),
+    supplier: Optional[str] = Query(None, description = "Pesquisar pelo nome de algum fornecedor"),
+):
+    
+    try:
+
+        materials = await material_service.list(
+            company_id,
+            offset,
+            limit, 
+            name,
+            supplier
+        )
+
+        return {
+            "materials": materials
+        }
+    
+    except (CompanyNotFound) as e:
+
+        raise map_exception(e)
 

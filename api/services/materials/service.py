@@ -62,4 +62,29 @@ class MaterialService:
         return new_material
 
 
-        
+    async def list(
+        self,
+        company_id: int,
+        offset: int = 0,
+        limit: int = 20,
+        name: Optional[str] = None,
+        supplier: Optional[str] = None
+    ) -> List[MaterialPublicSchema]:
+
+        company = await self._company_repository.get_by_id(company_id)
+
+        if not company:
+            raise CompanyNotFound()
+
+        materials = await self._material_repository.get_by_company_id(
+            company_id,
+            offset,
+            limit,
+            name,
+            supplier
+        )
+
+        return materials
+    
+
+
