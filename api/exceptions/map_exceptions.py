@@ -6,7 +6,8 @@ from api.exceptions import (
     SegmentAccesDenied,
     InvalidTypeCompanyId,
     ZeroCompanyId,
-    ClientNotFound
+    ClientNotFound,
+    SupplierNotFound
 )
 
 
@@ -40,6 +41,10 @@ def map_exception(exception: Exception) -> HTTPException:
             detail=str(e)
         ),
         ClientNotFound: lambda e: HTTPException(
+            status_code = getattr(e, "status_code", 404),
+            detail = str(e)
+        ),
+        SupplierNotFound: lambda e: HTTPException(
             status_code = getattr(e, "status_code", 404),
             detail = str(e)
         )

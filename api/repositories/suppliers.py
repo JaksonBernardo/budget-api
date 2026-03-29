@@ -2,37 +2,37 @@ from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_, delete
 from sqlalchemy.orm import selectinload
-from api.models import Client, LegalEntity
+from api.models import Supplier, LegalEntity
 
-class ClientRepository:
+class SupplierRepository:
 
     def __init__(self, db: AsyncSession):
         self.__db = db
 
-    async def save(self, client: Client) -> Client:
-        self.__db.add(client)
+    async def save(self, supplier: Supplier) -> Supplier:
+        self.__db.add(supplier)
         await self.__db.flush()
-        await self.__db.refresh(client)
-        return client
+        await self.__db.refresh(supplier)
+        return supplier
 
-    async def get_by_id(self, client_id: int) -> Client | None:
+    async def get_by_id(self, supplier_id: int) -> Supplier | None:
 
-        query = select(Client).options(
-            selectinload(Client.legal_entity)
-        ).where(Client.id == client_id)
+        query = select(Supplier).options(
+            selectinload(Supplier.legal_entity)
+        ).where(Supplier.id == supplier_id)
 
         result = await self.__db.execute(query)
 
         return result.scalar_one_or_none()
 
-    async def get_by_id_and_company(self, company_id: int, client_id: int) -> Client | None:
+    async def get_by_id_and_company(self, company_id: int, supplier_id: int) -> Supplier | None:
 
-        query = select(Client).options(
-            selectinload(Client.legal_entity)
+        query = select(Supplier).options(
+            selectinload(Supplier.legal_entity)
         ).where(
             and_(
-                Client.id == client_id,
-                Client.company_id == company_id
+                Supplier.id == supplier_id,
+                Supplier.company_id == company_id
             )
         )
 
@@ -40,30 +40,30 @@ class ClientRepository:
 
         return result.scalar_one_or_none()
 
-    async def update(self, client: Client) -> Client:
+    async def update(self, supplier: Supplier) -> Supplier:
         try:
-            await self.__db.merge(client)
+            await self.__db.merge(supplier)
             await self.__db.commit()
-            await self.__db.refresh(client)
-            return client
+            await self.__db.refresh(supplier)
+            return supplier
         except Exception:
             await self.__db.rollback()
             raise
 
-    async def delete_by_id(self, company_id: int, client_id: int) -> None:
+    async def delete_by_id(self, company_id: int, supplier_id: int) -> None:
 
         try:
-            client = await self.get_by_id_and_company(company_id, client_id)
+            supplier = await self.get_by_id_and_company(company_id, supplier_id)
 
-            if not client:
+            if not supplier:
                 return
 
-            legal_entity_id = client.legal_entity.id if client.legal_entity else None
+            legal_entity_id = supplier.legal_entity.id if supplier.legal_entity else None
 
-            query = delete(Client).where(
+            query = delete(Supplier).where(
                 and_(
-                    Client.id == client_id,
-                    Client.company_id == company_id
+                    Supplier.id == supplier_id,
+                    Supplier.company_id == company_id
                 )
             )
 
@@ -85,11 +85,11 @@ class ClientRepository:
         offset: int = 0,
         limit: int = 20,
         search: Optional[str] = None
-    ) -> List[Client]:
+    ) -> List[Supplier]:
 
-        query = select(Client).options(
-            selectinload(Client.legal_entity)
-        ).where(Client.company_id == company_id)
+        query = select(Supplier).options(
+            selectinload(Supplier.legal_entity)
+        ).where(Supplier.company_id == company_id)
 
         if search:
             query = query.join(LegalEntity).where(
@@ -104,4 +104,3 @@ class ClientRepository:
         result = await self.__db.execute(query)
 
         return result.scalars().all()
-    
