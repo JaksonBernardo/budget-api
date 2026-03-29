@@ -17,7 +17,7 @@ from api.models import Base
 
 if TYPE_CHECKING:
 
-    from api.models import Company, ServiceMaterial
+    from api.models import Company, ServiceMaterial, Supplier
 
 class Classificate(str, Enum):
     DIRECT = "DIRECT"
@@ -35,6 +35,10 @@ class Material(Base):
     )
     stock: Mapped[int] = mapped_column(Integer, default = 0)
     classification: Mapped[Classificate] = mapped_column(String(20), nullable = True, default = None)
+    supplier_id: Mapped[int] = mapped_column(
+        ForeignKey("suppliers.id", ondelete = "SET NULL"),
+        nullable = True
+    )
     company_id: Mapped[int] = mapped_column(
         ForeignKey("companys.id", ondelete = "CASCADE"),
         nullable = False
@@ -51,6 +55,11 @@ class Material(Base):
 
     company: Mapped["Company"] = relationship(
         "Company",
+        back_populates = "materials"
+    )
+
+    supplier: Mapped["Supplier"] = relationship(
+        "Supplier",
         back_populates = "materials"
     )
 

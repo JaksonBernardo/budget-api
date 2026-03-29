@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, List
 from datetime import datetime
 from sqlalchemy import String, Integer, ForeignKey, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -9,8 +9,7 @@ from api.models.companys import State
 if TYPE_CHECKING:
     from api.models import (
         Company,
-        Client,
-        Supplier
+        Material
     )
 
 
@@ -106,5 +105,10 @@ class Supplier(Base):
     company: Mapped["Company"] = relationship(
         "Company",
         back_populates = "suppliers"
+    )
+
+    materials: Mapped[List["Material"]] = relationship(
+        "Material",
+        back_populates = "supplier"
     )
 

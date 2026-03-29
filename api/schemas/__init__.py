@@ -17,7 +17,12 @@ from api.schemas.suppliers import (
     SupplierUpdateSchema,
     ListSupplierPublicSchema
 )
-
+from api.schemas.materials import (
+    MaterialSchema,
+    MaterialPublicSchema,
+    MaterialUpdateSchema,
+    ListMaterialPublicSchema
+)
 
 __all__ = [
     "SegmentSchema",
@@ -32,5 +37,9 @@ __all__ = [
     "SupplierSchema",
     "SupplierPublicSchema",
     "SupplierUpdateSchema",
-    "ListSupplierPublicSchema"
+    "ListSupplierPublicSchema",
+    "MaterialSchema",
+    "MaterialPublicSchema",
+    "MaterialUpdateSchema",
+    "ListMaterialPublicSchema"
 ]

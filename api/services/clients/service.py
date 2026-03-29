@@ -1,12 +1,11 @@
 from typing import Dict, List, Optional
-from sqlalchemy.ext.asyncio import AsyncSession
 from api.models import Client, LegalEntity
 from api.repositories import (
     ClientRepository,
     CompanyRepository,
     LegalEntityRepository
 )
-from api.schemas import ClientSchema, ClientPublicSchema, ClientUpdateSchema
+from api.schemas import ClientSchema, ClientPublicSchema
 from api.exceptions import (
     CompanyNotFound,
     ClientNotFound,

@@ -8,6 +8,10 @@ from api.exceptions.companys import (
     InvalidTypeCompanyId, 
     ZeroCompanyId
 )
+from api.exceptions.suppliers import (
+    SupplierNotFound,
+    ZeroSupplierId
+)
 from api.exceptions.materials import (
     MaterialInvalidName, 
     MaterialInvalidClassification
@@ -19,6 +23,7 @@ class MaterialSchema(BaseModel):
     name: str
     unit_cost: Decimal
     classification: Classificate
+    supplier_id: int
     company_id: int
 
     @field_validator("name")
@@ -68,6 +73,19 @@ class MaterialSchema(BaseModel):
             raise ZeroCompanyId()
         
         return value
+    
+    @field_validator("supplier_id")
+    def validate_supplier_id(cls, value):
+
+        if not isinstance(value, int):
+
+            raise TypeError("ID Supplier tem que do tipo inteiro")
+        
+        if value <= 0:
+
+            raise ZeroSupplierId()
+        
+        return value
 
 
 class MaterialPublicSchema(BaseModel):
@@ -76,6 +94,7 @@ class MaterialPublicSchema(BaseModel):
     unit_cost: Decimal
     stock: int
     classification: Classificate
+    supplier_id: int
     company_id: int
 
 
@@ -84,6 +103,7 @@ class MaterialUpdateSchema(BaseModel):
     name: Optional[str]
     unit_cost: Optional[Decimal]
     classification: Optional[Classificate]
+    supplier_id: Optional[int]
     company_id: Optional[int]
 
     @field_validator("name")
@@ -131,6 +151,19 @@ class MaterialUpdateSchema(BaseModel):
         if value <= 0:
 
             raise ZeroCompanyId()
+        
+        return value
+    
+    @field_validator("supplier_id")
+    def validate_supplier_id(cls, value):
+
+        if not isinstance(value, int):
+
+            raise TypeError("ID Supplier tem que do tipo inteiro")
+        
+        if value <= 0:
+
+            raise ZeroSupplierId()
         
         return value
 
