@@ -1,4 +1,6 @@
+import pytz
 from typing import Dict, List, Optional
+from datetime import datetime
 from api.models import Material
 from api.repositories import (
     MaterialRepository,
@@ -85,6 +87,67 @@ class MaterialService:
         )
 
         return materials
+
+    async def get(self, company_id: int, material_id: int) -> Material:
+        company = await self._company_repository.get_by_id(company_id)
+
+        if not company:
+            raise CompanyNotFound()
+
+        material = await self._material_repository.get_by_id(company_id, material_id)
+
+        if not material:
+            raise MaterialNotFound()
+
+        return material
+
+    async def delete(self, company_id: int, material_id: int) -> None:
+        company = await self._company_repository.get_by_id(company_id)
+
+        if not company:
+            raise CompanyNotFound()
+
+        material = await self._material_repository.get_by_id(company_id, material_id)
+
+        if not material:
+            raise MaterialNotFound()
+
+        await self._material_repository.delete_by_id(company_id, material_id)
+
+    async def update(self, material_id: int, material_data: Dict) -> Material:
+        company = await self._company_repository.get_by_id(material_data["company_id"])
+
+        if not company:
+            raise CompanyNotFound()
+
+        supplier = await self._supplier_repository.get_by_id(material_data["supplier_id"])
+
+        if not supplier:
+            raise SupplierNotFound()
+
+        material = await self._material_repository.get_by_id(
+            material_data["company_id"],
+            material_id
+        )
+
+        if not material:
+            raise MaterialNotFound()
+
+        if "name" in material_data and not material_data["name"]:
+            raise MaterialNotFound()
+
+        if "company_id" in material_data and material.company_id != material_data["company_id"]:
+            raise MaterialNotFound()
+
+        _BRAZIL_TIMEZONE_ = pytz.timezone("America/Sao_Paulo")
+        material.name = material_data["name"]
+        material.unit_cost = material_data["unit_cost"]
+        material.classification = material_data["classification"]
+        material.supplier_id = material_data["supplier_id"]
+        material.company_id = material_data["company_id"]
+        material.updated_at = datetime.now(_BRAZIL_TIMEZONE_)
+
+        return await self._material_repository.update(material)
     
 
 

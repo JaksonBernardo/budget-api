@@ -20,16 +20,16 @@ class MaterialRepository:
         await self.__db.refresh(material)
 
         return material
-    
+
     async def get_by_company_id(
-        self, 
-        company_id: int, 
-        offset: int, 
+        self,
+        company_id: int,
+        offset: int,
         limit: int,
-        name: str | None, 
+        name: str | None,
         supplier: str | None
     ) -> List[Material]:
-        
+
         query = select(Material).where(
             Material.company_id == company_id
         )
@@ -41,7 +41,7 @@ class MaterialRepository:
             )
 
         if supplier:
-            
+
             query = query.where(
                 Material.supplier.has(
                     Supplier.legal_entity.has(
@@ -57,6 +57,35 @@ class MaterialRepository:
         )
 
         return materials.scalars().all()
+
+    async def get_by_id(self, company_id: int, material_id: int) -> Optional[Material]:
+        query = select(Material).where(
+            and_(
+                Material.id == material_id,
+                Material.company_id == company_id
+            )
+        )
+
+        result = await self.__db.execute(query)
+        return result.scalar_one_or_none()
+
+    async def delete_by_id(self, company_id: int, material_id: int) -> None:
+        query = delete(Material).where(
+            and_(
+                Material.id == material_id,
+                Material.company_id == company_id
+            )
+        )
+
+        await self.__db.execute(query)
+        await self.__db.commit()
+
+    async def update(self, material: Material) -> Material:
+        await self.__db.merge(material)
+        await self.__db.commit()
+        await self.__db.refresh(material)
+
+        return material
     
 
 

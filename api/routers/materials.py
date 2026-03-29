@@ -10,7 +10,7 @@ from api.exceptions import (
 from api.exceptions.map_exceptions import map_exception
 from api.repositories import (
     MaterialRepository,
-    SupplierRepository, 
+    SupplierRepository,
     CompanyRepository
 )
 from api.core.database import get_session
@@ -32,27 +32,27 @@ material_router = APIRouter(
 def get_material_repository(
     db: AsyncSession = Depends(get_session)
 ) -> MaterialRepository:
-    
+
     return MaterialRepository(db)
 
 def get_supplier_repository(
     db: AsyncSession = Depends(get_session)
 ) -> SupplierRepository:
-    
+
     return SupplierRepository(db)
 
 def get_company_repository(
     db: AsyncSession = Depends(get_session)
 ) -> CompanyRepository:
-    
+
     return CompanyRepository(db)
 
 def get_material_service(
     material_repository: MaterialRepository = Depends(get_material_repository),
-    supplier_repository: MaterialRepository = Depends(get_supplier_repository),
-    company_repository: MaterialRepository = Depends(get_company_repository),
+    supplier_repository: SupplierRepository = Depends(get_supplier_repository),
+    company_repository: CompanyRepository = Depends(get_company_repository),
 ) -> MaterialService:
-    
+
     return MaterialService(
         material_repository,
         supplier_repository,
@@ -68,19 +68,20 @@ def get_material_service(
 )
 async def create_material(
     material_data: MaterialSchema,
-    material_service: MaterialService = Depends(get_material_service)
+    service: MaterialService = Depends(get_material_service)
 ):
-    
+
     try:
 
-        material = await material_service.create(material_data)
+        material = await service.create(material_data)
 
         return material
-    
+
     except (CompanyNotFound, SupplierNotFound) as e:
 
         raise map_exception(e)
-    
+
+
 @material_router.get(
     path = "/{company_id}",
     status_code = status.HTTP_200_OK,
@@ -89,19 +90,19 @@ async def create_material(
 )
 async def list_materials(
     company_id: int,
-    material_service: MaterialService = Depends(get_material_service),
+    service: MaterialService = Depends(get_material_service),
     offset: int = Query(0, ge = 0, description = "Registros a serem pulados"),
     limit: int = Query(20, ge = 1, description = "Qtd máxima de registros apresentados"),
     name: Optional[str] = Query(None, description = "Pesquisar pelo nome de algum material"),
     supplier: Optional[str] = Query(None, description = "Pesquisar pelo nome de algum fornecedor"),
 ):
-    
+
     try:
 
-        materials = await material_service.list(
+        materials = await service.list(
             company_id,
             offset,
-            limit, 
+            limit,
             name,
             supplier
         )
@@ -109,8 +110,64 @@ async def list_materials(
         return {
             "materials": materials
         }
-    
-    except (CompanyNotFound) as e:
 
+    except (CompanyNotFound, ) as e:
+
+        raise map_exception(e)
+
+
+@material_router.get(
+    path = "/{company_id}/{material_id}",
+    status_code = status.HTTP_200_OK,
+    summary = "Selecionando um material específico",
+    response_model = MaterialPublicSchema
+)
+async def get_material(
+    company_id: int,
+    material_id: int,
+    service: MaterialService = Depends(get_material_service),
+):
+    try:
+        material = await service.get(company_id, material_id)
+        return material
+
+    except (CompanyNotFound, MaterialNotFound) as e:
+        raise map_exception(e)
+
+
+@material_router.delete(
+    path = "/{company_id}/{material_id}",
+    status_code = status.HTTP_204_NO_CONTENT,
+    summary = "Deletando um material específico"
+)
+async def delete_material(
+    company_id: int,
+    material_id: int,
+    service: MaterialService = Depends(get_material_service),
+):
+    try:
+        await service.delete(company_id, material_id)
+
+    except (CompanyNotFound, MaterialNotFound) as e:
+        raise map_exception(e)
+
+
+@material_router.put(
+    path = "/{material_id}",
+    status_code = status.HTTP_200_OK,
+    summary = "Atualizando um material",
+    response_model = MaterialPublicSchema
+)
+async def update_material(
+    material_id: int,
+    material_data: MaterialUpdateSchema,
+    service: MaterialService = Depends(get_material_service),
+):
+    try:
+        material_info = material_data.model_dump(exclude_unset = True)
+        material = await service.update(material_id, material_info)
+        return material
+
+    except (CompanyNotFound, MaterialNotFound, SupplierNotFound, MaterialInvalidName) as e:
         raise map_exception(e)
 
