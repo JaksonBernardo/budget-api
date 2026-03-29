@@ -7,7 +7,9 @@ from api.exceptions import (
     InvalidTypeCompanyId,
     ZeroCompanyId,
     ClientNotFound,
-    SupplierNotFound
+    SupplierNotFound,
+    MaterialInvalidName,
+    MaterialNotFound
 )
 
 
@@ -47,7 +49,15 @@ def map_exception(exception: Exception) -> HTTPException:
         SupplierNotFound: lambda e: HTTPException(
             status_code = getattr(e, "status_code", 404),
             detail = str(e)
-        )
+        ),
+        MaterialInvalidName: lambda e: HTTPException(
+            status_code = getattr(e, "status_code", 400),
+            detail = str(e)
+        ),
+        MaterialNotFound: lambda e: HTTPException(
+            status_code = getattr(e, "status_code", 404),
+            detail = str(e)
+        ),
     }
 
     handler = exception_map.get(type(exception))

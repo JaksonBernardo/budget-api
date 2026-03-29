@@ -2,7 +2,15 @@ from typing import TYPE_CHECKING, List
 from enum import Enum
 from decimal import Decimal
 from datetime import datetime
-from sqlalchemy import String, Integer, ForeignKey, DateTime, Numeric, func
+from sqlalchemy import (
+    String, 
+    Integer, 
+    ForeignKey, 
+    DateTime, 
+    Numeric, 
+    func,
+    CheckConstraint
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from api.models import Base
@@ -26,7 +34,7 @@ class Material(Base):
         nullable = False
     )
     stock: Mapped[int] = mapped_column(Integer, default = 0)
-    classification: Mapped[Classificate] = mapped_column(String(20), nullable = False)
+    classification: Mapped[Classificate] = mapped_column(String(20), nullable = True, default = None)
     company_id: Mapped[int] = mapped_column(
         ForeignKey("companys.id", ondelete = "CASCADE"),
         nullable = False
@@ -54,6 +62,11 @@ class Material(Base):
     movementations: Mapped[List["Movementation"]] = relationship(
         "Movementation",
         back_populates = "material"
+    )
+
+    __table_args__ = (
+        CheckConstraint("unit_cost >= 0", name = "ck_material_unit_cost_positive"),
+        CheckConstraint("stock >= 0", name = "ck_material_stock_positive"),
     )
 
 
@@ -85,6 +98,10 @@ class Movementation(Base):
     exits: Mapped[List["Exits"]] = relationship(
         "Exits",
         back_populates = "movementation"
+    )
+
+    __table_args__ = (
+        CheckConstraint("qtd > 0", name = "ck_movementation_qtd_positive"),
     )
 
 
