@@ -20,6 +20,7 @@ from api.schemas import (
     ListClientPublicSchema
 )
 from api.services.clients.service import ClientService
+from api.security.dependencies import CurrentUser
 
 client_router = APIRouter(
     prefix = "/api/clients",
@@ -60,7 +61,8 @@ def get_client_service(
 async def create_client(
     client_data: ClientSchema,
     db: AsyncSession = Depends(get_session),
-    client_service: ClientService = Depends(get_client_service)
+    client_service: ClientService = Depends(get_client_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     async with db.begin():
 
@@ -76,6 +78,7 @@ async def create_client(
 async def list_clients(
     company_id: int,
     client_service: ClientService = Depends(get_client_service),
+    current_user: CurrentUser = CurrentUser,
     offset: int = Query(0, ge = 0, description = "Registros a serem pulados"),
     limit: int = Query(20, ge = 1, description = "Qtd máxima de registros apresentados"),
     search: Optional[str] = Query(None, description = "Pesquisar pelo nome de algum cliente")
@@ -99,6 +102,7 @@ async def get_client(
     company_id: int,
     client_id: int,
     service: ClientService = Depends(get_client_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     try:
         client = await service.get(company_id, client_id)
@@ -117,6 +121,7 @@ async def delete_client(
     company_id: int,
     client_id: int,
     service: ClientService = Depends(get_client_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     try:
         await service.delete(company_id, client_id)
@@ -135,6 +140,7 @@ async def update_client(
     client_id: int,
     client_data: ClientUpdateSchema,
     service: ClientService = Depends(get_client_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     try:
         client_info = client_data.model_dump(exclude_unset = True)

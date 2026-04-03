@@ -20,6 +20,7 @@ from api.schemas import (
     ListSupplierPublicSchema
 )
 from api.services.suppliers.service import SupplierService
+from api.security.dependencies import CurrentUser
 
 supplier_router = APIRouter(
     prefix = "/api/suppliers",
@@ -60,7 +61,8 @@ def get_supplier_service(
 async def create_supplier(
     supplier_data: SupplierSchema,
     db: AsyncSession = Depends(get_session),
-    supplier_service: SupplierService = Depends(get_supplier_service)
+    supplier_service: SupplierService = Depends(get_supplier_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     async with db.begin():
 
@@ -76,6 +78,7 @@ async def create_supplier(
 async def list_suppliers(
     company_id: int,
     supplier_service: SupplierService = Depends(get_supplier_service),
+    current_user: CurrentUser = CurrentUser,
     offset: int = Query(0, ge = 0, description = "Registros a serem pulados"),
     limit: int = Query(20, ge = 1, description = "Qtd máxima de registros apresentados"),
     search: Optional[str] = Query(None, description = "Pesquisar pelo nome de algum fornecedor")
@@ -99,6 +102,7 @@ async def get_supplier(
     company_id: int,
     supplier_id: int,
     service: SupplierService = Depends(get_supplier_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     try:
         supplier = await service.get(company_id, supplier_id)
@@ -117,6 +121,7 @@ async def delete_supplier(
     company_id: int,
     supplier_id: int,
     service: SupplierService = Depends(get_supplier_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     try:
         await service.delete(company_id, supplier_id)
@@ -135,6 +140,7 @@ async def update_supplier(
     supplier_id: int,
     supplier_data: SupplierUpdateSchema,
     service: SupplierService = Depends(get_supplier_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     try:
         supplier_info = supplier_data.model_dump(exclude_unset = True)

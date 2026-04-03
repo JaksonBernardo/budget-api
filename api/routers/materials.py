@@ -21,6 +21,7 @@ from api.schemas import (
     ListMaterialPublicSchema
 )
 from api.services.materials.service import MaterialService
+from api.security.dependencies import CurrentUser
 
 
 material_router = APIRouter(
@@ -68,7 +69,8 @@ def get_material_service(
 )
 async def create_material(
     material_data: MaterialSchema,
-    service: MaterialService = Depends(get_material_service)
+    service: MaterialService = Depends(get_material_service),
+    current_user: CurrentUser = CurrentUser,
 ):
 
     try:
@@ -91,6 +93,7 @@ async def create_material(
 async def list_materials(
     company_id: int,
     service: MaterialService = Depends(get_material_service),
+    current_user: CurrentUser = CurrentUser,
     offset: int = Query(0, ge = 0, description = "Registros a serem pulados"),
     limit: int = Query(20, ge = 1, description = "Qtd máxima de registros apresentados"),
     name: Optional[str] = Query(None, description = "Pesquisar pelo nome de algum material"),
@@ -126,6 +129,7 @@ async def get_material(
     company_id: int,
     material_id: int,
     service: MaterialService = Depends(get_material_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     try:
         material = await service.get(company_id, material_id)
@@ -144,6 +148,7 @@ async def delete_material(
     company_id: int,
     material_id: int,
     service: MaterialService = Depends(get_material_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     try:
         await service.delete(company_id, material_id)
@@ -162,6 +167,7 @@ async def update_material(
     material_id: int,
     material_data: MaterialUpdateSchema,
     service: MaterialService = Depends(get_material_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     try:
         material_info = material_data.model_dump(exclude_unset = True)

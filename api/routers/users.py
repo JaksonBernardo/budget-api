@@ -13,6 +13,7 @@ from api.schemas.users import (
     ListUserPublicSchema
 )
 from api.services.users import UserService
+from api.security.dependencies import CurrentUser
 
 user_router = APIRouter(
     prefix="/api/users",
@@ -46,7 +47,8 @@ def get_user_service(
 )
 async def create_user(
     user_data: UserCreateSchema,
-    user_service: UserService = Depends(get_user_service)
+    user_service: UserService = Depends(get_user_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     try:
         user = await user_service.create(user_data)
@@ -65,6 +67,7 @@ async def create_user(
 async def list_users(
     company_id: int,
     user_service: UserService = Depends(get_user_service),
+    current_user: CurrentUser = CurrentUser,
     offset: int = Query(0, ge=0, description="Registros a serem pulados"),
     limit: int = Query(20, ge=1, description="Qtd máxima de registros apresentados"),
     search: Optional[str] = Query(None, description="Pesquisar pelo nome do usuário")
@@ -86,7 +89,8 @@ async def list_users(
 async def get_user(
     company_id: int,
     user_id: int,
-    user_service: UserService = Depends(get_user_service)
+    user_service: UserService = Depends(get_user_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     try:
         user = await user_service.get_by_id_and_company(company_id, user_id)
@@ -105,7 +109,8 @@ async def get_user(
 async def update_user(
     user_id: int,
     user_data: UserUpdateSchema,
-    user_service: UserService = Depends(get_user_service)
+    user_service: UserService = Depends(get_user_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     try:
         user = await user_service.update(user_id, user_data)
@@ -122,7 +127,8 @@ async def update_user(
 )
 async def delete_user(
     user_id: int,
-    user_service: UserService = Depends(get_user_service)
+    user_service: UserService = Depends(get_user_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     try:
         await user_service.delete(user_id)

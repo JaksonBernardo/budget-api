@@ -17,6 +17,7 @@ from api.schemas import (
     SegmentUpdateSchema
 )
 from api.services.segments.service import SegmentService
+from api.security.dependencies import CurrentUser
 
 segment_router = APIRouter(
     prefix = "/api/segments",
@@ -45,6 +46,7 @@ def get_segment_service(
 async def create_segment(
     segment_data: SegmentSchema,
     service: SegmentService = Depends(get_segment_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     try:
         new_segment = await service.create(segment_data)
@@ -63,6 +65,7 @@ async def create_segment(
 async def list_segments(
     company_id: int,
     service: SegmentService = Depends(get_segment_service),
+    current_user: CurrentUser = CurrentUser,
     offset: int = Query(0, ge = 0, description = "Registros a serem pulados"),
     limit: int = Query(20, ge = 1, description = "Qtd máxima de registros apresentados"),
     search: Optional[str] = Query(None, description = "Pesquisar pelo nome de algum segmento")
@@ -87,6 +90,7 @@ async def get_segment(
     company_id: int,
     segment_id: int,
     service: SegmentService = Depends(get_segment_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     try:
         segment = await service.get(company_id, segment_id)
@@ -105,6 +109,7 @@ async def delete_segment(
     company_id: int,
     segment_id: int,
     service: SegmentService = Depends(get_segment_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     try:
         await service.delete(company_id, segment_id)
@@ -123,6 +128,7 @@ async def update_segment(
     segment_id: int,
     segment_data: SegmentUpdateSchema,
     service: SegmentService = Depends(get_segment_service),
+    current_user: CurrentUser = CurrentUser,
 ):
     try:
         segment_info = segment_data.model_dump(exclude_unset = True)
