@@ -6,6 +6,7 @@ from api.routers.segments import segment_router
 from api.routers.clients import client_router
 from api.routers.suppliers import supplier_router
 from api.routers.materials import material_router
+from api.routers.users import user_router
 
 app = FastAPI()
 
@@ -13,6 +14,7 @@ app.include_router(segment_router)
 app.include_router(client_router)
 app.include_router(supplier_router)
 app.include_router(material_router)
+app.include_router(user_router)
 
 origins = [
     Settings().URL_CORS,

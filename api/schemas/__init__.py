@@ -23,6 +23,16 @@ from api.schemas.materials import (
     MaterialUpdateSchema,
     ListMaterialPublicSchema
 )
+from api.schemas.auth import (
+    LoginSchema,
+    Token
+)
+from api.schemas.users import (
+    UserCreateSchema,
+    UserUpdateSchema,
+    UserPublicSchema,
+    ListUserPublicSchema
+)
 
 __all__ = [
     "SegmentSchema",
@@ -41,5 +51,11 @@ __all__ = [
     "MaterialSchema",
     "MaterialPublicSchema",
     "MaterialUpdateSchema",
-    "ListMaterialPublicSchema"
+    "ListMaterialPublicSchema",
+    "LoginSchema",
+    "Token",
+    "UserCreateSchema",
+    "UserUpdateSchema",
+    "UserPublicSchema",
+    "ListUserPublicSchema"
 ]

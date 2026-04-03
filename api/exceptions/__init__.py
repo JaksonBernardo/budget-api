@@ -3,6 +3,7 @@ from api.exceptions.segments import SegmentInvalidName, SegmentNotFound, Segment
 from api.exceptions.clients import ClientNotFound, ClientAccesDenied
 from api.exceptions.suppliers import SupplierNotFound, SupplierAccesDenied, ZeroSupplierId
 from api.exceptions.materials import MaterialInvalidName, MaterialNotFound
+from api.exceptions.users import UserNotFound, UserAlreadyExists, UserAccessDenied, InvalidUserId
 
 __all__ = [
     "ZeroCompanyId",
@@ -17,5 +18,9 @@ __all__ = [
     "SupplierAccesDenied",
     "ZeroSupplierId",
     "MaterialInvalidName",
-    "MaterialNotFound"
+    "MaterialNotFound",
+    "UserNotFound",
+    "UserAlreadyExists",
+    "UserAccessDenied",
+    "InvalidUserId"
 ]

@@ -4,6 +4,7 @@ from api.repositories.clients import ClientRepository
 from api.repositories.legal_entity import LegalEntityRepository
 from api.repositories.suppliers import SupplierRepository
 from api.repositories.materials import MaterialRepository
+from api.repositories.users import UserRepository
 
 __all__ = [
     "SegmentRepository",
@@ -11,5 +12,6 @@ __all__ = [
     "ClientRepository",
     "LegalEntityRepository",
     "SupplierRepository",
-    "MaterialRepository"
+    "MaterialRepository",
+    "UserRepository"
 ]

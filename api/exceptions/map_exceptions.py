@@ -10,7 +10,11 @@ from api.exceptions import (
     SupplierNotFound,
     ZeroSupplierId,
     MaterialInvalidName,
-    MaterialNotFound
+    MaterialNotFound,
+    UserNotFound,
+    UserAlreadyExists,
+    UserAccessDenied,
+    InvalidUserId
 )
 
 
@@ -62,6 +66,22 @@ def map_exception(exception: Exception) -> HTTPException:
         MaterialNotFound: lambda e: HTTPException(
             status_code = getattr(e, "status_code", 404),
             detail = str(e)
+        ),
+        UserNotFound: lambda e: HTTPException(
+            status_code=getattr(e, "status_code", 404),
+            detail=str(e)
+        ),
+        UserAlreadyExists: lambda e: HTTPException(
+            status_code=getattr(e, "status_code", 409),
+            detail=str(e)
+        ),
+        UserAccessDenied: lambda e: HTTPException(
+            status_code=getattr(e, "status_code", 403),
+            detail=str(e)
+        ),
+        InvalidUserId: lambda e: HTTPException(
+            status_code=getattr(e, "status_code", 400),
+            detail=str(e)
         ),
     }
 
