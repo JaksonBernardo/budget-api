@@ -36,6 +36,10 @@ class PlanService:
 
             raise PlanAlreadyExists()
         
+        if plan_data.price and plan_data.price <= 0:
+
+            raise PlanNegativePrice()
+        
         _BRAZIL_TIMEZONE_ = pytz.timezone("America/Sao_Paulo")
         
         plan_db = Plan(
@@ -64,7 +68,7 @@ class PlanService:
 
         return plans
     
-    async def get_by_id(self, plan_id: int):
+    async def get_by_id(self, plan_id: int) -> Plan:
 
         plan = await self.__plan_repository.get_by_id(plan_id)
 
@@ -89,4 +93,36 @@ class PlanService:
             raise PlanHaveCompanys()
         
         await self.__plan_repository.delete(plan_id)
+
+    async def update_plan(self, plan_id: int, plan_infos: Dict) -> Plan:
+
+        plan = await self.__plan_repository.get_by_id(plan_id)
+
+        if not plan:
+
+            raise PlanNotFound()
+        
+        if "price" in plan_infos and float(plan_infos["price"]) <= 0.0:
+
+            raise PlanNegativePrice()
+        
+        if "name" in plan_infos and plan_infos["name"] != plan.name:
+
+            plan.name = plan_infos["name"]
+
+        if "description" in plan_infos and plan_infos["description"] != plan.description:
+
+            plan.description = plan_infos["description"]
+
+        if "price" in plan_infos and plan_infos["price"] != plan.price:
+
+            plan.price = plan_infos["price"]
+
+        _BRAZIL_TIMEZONE_ = pytz.timezone("America/Sao_Paulo")
+
+        plan.updated_at = datetime.now(_BRAZIL_TIMEZONE_)
+
+        new_plan = await self.__plan_repository.update(plan)
+
+        return new_plan
 

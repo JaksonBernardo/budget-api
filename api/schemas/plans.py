@@ -24,16 +24,6 @@ class PlanSchema(BaseModel):
             raise PlanInvalidName()
         
         return value
-    
-    @field_validator("price")
-    @classmethod
-    def validate_price(cls, value):
-
-        if value <= 0:
-
-            raise PlanNegativePrice()
-        
-        return value
 
 
 class PlanPublicSchema(BaseModel):
@@ -62,16 +52,6 @@ class PlanUpdateSchema(BaseModel):
         
         return value
     
-    @field_validator("price")
-    @classmethod
-    def validate_price(cls, value):
-
-        if value <= 0:
-
-            raise PlanNegativePrice()
-        
-        return value
-
 
 class ListPlanPublicSchema(BaseModel):
 

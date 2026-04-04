@@ -61,3 +61,10 @@ class PlanRepository:
         )
         await self.__db.commit()
 
+    async def update(self, plan: Plan) -> Plan:
+
+        await self.__db.commit()
+        await self.__db.refresh(plan)
+
+        return plan
+

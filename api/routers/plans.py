@@ -141,3 +141,29 @@ async def delete_plan(
         raise map_exception(e)
 
 
+@plan_router.put(
+    path = "/{plan_id}",
+    status_code = status.HTTP_200_OK,
+    summary = "Atualizando um plano",
+    response_model = PlanPublicSchema
+)
+async def update_plan(
+    plan_id: int,
+    plan_data: PlanUpdateSchema,
+    plan_service: PlanService = Depends(get_plan_service)
+):
+
+    try:
+
+        plan_info = plan_data.model_dump(exclude_unset = True)
+
+        new_plan = await plan_service.update_plan(plan_id, plan_info)
+
+        return new_plan
+
+    except (PlanNotFound, PlanInvalidName, PlanNegativePrice) as e:
+
+        raise map_exception(e)
+
+
+
