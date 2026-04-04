@@ -30,7 +30,7 @@ class Plan(Base):
     __tablename__ = "plans"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(255), nullable = False)
+    name: Mapped[str] = mapped_column(String(255), nullable = False, unique = True)
     description: Mapped[str] = mapped_column(Text, nullable = True)
     price: Mapped[Decimal] = mapped_column(
         Numeric(10, 2),

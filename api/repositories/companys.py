@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, exists
 from api.models import Company
 
 class CompanyRepository:
@@ -16,4 +16,11 @@ class CompanyRepository:
 
         return company
     
+    async def verify_if_plan_id(self, plan_id: int) -> bool:
+
+        companys  = await self.__db.execute(
+            select(Company).where(Company.plan_id == plan_id)
+        )
+
+        return len(companys.scalars().all()) > 0
 

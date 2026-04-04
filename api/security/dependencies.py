@@ -16,8 +16,9 @@ async def get_current_user(
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
     db: AsyncSession = Depends(get_session)
 ) -> User:
-    """Valida o token JWT e retorna o usuário autenticado."""
+
     user_id = decode_access_token(credentials.credentials)
+
     if user_id is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -26,7 +27,9 @@ async def get_current_user(
         )
 
     user_repo = UserRepository(db)
+
     user = await user_repo.get_by_id(user_id)
+    
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

@@ -14,14 +14,17 @@ from api.exceptions import (
     UserNotFound,
     UserAlreadyExists,
     UserAccessDenied,
-    InvalidUserId
+    InvalidUserId,
+    PlanNotFound,
+    PlanInvalidName,
+    PlanNegativePrice,
+    PlanAlreadyExists,
+    PlanHaveCompanys
 )
 
 
 def map_exception(exception: Exception) -> HTTPException:
-    """
-    Mapeia exceções de domínio para HTTPException do FastAPI.
-    """
+
     exception_map = {
         CompanyNotFound: lambda e: HTTPException(
             status_code=getattr(e, "status_code", 404),
@@ -83,6 +86,26 @@ def map_exception(exception: Exception) -> HTTPException:
             status_code=getattr(e, "status_code", 400),
             detail=str(e)
         ),
+        PlanNegativePrice: lambda e: HTTPException(
+            status_code=getattr(e, "status_code", 400),
+            detail=str(e)
+        ),
+        PlanInvalidName: lambda e: HTTPException(
+            status_code=getattr(e, "status_code", 400),
+            detail=str(e)
+        ),
+        PlanNotFound: lambda e: HTTPException(
+            status_code=getattr(e, "status_code", 404),
+            detail=str(e)
+        ),
+        PlanAlreadyExists: lambda e: HTTPException(
+            status_code=getattr(e, "status_code", 409),
+            detail=str(e)
+        ),
+        PlanHaveCompanys: lambda e: HTTPException(
+            status_code=getattr(e, "status_code", 403),
+            detail=str(e)
+        )
     }
 
     handler = exception_map.get(type(exception))

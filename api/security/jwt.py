@@ -9,11 +9,12 @@ from api.core.settings import Settings
 _settings = Settings()
 
 
-def create_access_token(subject: int) -> str:
-    """Gera um JWT token com o user_id como subject."""
+def create_access_token(subject: int, company_id: int) -> str:
+
     expire = datetime.now(timezone.utc) + timedelta(minutes=_settings.JWT_EXPIRATION_MINUTES)
     payload = {
         "sub": str(subject),
+        "company_id": str(company_id),
         "exp": expire,
         "type": "access"
     }
@@ -21,7 +22,7 @@ def create_access_token(subject: int) -> str:
 
 
 def decode_access_token(token: str) -> Optional[int]:
-    """Decodifica o JWT e retorna o user_id (sub) ou None se inválido."""
+
     try:
         payload = jwt.decode(
             token,

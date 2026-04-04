@@ -24,7 +24,7 @@ class UserService:
 
     async def create(self, user_data: UserCreateSchema) -> User:
         """Cria um novo usuário com hash de senha."""
-        # Verifica se empresa existe
+
         company = await self.__company_repository.get_by_id(user_data.company_id)
         if not company:
             raise CompanyNotFound()

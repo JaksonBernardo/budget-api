@@ -34,7 +34,7 @@ async def auth(
         if not user or not verify_password(user.password, login_data.password):
             raise UserNotFound("Credenciais inválidas")
 
-        access_token = create_access_token(subject=user.id)
+        access_token = create_access_token(subject=user.id, company_id = user.company_id)
         return Token(access_token=access_token, token_type="bearer")
 
     except UserNotFound as e:
