@@ -54,14 +54,16 @@ class Company(Base):
     __tablename__ = "companys"
 
     id: Mapped[int] = mapped_column(primary_key = True, autoincrement = True)
+    customer_id: Mapped[str] = mapped_column(String(255), unique = True, nullable = True)
     photo: Mapped[str] = mapped_column(String(255), nullable = True)
+    email: Mapped[str] = mapped_column(String(255), unique = True)
     name: Mapped[str] = mapped_column(String(255), nullable = False)
     address: Mapped[str] = mapped_column(String(255), nullable = True)
-    number: Mapped[int] = mapped_column(Integer, nullable=True)
+    number: Mapped[int] = mapped_column(Integer, nullable = True)
     state: Mapped[State] = mapped_column(String(2), nullable = True)
     cep: Mapped[int] = mapped_column(Integer, nullable = True)
     city: Mapped[str] = mapped_column(String(255), nullable = True)
-    cnpj: Mapped[str] = mapped_column(String(255), nullable = True)
+    cnpj: Mapped[str] = mapped_column(String(255), nullable = False)
     phone: Mapped[str] = mapped_column(String(255), nullable = True)
     whatsapp: Mapped[str] = mapped_column(String(255), nullable = True)
     website: Mapped[str] = mapped_column(String(255), nullable = True)

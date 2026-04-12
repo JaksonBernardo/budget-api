@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(del *)"
+      "Bash(del *)",
+      "Bash(python *)",
+      "Bash(sleep *)",
+      "Bash(curl *)",
+      "Bash(kill *)"
     ]
   },
   "$version": 3

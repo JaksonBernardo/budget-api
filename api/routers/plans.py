@@ -150,7 +150,8 @@ async def delete_plan(
 async def update_plan(
     plan_id: int,
     plan_data: PlanUpdateSchema,
-    plan_service: PlanService = Depends(get_plan_service)
+    plan_service: PlanService = Depends(get_plan_service),
+    current_user: CurrentUser = CurrentUser
 ):
 
     try:

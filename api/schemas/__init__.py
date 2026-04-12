@@ -40,6 +40,14 @@ from api.schemas.plans import (
     ListPlanPublicSchema
 )
 
+
+from api.schemas.companys import (
+    CompanySchema,
+    CompanyPublicSchema,
+    CompanyUpdateSchema,
+    ListCompanyPublicSchema
+)
+
 __all__ = [
     "SegmentSchema",
     "SegmentPublicSchema",
@@ -67,5 +75,9 @@ __all__ = [
     "PlanSchema",
     "PlanPublicSchema",
     "PlanUpdateSchema",
-    "ListPlanPublicSchema"
+    "ListPlanPublicSchema",
+    "CompanySchema",
+    "CompanyPublicSchema",
+    "CompanyUpdateSchema",
+    "ListCompanyPublicSchema"
 ]

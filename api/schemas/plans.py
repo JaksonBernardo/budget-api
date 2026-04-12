@@ -30,7 +30,7 @@ class PlanPublicSchema(BaseModel):
 
     id: int
     name: str
-    description: str
+    description: Optional[str]
     price: Decimal
     created_at: datetime
     updated_at: datetime

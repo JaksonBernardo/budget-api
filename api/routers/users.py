@@ -48,7 +48,6 @@ def get_user_service(
 async def create_user(
     user_data: UserCreateSchema,
     user_service: UserService = Depends(get_user_service),
-    current_user: CurrentUser = CurrentUser,
 ):
     try:
         user = await user_service.create(user_data)

@@ -1,4 +1,4 @@
-from api.exceptions.companys import ZeroCompanyId, InvalidTypeCompanyId, CompanyNotFound
+from api.exceptions.companys import ZeroCompanyId, InvalidTypeCompanyId, CompanyNotFound, InvalidNameCompany, CnpjAlreadyExists, NameAlreadyExists
 from api.exceptions.segments import SegmentInvalidName, SegmentNotFound, SegmentAccesDenied
 from api.exceptions.clients import ClientNotFound, ClientAccesDenied
 from api.exceptions.suppliers import SupplierNotFound, SupplierAccesDenied, ZeroSupplierId
@@ -10,6 +10,9 @@ __all__ = [
     "ZeroCompanyId",
     "InvalidTypeCompanyId",
     "CompanyNotFound",
+    "InvalidNameCompany",
+    "CnpjAlreadyExists", 
+    "NameAlreadyExists",
     "SegmentInvalidName",
     "SegmentNotFound",
     "SegmentAccesDenied",

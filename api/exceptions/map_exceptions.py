@@ -1,26 +1,5 @@
 from fastapi import HTTPException
-from api.exceptions import (
-    CompanyNotFound,
-    SegmentInvalidName,
-    SegmentNotFound,
-    SegmentAccesDenied,
-    InvalidTypeCompanyId,
-    ZeroCompanyId,
-    ClientNotFound,
-    SupplierNotFound,
-    ZeroSupplierId,
-    MaterialInvalidName,
-    MaterialNotFound,
-    UserNotFound,
-    UserAlreadyExists,
-    UserAccessDenied,
-    InvalidUserId,
-    PlanNotFound,
-    PlanInvalidName,
-    PlanNegativePrice,
-    PlanAlreadyExists,
-    PlanHaveCompanys
-)
+from api.exceptions import *
 
 
 def map_exception(exception: Exception) -> HTTPException:
@@ -29,6 +8,18 @@ def map_exception(exception: Exception) -> HTTPException:
         CompanyNotFound: lambda e: HTTPException(
             status_code=getattr(e, "status_code", 404),
             detail=str(e)
+        ),
+        InvalidNameCompany: lambda e: HTTPException(
+            status_code=getattr(e, "status_code", 400),
+            detail = str(e)
+        ),
+        CnpjAlreadyExists: lambda e: HTTPException(
+            status_code=getattr(e, "status_code", 400),
+            detail = str(e)
+        ),
+        NameAlreadyExists: lambda e: HTTPException(
+            status_code=getattr(e, "status_code", 400),
+            detail = str(e)
         ),
         SegmentNotFound: lambda e: HTTPException(
             status_code=getattr(e, "status_code", 404),
