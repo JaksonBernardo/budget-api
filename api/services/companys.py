@@ -1,11 +1,12 @@
 from typing import List, Optional, Dict
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 
-from api.models import Company
+from api.models import Company, Subscription
 from api.repositories import (
     CompanyRepository,
-    PlanRepository
+    PlanRepository,
+    SubscriptionRepository
 )
 from api.schemas import (
     CompanySchema
@@ -26,10 +27,12 @@ class CompanyService:
     def __init__(
         self,
         company_repository: CompanyRepository,
-        plan_repository: PlanRepository
+        plan_repository: PlanRepository,
+        subscription_repository: SubscriptionRepository
     ):
         self.__company_repository = company_repository
         self.__plan_repository = plan_repository
+        self.__subscription_repository = subscription_repository
     
     async def create(
         self, 
@@ -97,18 +100,41 @@ class CompanyService:
             customer_id = new_customer.get("id")
             company_db.customer_id = customer_id
 
+        start_date = datetime.now(_BRAZIL_TIMEZONE_)
+        end_date = start_date + timedelta(days = 365)
+
         data_subscription = {
             "customer": customer_id,
             "billingType": "UNDEFINED",
             "value": float(plan.price),
-            "nextDueDate": datetime.now(_BRAZIL_TIMEZONE_).strftime("%Y-%m-%d"),
+            "nextDueDate": start_date.strftime("%Y-%m-%d"),
+            "endDate": end_date.strftime("%Y-%m-%d"),
             "cycle": "MONTHLY",
             "description": plan.description if plan.description else None
         }
 
-        subscription = asaas_subscriptions().post_subscription(data_subscription)
+        response: Dict = asaas_subscriptions().post_subscription(data_subscription)
 
         company = await self.__company_repository.create(company_db)
+
+        subscription_db = Subscription(
+            subscription_id = response.get('id'),
+            company_id = company.id,
+            plan_id = company_schema.plan_id,
+            billing_type = response.get('billingType'),
+            cycle = response.get('cycle'),
+            value = float(plan.price),
+            start_date = start_date,
+            end_date = end_date,
+            description = plan.description if plan.description else None,
+            status = response.get('status'),
+            discount_value = 0.0,
+            discount_type = "FIXED",
+            created_at = datetime.now(_BRAZIL_TIMEZONE_),
+            updated_at = datetime.now(_BRAZIL_TIMEZONE_)
+        )
+
+        subscription = await self.__subscription_repository.create(subscription_db)
 
         return company
 

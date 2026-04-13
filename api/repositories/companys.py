@@ -12,7 +12,7 @@ class CompanyRepository:
     async def create(self, company: Company) -> Company:
 
         self.__db.add(company)
-        await self.__db.commit()
+        await self.__db.flush()
         await self.__db.refresh(company)
 
         return company

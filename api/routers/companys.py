@@ -5,7 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.core.database import get_session
 from api.repositories import (
     CompanyRepository,
-    PlanRepository
+    PlanRepository,
+    SubscriptionRepository
 )
 from api.schemas import (
     CompanySchema,
@@ -42,6 +43,10 @@ def get_plan_repository(db: AsyncSession = Depends(get_session)) -> PlanReposito
 
     return PlanRepository(db)
 
+def get_subscription_repository(db: AsyncSession = Depends(get_session)) -> SubscriptionRepository:
+
+    return SubscriptionRepository(db)
+
 def get_asaas_customers():
 
     return AsaasCustomers
@@ -52,9 +57,15 @@ def get_asaas_subscriptions():
 
 def get_company_service(
     company_repository: CompanyRepository = Depends(get_company_repository),
-    plan_repository: PlanRepository = Depends(get_plan_repository)
+    plan_repository: PlanRepository = Depends(get_plan_repository),
+    subscription_repository: SubscriptionRepository = Depends(get_subscription_repository)
 ) -> CompanyService:
-    return CompanyService(company_repository, plan_repository)
+    
+    return CompanyService(
+        company_repository, 
+        plan_repository, 
+        subscription_repository
+    )
 
 
 @company_router.post(
@@ -65,6 +76,7 @@ def get_company_service(
 )
 async def create_company(
     company_data: CompanySchema,
+    db: AsyncSession = Depends(get_session),
     asaas_customers: AsaasCustomers = Depends(get_asaas_customers),
     asaas_subscriptions: AsaasCustomers = Depends(get_asaas_subscriptions),
     service: CompanyService = Depends(get_company_service)
@@ -72,12 +84,14 @@ async def create_company(
     
     try:
 
-        new_company = await service.create(
-            company_data, 
-            asaas_customers,
-            asaas_subscriptions
-        )
-        return new_company
+        async with db.begin():
+
+            new_company = await service.create(
+                company_data, 
+                asaas_customers,
+                asaas_subscriptions
+            )
+            return new_company
     
     except (PlanNotFound, NameAlreadyExists, CnpjAlreadyExists) as e:
 

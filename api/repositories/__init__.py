@@ -6,6 +6,7 @@ from api.repositories.suppliers import SupplierRepository
 from api.repositories.materials import MaterialRepository
 from api.repositories.users import UserRepository
 from api.repositories.plans import PlanRepository
+from api.repositories.subscriptions import SubscriptionRepository
 
 __all__ = [
     "SegmentRepository",
@@ -15,5 +16,6 @@ __all__ = [
     "SupplierRepository",
     "MaterialRepository",
     "UserRepository",
-    "PlanRepository"
+    "PlanRepository",
+    "SubscriptionRepository"
 ]

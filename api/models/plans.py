@@ -9,7 +9,7 @@ from api.models import Base
 
 if TYPE_CHECKING:
 
-    from api.models import Company
+    from api.models import Company, Subscription
 
 class Feature(Base):
 
@@ -53,6 +53,11 @@ class Plan(Base):
 
     companys: Mapped[List["Company"]] = relationship(
         "Company",
+        back_populates = "plan"
+    )
+
+    subscriptions: Mapped[List["Subscription"]] = relationship(
+        "Subscription",
         back_populates = "plan"
     )
 
