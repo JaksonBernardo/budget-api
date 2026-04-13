@@ -98,17 +98,7 @@ class AsaasCustomers(Asaas):
         
 
     def delete_customer(self, data: Dict):
-        """Delete customer in Asaas API.
         
-        Args:
-            data: Dictionary containing customer information
-            
-        Raises:
-            requests.exceptions.ConnectionError: If connection to Asaas API fails
-            requests.exceptions.Timeout: If request times out
-            requests.exceptions.HTTPError: If API returns an error response
-            ValueError: If environment is not configured properly
-        """
         base_url = super().get_base_url()
         
         if not base_url:
@@ -145,8 +135,34 @@ class AsaasCustomers(Asaas):
         except requests.exceptions.RequestException as e:
             logger.error(f"Unexpected error while posting customer to Asaas: {e}")
             raise
-    
-    
+
+    def update_customer(self, data: Dict):
+        """Update customer data on Asaas API.
+
+        Args:
+            data: Dictionary containing customer fields to update. Must include 'id'.
+
+        Returns:
+            dict: Response JSON from Asaas API
+        """
+        base_url = super().get_base_url()
+
+        if not base_url:
+            raise ValueError("ASAAS_ENVIRONMENT not configured properly")
+
+        endpoint = f"{base_url}/customers/{data['id']}"
+        customer_data = {k: v for k, v in data.items() if k != 'id'}
+
+        response = requests.post(
+            url=endpoint,
+            json=customer_data,
+            headers=super().get_headers(),
+            timeout=30
+        )
+        response.raise_for_status()
+        return response.json()
+
+
 class AsaasSubscriptions(Asaas):
 
     def __init__(self):

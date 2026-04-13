@@ -180,12 +180,21 @@ async def update_company(
     company_id: int,
     company_data: CompanyUpdateSchema,
     service: CompanyService = Depends(get_company_service),
+    asaas_customers: AsaasCustomers = Depends(get_asaas_customers),
     current_user: CurrentUser = CurrentUser
 ):
-    
+
     try:
 
         company_data = company_data.model_dump(exclude_unset = True)
+
+        company = await service.update_company(
+            company_data,
+            company_id,
+            asaas_customers,
+        )
+
+        return company
 
 
     except (CompanyNotFound, InvalidNameCompany, PlanNotFound) as e:

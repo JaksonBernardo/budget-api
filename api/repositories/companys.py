@@ -77,3 +77,10 @@ class CompanyRepository:
         )
 
         await self.__db.commit()
+
+    async def update(self, company: Company) -> Company:
+
+        await self.__db.commit()
+        await self.__db.refresh(company)
+
+        return company

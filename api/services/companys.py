@@ -1,5 +1,6 @@
 from typing import List, Optional, Dict
 from datetime import datetime, timedelta
+from sqlalchemy.ext.asyncio import AsyncSession
 import pytz
 
 from api.models import Company, Subscription
@@ -162,18 +163,18 @@ class CompanyService:
     
 
     async def update_company(
-        self, 
-        company_data: Dict, 
-        company_id: int, 
-        asaas_customers: AsaasCustomers
-    ) -> Company | None:
-        
+        self,
+        company_data: Dict,
+        company_id: int,
+        asaas_customers: AsaasCustomers,
+    ) -> Company:
+
         company = await self.__company_repository.get_by_id(company_id)
 
         if not company:
 
             raise CompanyNotFound()
-        
+
         if "name" in company_data and company_data["name"] != company.name:
 
             has_name = await self.__company_repository.get_by_name(
@@ -183,9 +184,9 @@ class CompanyService:
             if has_name:
 
                 raise NameAlreadyExists()
-            
+
             company.name = company_data["name"]
-            
+
         if "cnpj" in company_data and company_data["cnpj"] != company.cnpj:
 
             has_document = await self.__company_repository.get_by_document(
@@ -195,10 +196,8 @@ class CompanyService:
             if has_document:
 
                 raise CnpjAlreadyExists()
-            
+
             company.cnpj = company_data["cnpj"]
-        
-        old_plan = company.plan_id
 
         if "plan_id" in company_data and company_data["plan_id"] != company.plan_id:
 
@@ -209,8 +208,75 @@ class CompanyService:
             if not plan:
 
                 raise PlanNotFound()
-            
+
             company.plan_id = company_data["plan_id"]
+
+        if "email" in company_data:
+            company.email = company_data["email"]
+
+        if "photo" in company_data:
+            company.photo = company_data["photo"]
+
+        if "address" in company_data:
+            company.address = company_data["address"]
+
+        if "number" in company_data:
+            company.number = company_data["number"]
+
+        if "state" in company_data:
+            company.state = company_data["state"]
+
+        if "cep" in company_data:
+            company.cep = company_data["cep"]
+
+        if "city" in company_data:
+            company.city = company_data["city"]
+
+        if "phone" in company_data:
+            company.phone = company_data["phone"]
+
+        if "whatsapp" in company_data:
+            company.whatsapp = company_data["whatsapp"]
+
+        if "website" in company_data:
+            company.website = company_data["website"]
+
+        if "is_blocked" in company_data:
+            company.is_blocked = company_data["is_blocked"]
+
+
+        if company.customer_id:
+
+            asaas_data: Dict = {"id": company.customer_id}
+
+            if company.name:
+                asaas_data["name"] = company.name
+            if company.cnpj:
+                asaas_data["cpfCnpj"] = company.cnpj
+            if company.email:
+                asaas_data["email"] = company.email
+            if company.phone:
+                asaas_data["phone"] = company.phone
+            if company.whatsapp:
+                asaas_data["mobilePhone"] = company.whatsapp
+            if company.address:
+                asaas_data["address"] = company.address
+            if company.number:
+                asaas_data["addressNumber"] = str(company.number)
+            if company.cep:
+                asaas_data["postalCode"] = company.cep
+            if company.state:
+                asaas_data["province"] = company.state
+
+            if len(asaas_data) > 1:
+
+                asaas_customers().update_customer(asaas_data)
+
+        await self.__company_repository.update(company)
+
+        return company
+
+        
 
         
     async def delete_company(
