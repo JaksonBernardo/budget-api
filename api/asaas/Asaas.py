@@ -103,9 +103,6 @@ class AsaasCustomers(Asaas):
         Args:
             data: Dictionary containing customer information
             
-        Returns:
-            dict: Response JSON from Asaas API
-            
         Raises:
             requests.exceptions.ConnectionError: If connection to Asaas API fails
             requests.exceptions.Timeout: If request times out

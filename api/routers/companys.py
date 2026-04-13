@@ -142,6 +142,32 @@ async def get_company(
     except CompanyNotFound as e:
 
         raise map_exception(e)
+    
+
+@company_router.delete(
+    path = "/{company_id}",
+    status_code = status.HTTP_204_NO_CONTENT,
+    summary = "Deletando um assinante da plataforma"
+)
+async def delete_company(
+    company_id: int,
+    service: CompanyService = Depends(get_company_service),
+    asaas_customers: AsaasCustomers = Depends(get_asaas_customers),
+    asaas_subscriptions: AsaasSubscriptions = Depends(get_asaas_subscriptions),
+    current_user: CurrentUser = CurrentUser
+):
+    
+    try:
+
+        await service.delete_company(
+            company_id,
+            asaas_customers,
+            asaas_subscriptions
+        )
+
+    except (CompanyNotFound, ) as e:
+
+        raise map_exception(e)
 
 
 @company_router.put(

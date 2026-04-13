@@ -213,12 +213,24 @@ class CompanyService:
             company.plan_id = company_data["plan_id"]
 
         
-
-        
     async def delete_company(
-        self, company_id: int, asaas_customers: AsaasCustomers
+        self, 
+        company_id: int, 
+        asaas_customers: AsaasCustomers,
+        asaas_subscriptions: AsaasSubscriptions
     ) -> None:
         
-        pass
+        company = await self.__company_repository.get_by_id(company_id)
+
+        if not company:
+
+            raise CompanyNotFound()
+        
+        asaas_customers().delete_customer({
+            "id": company.customer_id
+        })
+
+        await self.__company_repository.delete(company_id)
+
 
 

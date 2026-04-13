@@ -1,6 +1,6 @@
 from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, or_
+from sqlalchemy import select, or_, delete
 from api.models import Company
 
 class CompanyRepository:
@@ -69,4 +69,11 @@ class CompanyRepository:
         )
 
         return company.scalar_one_or_none()
+    
+    async def delete(self, company_id: int) -> None:
 
+        await self.__db.execute(
+            delete(Company).where(Company.id == company_id)
+        )
+
+        await self.__db.commit()
