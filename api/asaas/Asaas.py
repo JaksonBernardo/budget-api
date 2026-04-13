@@ -40,20 +40,7 @@ class AsaasCustomers(Asaas):
 
     
     def post_customer(self, data: Dict):
-        """Post customer data to Asaas API.
         
-        Args:
-            data: Dictionary containing customer information
-            
-        Returns:
-            dict: Response JSON from Asaas API
-            
-        Raises:
-            requests.exceptions.ConnectionError: If connection to Asaas API fails
-            requests.exceptions.Timeout: If request times out
-            requests.exceptions.HTTPError: If API returns an error response
-            ValueError: If environment is not configured properly
-        """
         base_url = super().get_base_url()
         
         if not base_url:
@@ -96,7 +83,6 @@ class AsaasCustomers(Asaas):
             logger.error(f"Failed to parse JSON response from Asaas: {e}")
             raise ValueError(f"Invalid JSON response from Asaas API: {e}")
         
-
     def delete_customer(self, data: Dict):
         
         base_url = super().get_base_url()
@@ -137,14 +123,7 @@ class AsaasCustomers(Asaas):
             raise
 
     def update_customer(self, data: Dict):
-        """Update customer data on Asaas API.
-
-        Args:
-            data: Dictionary containing customer fields to update. Must include 'id'.
-
-        Returns:
-            dict: Response JSON from Asaas API
-        """
+       
         base_url = super().get_base_url()
 
         if not base_url:

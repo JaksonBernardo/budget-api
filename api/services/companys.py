@@ -276,9 +276,7 @@ class CompanyService:
 
         return company
 
-        
-
-        
+      
     async def delete_company(
         self, 
         company_id: int, 
