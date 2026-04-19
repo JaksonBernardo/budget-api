@@ -96,6 +96,18 @@ def map_exception(exception: Exception) -> HTTPException:
         PlanHaveCompanys: lambda e: HTTPException(
             status_code=getattr(e, "status_code", 403),
             detail=str(e)
+        ),
+        EmployeeNotFound: lambda e: HTTPException(
+            status_code=getattr(e, "status_code", 404),
+            detail=str(e)
+        ),
+        EmployeeAccessDenied: lambda e: HTTPException(
+            status_code=getattr(e, "status_code", 403),
+            detail=str(e)
+        ),
+        EmployeeInvalidData: lambda e: HTTPException(
+            status_code=400,
+            detail=str(e)
         )
     }
 

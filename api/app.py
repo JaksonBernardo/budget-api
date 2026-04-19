@@ -10,6 +10,7 @@ from api.routers.users import user_router
 from api.routers.auth import auth_router
 from api.routers.plans import plan_router
 from api.routers.companys import company_router
+from api.routers.employees import employee_router
 
 app = FastAPI()
 
@@ -21,6 +22,7 @@ app.include_router(segment_router)
 app.include_router(client_router)
 app.include_router(supplier_router)
 app.include_router(material_router)
+app.include_router(employee_router)
 
 origins = [
     Settings().URL_CORS,
