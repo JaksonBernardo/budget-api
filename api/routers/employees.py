@@ -16,7 +16,7 @@ from api.schemas import (
     ListEmployeePublicSchema,
     EmployeeUpdateSchema
 )
-from api.services.employees.service import EmployeeService
+from api.services.employees import EmployeeService
 from api.security.dependencies import CurrentUser
 
 employee_router = APIRouter(

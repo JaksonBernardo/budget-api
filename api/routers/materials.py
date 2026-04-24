@@ -20,7 +20,7 @@ from api.schemas import (
     MaterialUpdateSchema,
     ListMaterialPublicSchema
 )
-from api.services.materials.service import MaterialService
+from api.services.materials import MaterialService
 from api.security.dependencies import CurrentUser
 
 

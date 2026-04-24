@@ -19,7 +19,7 @@ from api.schemas import (
     SupplierUpdateSchema,
     ListSupplierPublicSchema
 )
-from api.services.suppliers.service import SupplierService
+from api.services.suppliers import SupplierService
 from api.security.dependencies import CurrentUser
 
 supplier_router = APIRouter(

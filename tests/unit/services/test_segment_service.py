@@ -3,7 +3,7 @@ import pytest
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, call
 
-from api.services.segments.service import SegmentService
+from api.services.segments import SegmentService
 from api.exceptions.segments import (
     SegmentInvalidName,
     SegmentNotFound,

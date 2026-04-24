@@ -19,7 +19,7 @@ from api.schemas import (
     ClientUpdateSchema,
     ListClientPublicSchema
 )
-from api.services.clients.service import ClientService
+from api.services.clients import ClientService
 from api.security.dependencies import CurrentUser
 
 client_router = APIRouter(

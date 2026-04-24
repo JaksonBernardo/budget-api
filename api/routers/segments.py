@@ -16,7 +16,7 @@ from api.schemas import (
     ListSegmentPublicSchema,
     SegmentUpdateSchema
 )
-from api.services.segments.service import SegmentService
+from api.services.segments import SegmentService
 from api.security.dependencies import CurrentUser
 
 segment_router = APIRouter(
