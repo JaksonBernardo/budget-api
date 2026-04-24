@@ -10,7 +10,7 @@ from api.exceptions.users import UserNotFound
 from api.exceptions.map_exceptions import map_exception
 
 auth_router = APIRouter(
-    prefix="/api/auth",
+    prefix="/api/v1/auth",
     tags=["Auth"]
 )
 

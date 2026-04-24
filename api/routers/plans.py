@@ -25,7 +25,7 @@ from api.security.dependencies import CurrentUser
 
 
 plan_router = APIRouter(
-    prefix = "/api/plans",
+    prefix = "/api/v1/plans",
     tags = ["Plans"]
 )
 

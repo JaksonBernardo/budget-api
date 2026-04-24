@@ -16,7 +16,7 @@ from api.services.users import UserService
 from api.security.dependencies import CurrentUser
 
 user_router = APIRouter(
-    prefix="/api/users",
+    prefix="/api/v1/users",
     tags=["Users"]
 )
 

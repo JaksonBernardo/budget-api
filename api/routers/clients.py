@@ -23,7 +23,7 @@ from api.services.clients import ClientService
 from api.security.dependencies import CurrentUser
 
 client_router = APIRouter(
-    prefix = "/api/clients",
+    prefix = "/api/v1/clients",
     tags = ["Clients"]
 )
 

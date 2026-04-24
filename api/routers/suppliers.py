@@ -23,7 +23,7 @@ from api.services.suppliers import SupplierService
 from api.security.dependencies import CurrentUser
 
 supplier_router = APIRouter(
-    prefix = "/api/suppliers",
+    prefix = "/api/v1/suppliers",
     tags = ["Suppliers"]
 )
 

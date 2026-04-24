@@ -20,7 +20,7 @@ from api.services.segments import SegmentService
 from api.security.dependencies import CurrentUser
 
 segment_router = APIRouter(
-    prefix = "/api/segments",
+    prefix = "/api/v1/segments",
     tags = ["Segments"]
 )
 

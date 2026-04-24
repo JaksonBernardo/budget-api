@@ -20,7 +20,7 @@ from api.services.employees import EmployeeService
 from api.security.dependencies import CurrentUser
 
 employee_router = APIRouter(
-    prefix = "/api/employees",
+    prefix = "/api/v1/employees",
     tags = ["Employees"]
 )
 

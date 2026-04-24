@@ -52,7 +52,7 @@ class TestCompanyEndpoints:
         with patch("api.services.companys.CompanyService.create", new_callable=AsyncMock) as mock_create:
             mock_create.return_value = sample_company_public_obj
             
-            response = await test_client.post("/api/companies/", json={
+            response = await test_client.post("/api/v1/companies/", json={
                 "name": "Test Company",
                 "cnpj": "12345678000199",
                 "email": "test@company.com",
@@ -67,7 +67,7 @@ class TestCompanyEndpoints:
         with patch("api.services.companys.CompanyService.list", new_callable=AsyncMock) as mock_list:
             mock_list.return_value = [sample_company_public_obj]
             
-            response = await test_client.get("/api/companies/")
+            response = await test_client.get("/api/v1/companies/")
             
             assert response.status_code == 200
             assert "companys" in response.json()
@@ -77,7 +77,7 @@ class TestCompanyEndpoints:
         with patch("api.services.companys.CompanyService.get_by_id", new_callable=AsyncMock) as mock_get:
             mock_get.return_value = sample_company_public_obj
             
-            response = await test_client.get("/api/companies/1")
+            response = await test_client.get("/api/v1/companies/1")
             
             assert response.status_code == 200
 
@@ -87,7 +87,7 @@ class TestCompanyEndpoints:
             from api.exceptions.companys import CompanyNotFound
             mock_get.side_effect = CompanyNotFound()
             
-            response = await test_client.get("/api/companies/999")
+            response = await test_client.get("/api/v1/companies/999")
             
             assert response.status_code == 404
 
@@ -96,7 +96,7 @@ class TestCompanyEndpoints:
         with patch("api.services.companys.CompanyService.delete_company", new_callable=AsyncMock) as mock_delete:
             mock_delete.return_value = None
             
-            response = await test_client.delete("/api/companies/1")
+            response = await test_client.delete("/api/v1/companies/1")
             
             assert response.status_code == 204
 
@@ -105,6 +105,6 @@ class TestCompanyEndpoints:
         with patch("api.services.companys.CompanyService.update_company", new_callable=AsyncMock) as mock_update:
             mock_update.return_value = sample_company_public_obj
             
-            response = await test_client.put("/api/companies/1", json={"name": "Updated Name"})
+            response = await test_client.put("/api/v1/companies/1", json={"name": "Updated Name"})
             
             assert response.status_code == 200

@@ -41,7 +41,7 @@ class TestSegmentEndpoints:
         with patch("api.services.segments.SegmentService.list", new_callable=AsyncMock) as mock_list:
             mock_list.return_value = [sample_segment_model]
 
-            response = await test_client.get("/api/segments/1")
+            response = await test_client.get("/api/v1/segments/1")
 
             assert response.status_code == 200
 
@@ -51,7 +51,7 @@ class TestSegmentEndpoints:
         with patch("api.services.segments.SegmentService.list", new_callable=AsyncMock) as mock_list:
             mock_list.return_value = []
 
-            response = await test_client.get("/api/segments/1?offset=10&limit=5")
+            response = await test_client.get("/api/v1/segments/1?offset=10&limit=5")
 
             assert response.status_code == 200
             mock_list.assert_called_once_with(1, 10, 5, None)
@@ -62,7 +62,7 @@ class TestSegmentEndpoints:
         with patch("api.services.segments.SegmentService.list", new_callable=AsyncMock) as mock_list:
             mock_list.return_value = []
 
-            response = await test_client.get("/api/segments/1?search=teste")
+            response = await test_client.get("/api/v1/segments/1?search=teste")
 
             assert response.status_code == 200
             mock_list.assert_called_once_with(1, 0, 20, "teste")
@@ -81,7 +81,7 @@ class TestSegmentEndpoints:
                 "updated_at": sample_segment_model.updated_at,
             })
 
-            response = await test_client.get("/api/segments/1/1")
+            response = await test_client.get("/api/v1/segments/1/1")
 
             assert response.status_code == 200
 
@@ -92,7 +92,7 @@ class TestSegmentEndpoints:
             from api.exceptions.segments import SegmentNotFound
             mock_get.side_effect = SegmentNotFound()
 
-            response = await test_client.get("/api/segments/1/999")
+            response = await test_client.get("/api/v1/segments/1/999")
 
             assert response.status_code == 404
 
@@ -102,7 +102,7 @@ class TestSegmentEndpoints:
         with patch("api.services.segments.SegmentService.delete", new_callable=AsyncMock) as mock_delete:
             mock_delete.return_value = None
 
-            response = await test_client.delete("/api/segments/1/1")
+            response = await test_client.delete("/api/v1/segments/1/1")
 
             assert response.status_code == 204
 
@@ -113,7 +113,7 @@ class TestSegmentEndpoints:
             from api.exceptions.segments import SegmentNotFound
             mock_delete.side_effect = SegmentNotFound()
 
-            response = await test_client.delete("/api/segments/1/999")
+            response = await test_client.delete("/api/v1/segments/1/999")
 
             assert response.status_code == 404
 
@@ -124,6 +124,6 @@ class TestSegmentEndpoints:
             from api.exceptions.companys import CompanyNotFound
             mock_list.side_effect = CompanyNotFound()
 
-            response = await test_client.get("/api/segments/999")
+            response = await test_client.get("/api/v1/segments/999")
 
             assert response.status_code == 404

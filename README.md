@@ -72,56 +72,56 @@ Copie o arquivo `.env.example` para `.env` e configure as variáveis de ambiente
 ## API Endpoints
 
 ### Auth
-- `POST /api/auth/login` - Autenticação de usuário
+- `POST /api/v1/auth/login` - Autenticação de usuário
 
 ### Companies
-- `POST /api/companies` - Criar nova empresa e assinatura
-- `GET /api/companies` - Listar empresas
-- `GET /api/companies/{id}` - Obter empresa por ID
-- `PUT /api/companies/{id}` - Atualizar empresa
-- `DELETE /api/companies/{id}` - Deletar empresa
+- `POST /api/v1/companies` - Criar nova empresa e assinatura
+- `GET /api/v1/companies` - Listar empresas
+- `GET /api/v1/companies/{id}` - Obter empresa por ID
+- `PUT /api/v1/companies/{id}` - Atualizar empresa
+- `DELETE /api/v1/companies/{id}` - Deletar empresa
 
 ### Plans
-- `POST /api/plans` - Criar plano
-- `GET /api/plans` - Listar planos
-- `GET /api/plans/{id}` - Obter plano por ID
-- `PUT /api/plans/{id}` - Atualizar plano
-- `DELETE /api/plans/{id}` - Deletar plano
+- `POST /api/v1/plans` - Criar plano
+- `GET /api/v1/plans` - Listar planos
+- `GET /api/v1/plans/{id}` - Obter plano por ID
+- `PUT /api/v1/plans/{id}` - Atualizar plano
+- `DELETE /api/v1/plans/{id}` - Deletar plano
 
 ### Users
-- `POST /api/users` - Criar usuário
-- `GET /api/users` - Listar usuários
-- `GET /api/users/{id}` - Obter usuário por ID
-- `PUT /api/users/{id}` - Atualizar usuário
-- `DELETE /api/users/{id}` - Deletar usuário
+- `POST /api/v1/users` - Criar usuário
+- `GET /api/v1/users` - Listar usuários
+- `GET /api/v1/users/{id}` - Obter usuário por ID
+- `PUT /api/v1/users/{id}` - Atualizar usuário
+- `DELETE /api/v1/users/{id}` - Deletar usuário
 
 ### Clients
-- `POST /api/clients` - Criar cliente
-- `GET /api/clients` - Listar clientes
-- `GET /api/clients/{id}` - Obter cliente por ID
-- `PUT /api/clients/{id}` - Atualizar cliente
-- `DELETE /api/clients/{id}` - Deletar cliente
+- `POST /api/v1/clients` - Criar cliente
+- `GET /api/v1/clients` - Listar clientes
+- `GET /api/v1/clients/{id}` - Obter cliente por ID
+- `PUT /api/v1/clients/{id}` - Atualizar cliente
+- `DELETE /api/v1/clients/{id}` - Deletar cliente
 
 ### Suppliers
-- `POST /api/suppliers` - Criar fornecedor
-- `GET /api/suppliers` - Listar fornecedores
-- `GET /api/suppliers/{id}` - Obter fornecedor por ID
-- `PUT /api/suppliers/{id}` - Atualizar fornecedor
-- `DELETE /api/suppliers/{id}` - Deletar fornecedor
+- `POST /api/v1/suppliers` - Criar fornecedor
+- `GET /api/v1/suppliers` - Listar fornecedores
+- `GET /api/v1/suppliers/{id}` - Obter fornecedor por ID
+- `PUT /api/v1/suppliers/{id}` - Atualizar fornecedor
+- `DELETE /api/v1/suppliers/{id}` - Deletar fornecedor
 
 ### Materials
-- `POST /api/materials` - Criar material
-- `GET /api/materials` - Listar materiais
-- `GET /api/materials/{id}` - Obter material por ID
-- `PUT /api/materials/{id}` - Atualizar material
-- `DELETE /api/materials/{id}` - Deletar material
+- `POST /api/v1/materials` - Criar material
+- `GET /api/v1/materials` - Listar materiais
+- `GET /api/v1/materials/{id}` - Obter material por ID
+- `PUT /api/v1/materials/{id}` - Atualizar material
+- `DELETE /api/v1/materials/{id}` - Deletar material
 
 ### Segments
-- `POST /api/segments` - Criar segmento
-- `GET /api/segments` - Listar segmentos
-- `GET /api/segments/{id}` - Obter segmento por ID
-- `PUT /api/segments/{id}` - Atualizar segmento
-- `DELETE /api/segments/{id}` - Deletar segmento
+- `POST /api/v1/segments` - Criar segmento
+- `GET /api/v1/segments` - Listar segmentos
+- `GET /api/v1/segments/{id}` - Obter segmento por ID
+- `PUT /api/v1/segments/{id}` - Atualizar segmento
+- `DELETE /api/v1/segments/{id}` - Deletar segmento
 
 ### Health
 - `GET /health` - Verificar status da API

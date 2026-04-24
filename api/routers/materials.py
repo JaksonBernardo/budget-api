@@ -25,7 +25,7 @@ from api.security.dependencies import CurrentUser
 
 
 material_router = APIRouter(
-    prefix = "/api/materials",
+    prefix = "/api/v1/materials",
     tags = ["Materials"]
 )
 

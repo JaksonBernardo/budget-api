@@ -30,7 +30,7 @@ from api.exceptions import (
 )
 
 company_router = APIRouter(
-    prefix="/api/companies",
+    prefix="/api/v1/companies",
     tags=["Companies"]
 )
 
