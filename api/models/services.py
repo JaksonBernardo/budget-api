@@ -28,18 +28,6 @@ class Service(Base):
         nullable = True
     )
     description: Mapped[str] = mapped_column(Text, nullable = True, default = None)
-    total_cost: Mapped[Decimal] = mapped_column(
-        Numeric(10, 2),
-        nullable = False
-    )
-    employee_cost: Mapped[Decimal] = mapped_column(
-        Numeric(10, 2),
-        nullable = False
-    )
-    material_cost: Mapped[Decimal] = mapped_column(
-        Numeric(10, 2),
-        nullable = False
-    )
     company_id: Mapped[int] = mapped_column(
         ForeignKey("companys.id", ondelete = "CASCADE"),
         nullable = False
@@ -93,6 +81,14 @@ class ServiceMaterial(Base):
         ForeignKey("materials.id", ondelete = "CASCADE"),
         nullable = False
     )
+    qtd_material: Mapped[Decimal] = mapped_column(
+        Numeric(10, 2),
+        nullable = False
+    )
+    total_cost: Mapped[Decimal] = mapped_column(
+        Numeric(10, 2),
+        nullable = False
+    )
 
     service: Mapped["Service"] = relationship(
         "Service",
@@ -116,6 +112,14 @@ class ServiceEmployee(Base):
     )
     employee_id: Mapped[int] = mapped_column(
         ForeignKey("employees.id", ondelete = "CASCADE"),
+        nullable = False
+    )
+    minute_works: Mapped[Decimal] = mapped_column(
+        Numeric(10, 2),
+        nullable = False
+    )
+    total_cost: Mapped[Decimal] = mapped_column(
+        Numeric(10, 2),
         nullable = False
     )
 

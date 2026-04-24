@@ -108,6 +108,22 @@ def map_exception(exception: Exception) -> HTTPException:
         EmployeeInvalidData: lambda e: HTTPException(
             status_code=400,
             detail=str(e)
+        ),
+        PriceNotFound: lambda e: HTTPException(
+            status_code=getattr(e, "status_code", 404),
+            detail=str(e)
+        ),
+        PriceExceedValue: lambda e: HTTPException(
+            status_code=getattr(e, "status_code", 400),
+            detail=str(e)
+        ),
+        PriceInvalidName: lambda e: HTTPException(
+            status_code=getattr(e, "status_code", 400),
+            detail=str(e)
+        ),
+        PriceInvalidValue: lambda e: HTTPException(
+            status_code=getattr(e, "status_code", 400),
+            detail=str(e)
         )
     }
 
