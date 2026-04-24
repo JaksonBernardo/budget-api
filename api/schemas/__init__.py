@@ -54,6 +54,12 @@ from api.schemas.employees import (
     EmployeeUpdateSchema,
     ListEmployeePublicSchema
 )
+from api.schemas.prices import (
+    PriceSchema,
+    PricePublicSchema,
+    PriceUpdateSchema,
+    ListPricePublicSchema
+)
 
 __all__ = [
     "SegmentSchema",
@@ -90,5 +96,9 @@ __all__ = [
     "EmployeeSchema",
     "EmployeePublicSchema",
     "EmployeeUpdateSchema",
-    "ListEmployeePublicSchema"
+    "ListEmployeePublicSchema",
+    "PriceSchema",
+    "PricePublicSchema",
+    "PriceUpdateSchema",
+    "ListPricePublicSchema"
 ]

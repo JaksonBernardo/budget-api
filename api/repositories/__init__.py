@@ -8,6 +8,7 @@ from api.repositories.users import UserRepository
 from api.repositories.plans import PlanRepository
 from api.repositories.subscriptions import SubscriptionRepository
 from api.repositories.employees import EmployeeRepository
+from api.repositories.prices import PriceRepository
 
 __all__ = [
     "SegmentRepository",
@@ -19,5 +20,6 @@ __all__ = [
     "UserRepository",
     "PlanRepository",
     "SubscriptionRepository",
-    "EmployeeRepository"
+    "EmployeeRepository",
+    "PriceRepository"
 ]
