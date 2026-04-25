@@ -27,6 +27,7 @@ supplier_router = APIRouter(
     tags = ["Suppliers"]
 )
 
+
 def get_legal_entity_repository(db: AsyncSession = Depends(get_session)) -> LegalEntityRepository:
 
     return LegalEntityRepository(db)
@@ -40,12 +41,14 @@ def get_company_repository(db: AsyncSession = Depends(get_session)) -> CompanyRe
     return CompanyRepository(db)
 
 def get_supplier_service(
+    db: AsyncSession = Depends(get_session),
     legal_entity_repository: LegalEntityRepository = Depends(get_legal_entity_repository),
     supplier_repository: SupplierRepository = Depends(get_supplier_repository),
     company_repository: CompanyRepository = Depends(get_company_repository),
 ) -> SupplierService:
 
     return SupplierService(
+        db = db,
         legal_entity_repository=legal_entity_repository,
         supplier_repository=supplier_repository,
         company_repository=company_repository
@@ -64,9 +67,15 @@ async def create_supplier(
     supplier_service: SupplierService = Depends(get_supplier_service),
     current_user: CurrentUser = CurrentUser,
 ):
-    async with db.begin():
+    try:
 
-        return await supplier_service.create(supplier_data)
+        supplier = await supplier_service.create(supplier_data)
+        
+        return supplier
+
+    except (CompanyNotFound, ) as e:
+
+        raise map_exception(e)
 
 
 @supplier_router.get(

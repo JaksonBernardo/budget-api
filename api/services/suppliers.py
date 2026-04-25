@@ -19,10 +19,12 @@ class SupplierService:
 
     def __init__(
         self,
+        db: AsyncSession,
         legal_entity_repository: LegalEntityRepository,
         supplier_repository: SupplierRepository,
         company_repository: CompanyRepository
-    ):
+    ):  
+        self.__db = db
         self._legal_entity_repository = legal_entity_repository
         self._supplier_repository = supplier_repository
         self._company_repository = company_repository
@@ -92,6 +94,7 @@ class SupplierService:
         return supplier
 
     async def delete(self, company_id: int, supplier_id: int) -> None:
+
         company = await self._company_repository.get_by_id(company_id)
 
         if not company:
@@ -105,6 +108,7 @@ class SupplierService:
         await self._supplier_repository.delete_by_id(company_id, supplier_id)
 
     async def update(self, supplier_id: int, supplier_data: Dict) -> SupplierPublicSchema:
+            
         company = await self._company_repository.get_by_id(supplier_data["company_id"])
 
         if not company:

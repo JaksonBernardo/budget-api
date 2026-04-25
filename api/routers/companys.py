@@ -84,14 +84,12 @@ async def create_company(
     
     try:
 
-        async with db.begin():
-
-            new_company = await service.create(
-                company_data, 
-                asaas_customers,
-                asaas_subscriptions
-            )
-            return new_company
+        new_company = await service.create(
+            company_data, 
+            asaas_customers,
+            asaas_subscriptions
+        )
+        return new_company
     
     except (PlanNotFound, NameAlreadyExists, CnpjAlreadyExists) as e:
 

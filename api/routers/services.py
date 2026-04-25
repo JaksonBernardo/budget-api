@@ -6,7 +6,8 @@ from api.exceptions import (
     SegmentNotFound,
     PriceNotFound,
     MaterialNotFound,
-    EmployeeNotFound
+    EmployeeNotFound,
+    PriceExceedValue
 )
 from api.exceptions.map_exceptions import map_exception
 from api.repositories import (
@@ -15,27 +16,101 @@ from api.repositories import (
     PriceRepository,
     MaterialRepository,
     EmployeeRepository,
-    PrecificationServiceRepository
+    PrecificationServiceRepository,
+    ServiceMaterialRepository,
+    ServiceEmployeeRepository,
+    ServicePriceRepository
 )
 from api.core.database import get_session
 from api.schemas import (
     ServiceSchema,
-    ServicePriceSchema,
     ServicePublicSchema,
-    ServiceEmployeeSchema,
-    ServiceMaterialSchema,
-    ServiceEmployeeSchema,
-    ServicePublicPriceSchema,
-    ServicePublicEmployeeSchema,
-    ServicePublicMaterialSchema,
 )
 from api.services.precifications import PrecificationService
 from api.security.dependencies import CurrentUser
 
-segment_router = APIRouter(
+service_router = APIRouter(
     prefix = "/api/v1/services",
     tags = ["Services"]
 )
+
+def get_company_repository(db: AsyncSession = Depends(get_session)) -> CompanyRepository:
+    return CompanyRepository(db)
+
+def get_segment_repository(db: AsyncSession = Depends(get_session)) -> SegmentRepository:
+    return SegmentRepository(db)
+
+def get_material_repository(db: AsyncSession = Depends(get_session)) -> MaterialRepository:
+    return MaterialRepository(db)
+
+def get_employee_repository(db: AsyncSession = Depends(get_session)) -> EmployeeRepository:
+    return EmployeeRepository(db)
+
+def get_price_repository(db: AsyncSession = Depends(get_session)) -> PriceRepository:
+    return PriceRepository(db)
+
+def get_precification_repository(db: AsyncSession = Depends(get_session)) -> PrecificationServiceRepository:
+    return PrecificationServiceRepository(db)
+
+def get_service_material_repository(db: AsyncSession = Depends(get_session)) -> ServiceMaterialRepository:
+    return ServiceMaterialRepository(db)
+
+def get_service_employee_repository(db: AsyncSession = Depends(get_session)) -> ServiceEmployeeRepository:
+    return ServiceEmployeeRepository(db)
+
+def get_service_price_repository(db: AsyncSession = Depends(get_session)) -> ServicePriceRepository:
+    return ServicePriceRepository(db)
+
+def get_precification_service(
+    segment_repository: SegmentRepository = Depends(get_segment_repository),
+    material_repository: MaterialRepository = Depends(get_material_repository),
+    employee_repository: EmployeeRepository = Depends(get_employee_repository),
+    price_repository: PriceRepository = Depends(get_price_repository),
+    precification_repository: PrecificationServiceRepository = Depends(get_precification_repository),
+    service_material_repository: ServiceMaterialRepository = Depends(get_service_material_repository),
+    service_employee_repository: ServiceEmployeeRepository = Depends(get_service_employee_repository),
+    service_price_repository: ServicePriceRepository = Depends(get_service_price_repository),
+    company_repository: CompanyRepository = Depends(get_company_repository),
+    db: AsyncSession = Depends(get_session)
+) -> PrecificationService:
+    return PrecificationService(
+        segment_repository,
+        material_repository,
+        employee_repository,
+        price_repository,
+        precification_repository,
+        service_material_repository,
+        service_employee_repository,
+        service_price_repository,
+        company_repository,
+        db
+    )
+
+@service_router.post(
+    path = "/",
+    status_code = status.HTTP_201_CREATED,
+    summary = "Criando um serviço",
+    response_model = ServicePublicSchema
+)
+async def create_service(
+    service_data: ServiceSchema,
+    service: PrecificationService = Depends(get_precification_service),
+    current_user: CurrentUser = CurrentUser,
+):
+    try:
+        
+        new_service = await service.create(service_data)
+        return new_service
+
+    except (
+        CompanyNotFound, 
+        SegmentNotFound, 
+        MaterialNotFound, 
+        EmployeeNotFound, 
+        PriceNotFound,
+        PriceExceedValue
+    ) as e:
+        raise map_exception(e)
 
 
 

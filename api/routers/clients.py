@@ -64,9 +64,8 @@ async def create_client(
     client_service: ClientService = Depends(get_client_service),
     current_user: CurrentUser = CurrentUser,
 ):
-    async with db.begin():
 
-        return await client_service.create(client_data)
+    return await client_service.create(client_data)
 
 
 @client_router.get(

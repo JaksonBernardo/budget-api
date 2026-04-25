@@ -72,4 +72,16 @@ class PrecificationServiceRepository:
 
         return service
 
+    async def get_by_id(self, service_id: int) -> Service:
+        query = select(Service).where(
+            Service.id == service_id
+        ).options(
+            selectinload(Service.materials),
+            selectinload(Service.employees),
+            selectinload(Service.prices)
+        )
+        
+        result = await self.__db.execute(query)
+        return result.scalar_one_or_none()
+
 
