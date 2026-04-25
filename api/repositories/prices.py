@@ -46,6 +46,21 @@ class PriceRepository:
 
         result = await self.__db.execute(query)
         return result.scalar_one_or_none()
+    
+    async def get_by_ids(self, company_id: int, price_ids: List[int]) -> List[Price]:
+
+        if not price_ids:
+
+            return []
+        
+        query = select(Price).where(
+            Price.company_id == company_id,
+            Price.id.in_(price_ids)
+        )
+
+        result = await self.__db.execute(query)
+
+        return result.scalars().all()
 
     async def delete_by_id(self, company_id: int, price_id: int) -> None:
         query = delete(Price).where(

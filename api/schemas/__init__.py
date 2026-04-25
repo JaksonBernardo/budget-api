@@ -39,15 +39,12 @@ from api.schemas.plans import (
     PlanUpdateSchema,
     ListPlanPublicSchema
 )
-
-
 from api.schemas.companys import (
     CompanySchema,
     CompanyPublicSchema,
     CompanyUpdateSchema,
     ListCompanyPublicSchema
 )
-
 from api.schemas.employees import (
     EmployeeSchema,
     EmployeePublicSchema,
@@ -59,6 +56,16 @@ from api.schemas.prices import (
     PricePublicSchema,
     PriceUpdateSchema,
     ListPricePublicSchema
+)
+from api.schemas.services import (
+    ServiceEmployeeSchema,
+    ServiceMaterialSchema,
+    ServicePriceSchema,
+    ServicePublicEmployeeSchema,
+    ServicePublicMaterialSchema,
+    ServicePublicPriceSchema,
+    ServicePublicSchema,
+    ServiceSchema
 )
 
 __all__ = [
@@ -100,5 +107,13 @@ __all__ = [
     "PriceSchema",
     "PricePublicSchema",
     "PriceUpdateSchema",
-    "ListPricePublicSchema"
+    "ListPricePublicSchema",
+    "ServiceEmployeeSchema",
+    "ServiceMaterialSchema",
+    "ServicePriceSchema",
+    "ServicePublicEmployeeSchema",
+    "ServicePublicMaterialSchema",
+    "ServicePublicPriceSchema",
+    "ServicePublicSchema",
+    "ServiceSchema"
 ]

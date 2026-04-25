@@ -59,6 +59,7 @@ class MaterialRepository:
         return materials.scalars().all()
 
     async def get_by_id(self, company_id: int, material_id: int) -> Optional[Material]:
+        
         query = select(Material).where(
             and_(
                 Material.id == material_id,
@@ -67,7 +68,24 @@ class MaterialRepository:
         )
 
         result = await self.__db.execute(query)
+
         return result.scalar_one_or_none()
+
+    async def get_by_ids(self, company_id: int, material_ids: List[int]) -> List[Material]:
+
+        if not material_ids:
+
+            return []
+
+        query = select(Material).where(
+            Material.company_id == company_id,
+            Material.id.in_(material_ids)
+        )
+
+        result = await self.__db.execute(query)
+
+        return result.scalars().all()
+
 
     async def delete_by_id(self, company_id: int, material_id: int) -> None:
         query = delete(Material).where(

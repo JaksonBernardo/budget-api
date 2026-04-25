@@ -9,6 +9,12 @@ from api.repositories.plans import PlanRepository
 from api.repositories.subscriptions import SubscriptionRepository
 from api.repositories.employees import EmployeeRepository
 from api.repositories.prices import PriceRepository
+from api.repositories.precifications import (
+    PrecificationServiceRepository, 
+    ServiceEmployeeRepository, 
+    ServiceMaterialRepository, 
+    ServicePriceRepository
+)
 
 __all__ = [
     "SegmentRepository",
@@ -21,5 +27,9 @@ __all__ = [
     "PlanRepository",
     "SubscriptionRepository",
     "EmployeeRepository",
-    "PriceRepository"
+    "PriceRepository",
+    "PrecificationServiceRepository",
+    "ServiceEmployeeRepository", 
+    "ServiceMaterialRepository", 
+    "ServicePriceRepository"
 ]

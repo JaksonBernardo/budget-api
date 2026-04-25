@@ -86,10 +86,7 @@ class PriceUpdateSchema(BaseModel):
 
     @model_validator(mode = "after")
     def validate_rates(self):
-        # Only validate if at least one rate is being updated
-        # This is a bit tricky for partial updates if we don't have the current values
-        # But usually we'd want to ensure the final state is valid.
-        # For simple CRUD, we can just check the provided ones are non-negative.
+        
         rates = [
             self.fixed_expenses,
             self.impost,
