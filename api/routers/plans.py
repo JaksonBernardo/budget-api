@@ -78,7 +78,7 @@ async def create_plan(
 async def list_plans(
     plan_service: PlanService = Depends(get_plan_service),
     offset: int = Query(0, ge = 0, description = "Registros a serem pulados"),
-    limit: int = Query(20, ge = 1, description = "Qtd máxima de registros apresentados"),
+    limit: int = Query(20, ge = 1, le = 100, description = "Qtd máxima de registros apresentados"),
     search: Optional[str] = Query(None, description = "Pesquisar pelo nome de algum plano"),
     current_user: CurrentUser = CurrentUser
 ):
@@ -167,6 +167,7 @@ async def update_plan(
     except (PlanNotFound, PlanInvalidName, PlanNegativePrice) as e:
 
         raise map_exception(e)
+
 
 
 

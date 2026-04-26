@@ -67,7 +67,7 @@ async def list_segments(
     service: SegmentService = Depends(get_segment_service),
     current_user: CurrentUser = CurrentUser,
     offset: int = Query(0, ge = 0, description = "Registros a serem pulados"),
-    limit: int = Query(20, ge = 1, description = "Qtd máxima de registros apresentados"),
+    limit: int = Query(20, ge = 1, le = 100, description = "Qtd máxima de registros apresentados"),
     search: Optional[str] = Query(None, description = "Pesquisar pelo nome de algum segmento")
 ):
     try:

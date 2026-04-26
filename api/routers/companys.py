@@ -104,7 +104,7 @@ async def create_company(
 )
 async def list_companys(
     service: CompanyService = Depends(get_company_service),
-    limit: int = Query(10, ge = 1, description = "Qtd maxima de empresas listadas"),
+    limit: int = Query(10, ge = 1, le = 100, description = "Qtd maxima de empresas listadas"),
     offset: int  = Query(0, ge = 0, description = "Qtd de registros a serem pulados"),
     search: Optional[str] = Query(None, description = "Pesquisar pelo nome ou CNPJ da empresa"),
     current_user: CurrentUser = CurrentUser

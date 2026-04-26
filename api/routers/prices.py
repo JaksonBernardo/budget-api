@@ -81,7 +81,7 @@ async def list_prices(
     service: PriceService = Depends(get_price_service),
     current_user: CurrentUser = CurrentUser,
     offset: int = Query(0, ge = 0, description = "Registros a serem pulados"),
-    limit: int = Query(20, ge = 1, description = "Qtd máxima de registros apresentados"),
+    limit: int = Query(20, ge = 1, le = 100, description = "Qtd máxima de registros apresentados"),
     name: Optional[str] = Query(None, description = "Pesquisar pelo nome de algum preço"),
 ):
     try:
