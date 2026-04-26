@@ -29,6 +29,7 @@ from api.schemas import (
     ServicePublicPriceSchema,
     ServicePublicEmployeeSchema,
     ServicePublicMaterialSchema,
+    ServiceUpdateSchema,
 )
 from api.exceptions import (
     CompanyNotFound,
@@ -86,7 +87,7 @@ class PrecificationService:
 
             if not segment: raise SegmentNotFound()
 
-            if "name" in service_data:
+            if service_data.name:
 
                 if not service_data.name.strip():
 
@@ -243,6 +244,169 @@ class PrecificationService:
             await self.__db.rollback()
             raise e
 
+    async def update(self, service_id: int, service_data: ServiceUpdateSchema) -> Service:
+
+        try:
+            company = await self.__company_repository.get_by_id(service_data.company_id)
+            if not company: raise CompanyNotFound()
+
+            existing_service = await self.__precification_repository.get_by_id(
+                service_data.company_id, service_id
+            )
+            if not existing_service: raise ServiceNotFound()
+
+            if service_data.name:
+                if not service_data.name.strip():
+                    raise ServiceInvalidName()
+
+                service_with_name = await self.__precification_repository.get_by_name(
+                    service_data.company_id, service_data.name.strip()
+                )
+
+                if service_with_name and service_with_name.id != service_id:
+                    raise ServiceAccesDenied("Ja existe um servico com esse nome")
+                
+                existing_service.name = service_data.name.strip()
+
+            if service_data.segment_id:
+                segment = await self.__segment_repository.get_by_id(
+                    service_data.company_id, service_data.segment_id
+                )
+                if not segment: raise SegmentNotFound()
+                existing_service.segment_id = service_data.segment_id
+
+            if service_data.description is not None:
+                existing_service.description = service_data.description
+
+            materials_rows = []
+            employees_rows = []
+            prices_rows = []
+
+            if service_data.materials is not None:
+                material_ids = {item.material_id for item in service_data.materials}
+                if material_ids:
+                    materials = await self.__material_repository.get_by_ids(
+                        service_data.company_id, list(material_ids)
+                    )
+                    if len(materials) != len(material_ids):
+                        raise MaterialNotFound()
+
+                    materials_map = {m.id: m for m in materials}
+                    for item in service_data.materials:
+                        material = materials_map[item.material_id]
+                        materials_rows.append({
+                            "service_id": service_id,
+                            "material_id": material.id,
+                            "qtd_material": item.qtd_material,
+                            "total_cost": material.unit_cost * item.qtd_material
+                        })
+
+            if service_data.employees is not None:
+                employee_ids = {item.employee_id for item in service_data.employees}
+                if employee_ids:
+                    employees = await self.__employee_repository.get_by_ids(
+                        service_data.company_id, list(employee_ids)
+                    )
+                    if len(employees) != len(employee_ids):
+                        raise EmployeeNotFound()
+
+                    employees_map = {e.id: e for e in employees}
+                    for item in service_data.employees:
+                        employee = employees_map[item.employee_id]
+                        employees_rows.append({
+                            "service_id": service_id,
+                            "employee_id": employee.id,
+                            "minute_works": item.minute_works,
+                            "total_cost": employee.cost_per_minute * item.minute_works
+                        })
+
+            if service_data.prices is not None:
+                price_ids = {item.price_id for item in service_data.prices}
+                if price_ids:
+                    prices = await self.__price_repository.get_by_ids(
+                        service_data.company_id, list(price_ids)
+                    )
+                    if len(prices) != len(price_ids):
+                        raise PriceNotFound()
+
+                    prices_map = {p.id: p for p in prices}
+                    
+                    if service_data.materials is None or service_data.employees is None:
+                        current_service = await self.__precification_repository.get_by_id(
+                            service_data.company_id, service_id
+                        )
+                        
+                        if service_data.materials is None:
+                            for m in current_service.materials:
+                                materials_rows.append({
+                                    "total_cost": m.total_cost
+                                })
+                        
+                        if service_data.employees is None:
+                            for e in current_service.employees:
+                                employees_rows.append({
+                                    "total_cost": e.total_cost
+                                })
+
+                    total_base_cost = (
+                        sum(row["total_cost"] for row in materials_rows) +
+                        sum(row["total_cost"] for row in employees_rows)
+                    )
+
+                    if service_data.materials is None:
+                        materials_rows = []
+                    if service_data.employees is None:
+                        employees_rows = []
+
+                    for item in service_data.prices:
+                        price = prices_map[item.price_id]
+                        total_rates = (
+                            item.fixed_expenses + item.impost +
+                            item.commission + item.others_rates +
+                            item.profit_margin
+                        )
+
+                        if total_rates >= 100: raise PriceExceedValue()
+
+                        markup = 100 / (100 - total_rates)
+                        value = total_base_cost * markup
+
+                        prices_rows.append({
+                            "service_id": service_id,
+                            "price_id": price.id,
+                            "fixed_expenses": item.fixed_expenses,
+                            "impost": item.impost,
+                            "commission": item.commission,
+                            "others_rates": item.others_rates,
+                            "profit_margin": item.profit_margin,
+                            "markup": markup,
+                            "value": value
+                        })
+
+            await self.__precification_repository.update(existing_service)
+
+            if service_data.materials is not None:
+                await self.__service_material_repository.delete_by_service_id(service_id)
+                if materials_rows:
+                    await self.__service_material_repository.save(materials_rows)
+
+            if service_data.employees is not None:
+                await self.__service_employee_repository.delete_by_service_id(service_id)
+                if employees_rows:
+                    await self.__service_employee_repository.save(employees_rows)
+
+            if service_data.prices is not None:
+                await self.__service_price_repository.delete_by_service_id(service_id)
+                if prices_rows:
+                    await self.__service_price_repository.save(prices_rows)
+
+            await self.__db.commit()
+            return await self.__precification_repository.get_by_id(service_data.company_id, service_id)
+
+        except Exception as e:
+            await self.__db.rollback()
+            raise e
+
     async def list(
         self, company_id: int, limit: int, offset: int, search: str | None
     ) -> List[Service]:
@@ -292,6 +456,11 @@ class PrecificationService:
         if not service:
 
             raise ServiceNotFound()
+        
+        # E PRECISO FAZER UMA VERIFICACAO POSTERIORMENTE QUE NAO PODE DELETAR UM SERVICO QUE ESTA ATRELADO A ALGUM ORCAMENTO
+        # TAMBEM NAO DELETAR SE FOR VENDA, CONSEQUENTEMENTE TERA REGISTROS FINANCEIROS RELACIONADOS A ELE
+
+        # IDEIA DE DISPONIBILIZAR LINKS PUBLICOS PARA CLIENTES VEREM A PROPOSTA SER BAIXAR NADA NO CELULAR
         
         await self.__precification_repository.delete(company_id, service_id)
 

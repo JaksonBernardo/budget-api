@@ -75,6 +75,18 @@ class ServicePublicSchema(BaseModel):
 
 
 
+class ServiceUpdateSchema(BaseModel):
+
+    name: Optional[str] = None
+    segment_id: Optional[int] = None
+    description: Optional[str] = None
+    company_id: int
+
+    materials: List[ServiceMaterialSchema] = []
+    employees: List[ServiceEmployeeSchema] = []
+    prices: List[ServicePriceSchema] = []
+
+
 class ListServicePublicSchema(BaseModel):
 
     services: List[ServicePublicSchema]

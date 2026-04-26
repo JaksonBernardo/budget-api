@@ -28,7 +28,8 @@ from api.core.database import get_session
 from api.schemas import (
     ServiceSchema,
     ServicePublicSchema,
-    ListServicePublicSchema
+    ListServicePublicSchema,
+    ServiceUpdateSchema
 )
 from api.services.precifications import PrecificationService
 from api.security.dependencies import CurrentUser
@@ -196,3 +197,31 @@ async def delete_service(
         raise map_exception(e)
 
 
+@service_router.put(
+    path = "/{service_id}",
+    status_code = status.HTTP_200_OK,
+    summary = "Atualizando um serviço",
+    response_model = ServicePublicSchema
+)
+async def update_service(
+    service_id: int,
+    service_data: ServiceUpdateSchema,
+    precification_service: PrecificationService = Depends(get_precification_service),
+    current_user: CurrentUser = CurrentUser,
+):
+    try:
+        updated_service = await precification_service.update(service_id, service_data)
+        return updated_service
+
+    except (
+        CompanyNotFound, 
+        SegmentNotFound, 
+        MaterialNotFound, 
+        EmployeeNotFound, 
+        PriceNotFound,
+        PriceExceedValue,
+        ServiceNotFound,
+        ServiceInvalidName,
+        ServiceAccesDenied
+    ) as e:
+        raise map_exception(e)

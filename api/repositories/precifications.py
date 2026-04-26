@@ -1,6 +1,6 @@
 from typing import List, Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, insert, and_, delete
+from sqlalchemy import select, insert, and_, delete, update
 from sqlalchemy.orm import selectinload
 from api.models import (
     Service,
@@ -24,6 +24,15 @@ class ServiceMaterialRepository:
 
         await self.__db.flush()
         
+    async def delete_by_service_id(self, service_id: int) -> None:
+
+        query = delete(ServiceMaterial).where(
+            ServiceMaterial.service_id == service_id
+        )
+
+        await self.__db.execute(query)
+        await self.__db.flush()
+        
 
 class ServiceEmployeeRepository:
 
@@ -38,6 +47,15 @@ class ServiceEmployeeRepository:
             query, list_service_employee
         )
 
+        await self.__db.flush()
+        
+    async def delete_by_service_id(self, service_id: int) -> None:
+
+        query = delete(ServiceEmployee).where(
+            ServiceEmployee.service_id == service_id
+        )
+
+        await self.__db.execute(query)
         await self.__db.flush()
         
 
@@ -56,6 +74,15 @@ class ServicePriceRepository:
 
         await self.__db.flush()
 
+    async def delete_by_service_id(self, service_id: int) -> None:
+
+        query = delete(ServicePrice).where(
+            ServicePrice.service_id == service_id
+        )
+
+        await self.__db.execute(query)
+        await self.__db.flush()
+
 
 class PrecificationServiceRepository:
 
@@ -66,6 +93,13 @@ class PrecificationServiceRepository:
     async def save(self, service: Service) -> Service:
 
         self.__db.add(service)
+
+        await self.__db.flush()
+        await self.__db.refresh(service)
+
+        return service
+
+    async def update(self, service: Service) -> Service:
 
         await self.__db.flush()
         await self.__db.refresh(service)
@@ -94,7 +128,7 @@ class PrecificationServiceRepository:
             selectinload(Service.materials),
             selectinload(Service.employees),
             selectinload(Service.prices)
-        )
+        ).execution_options(populate_existing=True)
         
         result = await self.__db.execute(query)
 
