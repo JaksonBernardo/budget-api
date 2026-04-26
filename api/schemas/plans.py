@@ -56,4 +56,6 @@ class PlanUpdateSchema(BaseModel):
 class ListPlanPublicSchema(BaseModel):
 
     plans: List[PlanPublicSchema]
+    limit: int
+    offset: int
 

@@ -92,7 +92,9 @@ async def list_prices(
             name
         )
         return {
-            "prices": prices
+            "prices": prices,
+            "limit": limit,
+            "offset": offset
         }
     except (CompanyNotFound, ) as e:
         raise map_exception(e)

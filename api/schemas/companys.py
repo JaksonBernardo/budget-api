@@ -66,4 +66,6 @@ class CompanyPublicSchema(BaseModel):
 class ListCompanyPublicSchema(BaseModel):
 
     companys: List[CompanyPublicSchema]
+    limit: int
+    offset: int
 

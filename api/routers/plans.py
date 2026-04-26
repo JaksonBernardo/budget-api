@@ -90,7 +90,9 @@ async def list_plans(
     )
 
     return {
-        "plans": plans
+        "plans": plans,
+        "limit": limit,
+        "offset": offset
     }
 
 

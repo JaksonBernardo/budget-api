@@ -141,7 +141,9 @@ async def list_services(
         )
 
         return {
-            "services": services
+            "services": services,
+            "limit": limit,
+            "offset": offset
         }
 
     except (CompanyNotFound, ) as e:

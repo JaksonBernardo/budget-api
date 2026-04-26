@@ -111,7 +111,9 @@ async def list_materials(
         )
 
         return {
-            "materials": materials
+            "materials": materials,
+            "limit": limit,
+            "offset": offset
         }
 
     except (CompanyNotFound, ) as e:

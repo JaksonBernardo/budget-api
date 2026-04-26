@@ -73,7 +73,11 @@ async def list_users(
 ):
     try:
         users = await user_service.list_by_company(company_id, offset, limit, search)
-        return {"users": users}
+        return {
+            "users": users,
+            "limit": limit,
+            "offset": offset
+        }
 
     except CompanyNotFound as e:
         raise map_exception(e)

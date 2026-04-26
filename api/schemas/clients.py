@@ -98,4 +98,6 @@ class ClientUpdateSchema(BaseModel):
 class ListClientPublicSchema(BaseModel):
 
     clients: List[ClientPublicSchema]
+    limit: int
+    offset: int
 

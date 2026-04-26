@@ -98,3 +98,5 @@ class SupplierUpdateSchema(BaseModel):
 class ListSupplierPublicSchema(BaseModel):
 
     suppliers: List[SupplierPublicSchema]
+    limit: int
+    offset: int

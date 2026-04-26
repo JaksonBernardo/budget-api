@@ -87,7 +87,9 @@ async def list_clients(
     )
 
     return {
-        "clients": clients
+        "clients": clients,
+        "limit": limit,
+        "offset": offset
     }
 
 

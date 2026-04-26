@@ -97,7 +97,9 @@ async def list_suppliers(
     )
 
     return {
-        "suppliers": suppliers
+        "suppliers": suppliers,
+        "limit": limit,
+        "offset": offset
     }
 
 

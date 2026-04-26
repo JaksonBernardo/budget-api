@@ -73,7 +73,9 @@ async def list_segments(
     try:
         segments = await service.list(company_id, offset, limit, search)
         return {
-            "segments": segments
+            "segments": segments,
+            "limit": limit,
+            "offset": offset
         }
 
     except CompanyNotFound as e:

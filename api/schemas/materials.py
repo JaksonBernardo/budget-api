@@ -172,5 +172,5 @@ class MaterialUpdateSchema(BaseModel):
 class ListMaterialPublicSchema(BaseModel):
 
     materials: List[MaterialPublicSchema]
-
-
+    limit: int
+    offset: int

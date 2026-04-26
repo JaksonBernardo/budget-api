@@ -93,3 +93,5 @@ class UserPublicSchema(BaseModel):
 class ListUserPublicSchema(BaseModel):
 
     users: List[UserPublicSchema]
+    limit: int
+    offset: int

@@ -75,3 +75,5 @@ class EmployeeUpdateSchema(BaseModel):
 
 class ListEmployeePublicSchema(BaseModel):
     employees: List[EmployeePublicSchema]
+    limit: int
+    offset: int

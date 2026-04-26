@@ -102,3 +102,5 @@ class PriceUpdateSchema(BaseModel):
 
 class ListPricePublicSchema(BaseModel):
     prices: List[PricePublicSchema]
+    limit: int
+    offset: int

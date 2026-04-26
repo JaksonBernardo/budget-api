@@ -78,6 +78,8 @@ class ServicePublicSchema(BaseModel):
 class ListServicePublicSchema(BaseModel):
 
     services: List[ServicePublicSchema]
+    limit: int
+    offset: int
 
     class Config:
         from_attributes = True

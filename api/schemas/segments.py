@@ -78,5 +78,7 @@ class SegmentUpdateSchema(BaseModel):
 class ListSegmentPublicSchema(BaseModel):
 
     segments: List[SegmentPublicSchema]
+    limit: int
+    offset: int
 
 

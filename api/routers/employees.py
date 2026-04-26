@@ -73,7 +73,9 @@ async def list_employees(
     try:
         employees = await service.list(company_id, offset, limit, search)
         return {
-            "employees": employees
+            "employees": employees,
+            "limit": limit,
+            "offset": offset
         }
 
     except CompanyNotFound as e:

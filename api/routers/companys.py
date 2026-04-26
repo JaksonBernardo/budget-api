@@ -115,7 +115,9 @@ async def list_companys(
     )
 
     return {
-        "companys": companys
+        "companys": companys,
+        "limit": limit,
+        "offset": offset
     }
 
 

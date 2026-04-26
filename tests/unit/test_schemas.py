@@ -154,7 +154,9 @@ class TestListSegmentPublicSchema:
             }
         ]
 
-        schema = ListSegmentPublicSchema(segments=segments_data)
+        schema = ListSegmentPublicSchema(segments=segments_data, limit=20, offset=0)
 
         assert len(schema.segments) == 1
         assert schema.segments[0].name == sample_segment_model.name
+        assert schema.limit == 20
+        assert schema.offset == 0
