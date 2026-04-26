@@ -69,191 +69,159 @@ class PrecificationService:
 
     async def create(self, service_data: ServiceSchema) -> Service:
 
-        company = await self.__company_repository.get_by_id(
-            service_data.company_id
-        )
+        try:
+            company = await self.__company_repository.get_by_id(
+                service_data.company_id
+            )
 
-        if not company: raise CompanyNotFound()
+            if not company: raise CompanyNotFound()
 
-        segment = await self.__segment_repository.get_by_id(
-            service_data.company_id,
-            service_data.segment_id
-        )
-
-        if not segment: raise SegmentNotFound()
-
-        materials_rows = []
-        employees_rows = []
-        prices_rows = []
-
-        if service_data.materials:
-
-            material_ids = {
-                item.material_id
-                for item in service_data.materials
-            }
-
-            materials = await self.__material_repository.get_by_ids(
+            segment = await self.__segment_repository.get_by_id(
                 service_data.company_id,
-                list(material_ids)
+                service_data.segment_id
             )
 
-            if len(materials) != len(material_ids):
-                raise MaterialNotFound()
+            if not segment: raise SegmentNotFound()
 
-            materials_map = {m.id: m for m in materials}
+            materials_rows = []
+            employees_rows = []
+            prices_rows = []
 
-            for item in service_data.materials:
-                material = materials_map[item.material_id]
+            if service_data.materials:
 
-                materials_rows.append({
-                    "material_id": material.id,
-                    "qtd_material": item.qtd_material,
-                    "total_cost": material.unit_cost * item.qtd_material
-                })
+                material_ids = {
+                    item.material_id
+                    for item in service_data.materials
+                }
 
-        if service_data.employees:
-
-            employee_ids = {
-                item.employee_id
-                for item in service_data.employees
-            }
-
-            employees = await self.__employee_repository.get_by_ids(
-                service_data.company_id,
-                list(employee_ids)
-            )
-
-            if len(employees) != len(employee_ids):
-                raise EmployeeNotFound()
-
-            employees_map = {e.id: e for e in employees}
-
-            for item in service_data.employees:
-                employee = employees_map[item.employee_id]
-
-                employees_rows.append({
-                    "employee_id": employee.id,
-                    "minute_works": item.minute_works,
-                    "total_cost": employee.cost_per_minute * item.minute_works
-                })
-
-        if service_data.prices:
-
-            price_ids = {
-                item.price_id
-                for item in service_data.prices
-            }
-
-            prices = await self.__price_repository.get_by_ids(
-                service_data.company_id,
-                list(price_ids)
-            )
-
-            if len(prices) != len(price_ids):
-                raise PriceNotFound()
-
-            prices_map = {p.id: p for p in prices}
-
-            total_base_cost = (
-                sum(row["total_cost"] for row in materials_rows) +
-                sum(row["total_cost"] for row in employees_rows)
-            )
-
-            for item in service_data.prices:
-
-                price = prices_map[item.price_id]
-
-                total_rates = (
-                    item.fixed_expenses +
-                    item.impost +
-                    item.commission +
-                    item.others_rates +
-                    item.profit_margin
+                materials = await self.__material_repository.get_by_ids(
+                    service_data.company_id,
+                    list(material_ids)
                 )
 
-                if total_rates >= 100: 
-                    
-                    raise PriceExceedValue()
+                if len(materials) != len(material_ids):
+                    raise MaterialNotFound()
 
-                markup = 100 / (100 - total_rates)
-                value = total_base_cost * markup
+                materials_map = {m.id: m for m in materials}
 
-                prices_rows.append({
-                    "price_id": price.id,
-                    "fixed_expenses": item.fixed_expenses,
-                    "impost": item.impost,
-                    "commission": item.commission,
-                    "others_rates": item.others_rates,
-                    "profit_margin": item.profit_margin,
-                    "markup": markup,
-                    "value": value
-                })
+                for item in service_data.materials:
+                    material = materials_map[item.material_id]
 
-        service_entity = Service(
-            name=service_data.name,
-            segment_id=service_data.segment_id,
-            description=service_data.description,
-            company_id=service_data.company_id
-        )
+                    materials_rows.append({
+                        "material_id": material.id,
+                        "qtd_material": item.qtd_material,
+                        "total_cost": material.unit_cost * item.qtd_material
+                    })
 
-        service = await self.__precification_repository.save(service_entity)
+            if service_data.employees:
 
-        for row in materials_rows:
-            row["service_id"] = service.id
+                employee_ids = {
+                    item.employee_id
+                    for item in service_data.employees
+                }
 
-        for row in employees_rows:
-            row["service_id"] = service.id
+                employees = await self.__employee_repository.get_by_ids(
+                    service_data.company_id,
+                    list(employee_ids)
+                )
 
-        for row in prices_rows:
-            row["service_id"] = service.id
+                if len(employees) != len(employee_ids):
+                    raise EmployeeNotFound()
 
-        if materials_rows:
-            await self.__service_material_repository.save(materials_rows)
+                employees_map = {e.id: e for e in employees}
 
-        if employees_rows:
-            await self.__service_employee_repository.save(employees_rows)
+                for item in service_data.employees:
+                    employee = employees_map[item.employee_id]
 
-        if prices_rows:
-            await self.__service_price_repository.save(prices_rows)
+                    employees_rows.append({
+                        "employee_id": employee.id,
+                        "minute_works": item.minute_works,
+                        "total_cost": employee.cost_per_minute * item.minute_works
+                    })
 
-        service.materials = [
-            ServiceMaterial(
-                service_id=service.id,
-                material_id=row["material_id"],
-                qtd_material=row["qtd_material"],
-                total_cost=row["total_cost"]
+            if service_data.prices:
+
+                price_ids = {
+                    item.price_id
+                    for item in service_data.prices
+                }
+
+                prices = await self.__price_repository.get_by_ids(
+                    service_data.company_id,
+                    list(price_ids)
+                )
+
+                if len(prices) != len(price_ids):
+                    raise PriceNotFound()
+
+                prices_map = {p.id: p for p in prices}
+
+                total_base_cost = (
+                    sum(row["total_cost"] for row in materials_rows) +
+                    sum(row["total_cost"] for row in employees_rows)
+                )
+
+                for item in service_data.prices:
+
+                    price = prices_map[item.price_id]
+
+                    total_rates = (
+                        item.fixed_expenses +
+                        item.impost +
+                        item.commission +
+                        item.others_rates +
+                        item.profit_margin
+                    )
+
+                    if total_rates >= 100: 
+                        
+                        raise PriceExceedValue()
+
+                    markup = 100 / (100 - total_rates)
+                    value = total_base_cost * markup
+
+                    prices_rows.append({
+                        "price_id": price.id,
+                        "fixed_expenses": item.fixed_expenses,
+                        "impost": item.impost,
+                        "commission": item.commission,
+                        "others_rates": item.others_rates,
+                        "profit_margin": item.profit_margin,
+                        "markup": markup,
+                        "value": value
+                    })
+
+            service_entity = Service(
+                name=service_data.name,
+                segment_id=service_data.segment_id,
+                description=service_data.description,
+                company_id=service_data.company_id
             )
-            for row in materials_rows
-        ]
 
-        service.employees = [
-            ServiceEmployee(
-                service_id=service.id,
-                employee_id=row["employee_id"],
-                minute_works=row["minute_works"],
-                total_cost=row["total_cost"]
-            )
-            for row in employees_rows
-        ]
+            service = await self.__precification_repository.save(service_entity)
 
-        service.prices = [
-            ServicePrice(
-                service_id=service.id,
-                price_id=row["price_id"],
-                fixed_expenses=row["fixed_expenses"],
-                impost=row["impost"],
-                commission=row["commission"],
-                others_rates=row["others_rates"],
-                profit_margin=row["profit_margin"],
-                markup=row["markup"],
-                value=row["value"]
-            )
-            for row in prices_rows
-        ]
+            for row in materials_rows:
+                row["service_id"] = service.id
 
-        return service
-            
-        
+            for row in employees_rows:
+                row["service_id"] = service.id
 
+            for row in prices_rows:
+                row["service_id"] = service.id
 
+            if materials_rows:
+                await self.__service_material_repository.save(materials_rows)
+
+            if employees_rows:
+                await self.__service_employee_repository.save(employees_rows)
+
+            if prices_rows:
+                await self.__service_price_repository.save(prices_rows)
+
+            await self.__db.commit()
+
+            return await self.__precification_repository.get_by_id(service.id)
+
+        except Exception as e:
+            await self.__db.rollback()
+            raise e

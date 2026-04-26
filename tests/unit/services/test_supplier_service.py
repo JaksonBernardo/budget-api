@@ -10,6 +10,10 @@ from api.exceptions import (
 )
 
 @pytest.fixture
+def mock_db():
+    return MagicMock()
+
+@pytest.fixture
 def mock_legal_entity_repository():
     return MagicMock()
 
@@ -22,8 +26,8 @@ def mock_company_repository():
     return MagicMock()
 
 @pytest.fixture
-def supplier_service(mock_legal_entity_repository, mock_supplier_repository, mock_company_repository):
-    return SupplierService(mock_legal_entity_repository, mock_supplier_repository, mock_company_repository)
+def supplier_service(mock_db, mock_legal_entity_repository, mock_supplier_repository, mock_company_repository):
+    return SupplierService(mock_db, mock_legal_entity_repository, mock_supplier_repository, mock_company_repository)
 
 @pytest.fixture
 def sample_supplier_schema():
