@@ -277,5 +277,24 @@ class PrecificationService:
         
         return service
 
+    async def delete(self, company_id: int, service_id: int) -> None:
+
+        company = await self.__company_repository.get_by_id(company_id)
+
+        if not company:
+
+            raise CompanyNotFound()
+        
+        service = await self.__precification_repository.get_by_id(
+            company_id, service_id
+        )
+
+        if not service:
+
+            raise ServiceNotFound()
+        
+        await self.__precification_repository.delete(company_id, service_id)
+
+
 
 

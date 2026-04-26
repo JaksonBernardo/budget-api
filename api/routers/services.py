@@ -173,5 +173,26 @@ async def get_service(
     except (CompanyNotFound, ServiceNotFound) as e:
 
         raise map_exception(e)
+    
+
+@service_router.delete(
+    path = "/{company_id}/{service_id}",
+    status_code = status.HTTP_204_NO_CONTENT,
+    summary = "Deletando um servico"
+)
+async def delete_service(
+    company_id: int,
+    service_id: int,
+    precification_service: PrecificationService = Depends(get_precification_service),
+    current_user: CurrentUser = CurrentUser
+):
+    
+    try:
+
+        await precification_service.delete(company_id, service_id)
+
+    except (CompanyNotFound, ServiceNotFound, ServiceAccesDenied) as e:
+
+        raise map_exception(e)
 
 

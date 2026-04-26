@@ -1,6 +1,6 @@
 from typing import List, Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, insert, and_
+from sqlalchemy import select, insert, and_, delete
 from sqlalchemy.orm import selectinload
 from api.models import (
     Service,
@@ -85,7 +85,6 @@ class PrecificationServiceRepository:
 
         return result.scalar_one_or_none()
 
-
     async def get_by_id(self, company_id: int, service_id: int) -> Service:
 
         query = select(Service).where(
@@ -124,5 +123,17 @@ class PrecificationServiceRepository:
         results = await self.__db.execute(query)
 
         return results.scalars().all()
+
+    async def delete(self, company_id: int, service_id: int) -> None:
+
+        query = delete(Service).where(
+            and_(
+                Service.company_id == company_id,
+                Service.id == service_id
+            )
+        )
+
+        await self.__db.execute(query)
+        await self.__db.flush()
 
 
