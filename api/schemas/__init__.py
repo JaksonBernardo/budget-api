@@ -65,7 +65,8 @@ from api.schemas.services import (
     ServicePublicMaterialSchema,
     ServicePublicPriceSchema,
     ServicePublicSchema,
-    ServiceSchema
+    ServiceSchema,
+    ListServicePublicSchema
 )
 
 __all__ = [
@@ -115,5 +116,6 @@ __all__ = [
     "ServicePublicMaterialSchema",
     "ServicePublicPriceSchema",
     "ServicePublicSchema",
-    "ServiceSchema"
+    "ServiceSchema",
+    "ListServicePublicSchema"
 ]

@@ -36,7 +36,10 @@ from api.exceptions import (
     MaterialNotFound,
     EmployeeNotFound,
     PriceNotFound,
-    PriceExceedValue
+    PriceExceedValue,
+    ServiceNotFound,
+    ServiceInvalidName,
+    ServiceAccesDenied
 )
 
 
@@ -82,6 +85,20 @@ class PrecificationService:
             )
 
             if not segment: raise SegmentNotFound()
+
+            if "name" in service_data:
+
+                if not service_data.name.strip():
+
+                    raise ServiceInvalidName()
+
+                service = await self.__precification_repository.get_by_name(
+                    service_data.company_id, service_data.name.strip()
+                )
+
+                if service:
+
+                    raise ServiceAccesDenied("Ja existe um servico com esse nome")
 
             materials_rows = []
             employees_rows = []
@@ -220,8 +237,45 @@ class PrecificationService:
 
             await self.__db.commit()
 
-            return await self.__precification_repository.get_by_id(service.id)
+            return await self.__precification_repository.get_by_id(service.company_id, service.id)
 
         except Exception as e:
             await self.__db.rollback()
             raise e
+
+    async def list(
+        self, company_id: int, limit: int, offset: int, search: str | None
+    ) -> List[Service]:
+        
+        company = await self.__company_repository.get_by_id(company_id)
+
+        if not company:
+
+            raise CompanyNotFound()
+        
+        services = await self.__precification_repository.get_by_company_id(
+            company_id, limit, offset, search
+        )
+
+        return services
+
+    async def get(self, company_id: int, service_id: int) -> Service:
+
+        company = await self.__company_repository.get_by_id(company_id)
+
+        if not company:
+
+            raise CompanyNotFound()
+        
+        service = await self.__precification_repository.get_by_id(
+            company_id, service_id
+        )
+
+        if not service:
+
+            raise ServiceNotFound()
+        
+        return service
+
+
+

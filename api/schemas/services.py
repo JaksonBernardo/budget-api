@@ -70,3 +70,15 @@ class ServicePublicSchema(BaseModel):
 
 
 
+
+
+
+
+
+class ListServicePublicSchema(BaseModel):
+
+    services: List[ServicePublicSchema]
+
+    class Config:
+        from_attributes = True
+

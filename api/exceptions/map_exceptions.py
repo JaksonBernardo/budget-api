@@ -124,6 +124,18 @@ def map_exception(exception: Exception) -> HTTPException:
         PriceInvalidValue: lambda e: HTTPException(
             status_code=getattr(e, "status_code", 400),
             detail=str(e)
+        ),
+        ServiceNotFound: lambda e: HTTPException(
+            status_code = getattr(e, "status_code", 404),
+            detail = str(e)
+        ),
+        ServiceInvalidName: lambda e: HTTPException(
+            status_code = getattr(e, "status_code", 400),
+            detail = str(e)
+        ),
+        ServiceAccesDenied: lambda e: HTTPException(
+            status_code = getattr(e, "status_code", 403),
+            detail = str(e)
         )
     }
 
