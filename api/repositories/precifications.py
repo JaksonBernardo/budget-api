@@ -134,6 +134,19 @@ class PrecificationServiceRepository:
 
         return result.scalar_one_or_none()
 
+    async def get_by_segment_id(
+        self, company_id: int, segment_id: int
+    ) -> List[Service]:
+        
+        query = select(Service).where(
+            Service.company_id == company_id,
+            Service.segment_id == segment_id
+        )
+
+        results = await self.__db.execute(query)
+
+        return results.scalars().all()
+
     async def get_by_company_id(
         self, company_id: int, limit: int, offset: int, search: str | None
     ) -> List[Service]:

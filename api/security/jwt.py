@@ -9,12 +9,13 @@ from api.core.settings import Settings
 _settings = Settings()
 
 
-def create_access_token(subject: int, company_id: int) -> str:
+def create_access_token(subject: int, company_id: int, username: str) -> str:
 
     expire = datetime.now(timezone.utc) + timedelta(minutes=_settings.JWT_EXPIRATION_MINUTES)
     payload = {
         "sub": str(subject),
         "company_id": str(company_id),
+        "username": username,
         "exp": expire,
         "type": "access"
     }

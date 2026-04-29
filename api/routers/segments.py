@@ -8,7 +8,11 @@ from api.exceptions import (
     SegmentAccesDenied
 )
 from api.exceptions.map_exceptions import map_exception
-from api.repositories import SegmentRepository, CompanyRepository
+from api.repositories import (
+    SegmentRepository, 
+    CompanyRepository,
+    PrecificationServiceRepository
+)
 from api.core.database import get_session
 from api.schemas import (
     SegmentSchema,
@@ -30,11 +34,15 @@ def get_segment_repository(db: AsyncSession = Depends(get_session)) -> SegmentRe
 def get_company_repository(db: AsyncSession = Depends(get_session)) -> CompanyRepository:
     return CompanyRepository(db)
 
+def get_precification_repository(db: AsyncSession = Depends(get_session)) -> PrecificationServiceRepository:
+    return PrecificationServiceRepository(db)
+
 def get_segment_service(
     segment_repository: SegmentRepository = Depends(get_segment_repository),
-    company_repository: CompanyRepository = Depends(get_company_repository)
+    company_repository: CompanyRepository = Depends(get_company_repository),
+    precification_repository: PrecificationServiceRepository = Depends(get_precification_repository)
 ) -> SegmentService:
-    return SegmentService(segment_repository, company_repository)
+    return SegmentService(segment_repository, company_repository, precification_repository)
 
 
 @segment_router.post(
@@ -116,7 +124,7 @@ async def delete_segment(
     try:
         await service.delete(company_id, segment_id)
 
-    except (CompanyNotFound, SegmentNotFound) as e:
+    except (CompanyNotFound, SegmentNotFound, SegmentAccesDenied) as e:
         raise map_exception(e)
 
 

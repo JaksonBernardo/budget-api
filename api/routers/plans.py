@@ -80,7 +80,6 @@ async def list_plans(
     offset: int = Query(0, ge = 0, description = "Registros a serem pulados"),
     limit: int = Query(20, ge = 1, le = 100, description = "Qtd máxima de registros apresentados"),
     search: Optional[str] = Query(None, description = "Pesquisar pelo nome de algum plano"),
-    current_user: CurrentUser = CurrentUser
 ):
 
     plans = await plan_service.list_plans(
