@@ -1,5 +1,9 @@
+import logging
+
 from fastapi import APIRouter, status, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from opentelemetry.sdk.resources import Resource
 
 from api.schemas import LoginSchema, Token
 from api.repositories.users import UserRepository
@@ -13,6 +17,7 @@ auth_router = APIRouter(
     prefix="/api/v1/auth",
     tags=["Auth"]
 )
+
 
 
 def get_user_repository(db: AsyncSession = Depends(get_session)) -> UserRepository:

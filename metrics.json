@@ -1,0 +1,48 @@
+{
+    "resource_metrics": [
+        {
+            "resource": {
+                "attributes": {
+                    "service.name": "budget-api",
+                    "service.version": "1.0.0"
+                },
+                "schema_url": ""
+            },
+            "scope_metrics": [
+                {
+                    "scope": {
+                        "name": "meter",
+                        "version": "",
+                        "schema_url": "",
+                        "attributes": null
+                    },
+                    "metrics": [
+                        {
+                            "name": "login_requests",
+                            "description": "Qtd de tentativas de login",
+                            "unit": "1",
+                            "data": {
+                                "data_points": [
+                                    {
+                                        "attributes": {
+                                            "email": "jaksonbernardo@gmail.com",
+                                            "password": "senha_errada"
+                                        },
+                                        "start_time_unix_nano": 1777667896612810557,
+                                        "time_unix_nano": 1777667896612869517,
+                                        "value": 1,
+                                        "exemplars": []
+                                    }
+                                ],
+                                "aggregation_temporality": 2,
+                                "is_monotonic": true
+                            }
+                        }
+                    ],
+                    "schema_url": ""
+                }
+            ],
+            "schema_url": ""
+        }
+    ]
+}

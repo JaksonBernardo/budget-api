@@ -1,6 +1,7 @@
 from fastapi import FastAPI, status
 from api.core.settings import Settings
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 from api.routers.segments import segment_router
 from api.routers.clients import client_router
@@ -27,6 +28,8 @@ app.include_router(material_router)
 app.include_router(employee_router)
 app.include_router(price_router)
 app.include_router(service_router)
+
+
 
 origins = [
     Settings().URL_CORS,

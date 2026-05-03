@@ -1,0 +1,47 @@
+
+services:
+
+  olgtm:
+    image: grafana/otel-lgtm
+    ports:
+      - "3000:3000"
+      - "9090:9090"
+      - "4318:4318"
+      - "4317:4317"
+    networks:
+      - gestao-nexacore
+
+  budget_api:
+    build: .
+    container_name: budget_api
+    depends_on:
+      - olgtm
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DATABASE_URL: 'mysql+aiomysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}'
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ALGORITHM: ${JWT_ALGORITHM}
+      JWT_EXPIRATION_MINUTES: ${JWT_EXPIRATION_MINUTES}
+      URL_CORS: ${URL_CORS}
+      ASAAS_API_KEY: ${ASAAS_API_KEY}
+      ASAAS_ENVIRONMENT: ${ASAAS_ENVIRONMENT}
+      OTEL_EXPORTER_OTLP_INSECURE: true
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://olgtm:4317
+      OTEL_METRICS_EXPORTER: otlp
+      OTEL_SERVICE_NAME: 'budget-api'
+      OTEL_METRIC_EXPORT_INTERVAL: 1000
+      COLLECTOR_OTLP_ENABLED: true
+    ports:
+      - "8001:8001"
+    networks:
+      - gestao-nexacore
+
+  
+
+networks:
+  gestao-nexacore:
+    external: true

@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from api.exceptions import *
-
+from api.observer import request_counter
 
 def map_exception(exception: Exception) -> HTTPException:
 
@@ -141,12 +141,19 @@ def map_exception(exception: Exception) -> HTTPException:
 
     handler = exception_map.get(type(exception))
     if handler:
-        return handler(exception)
+        http_exc = handler(exception)
+        request_counter.add(1, {
+            "status_code": str(http_exc.status_code),
+            "exception_type": type(exception).__name__
+        })
+        return http_exc
+    
+    request_counter.add(1, {
+        "status_code": "500",
+        "exception_type": type(exception).__name__
+    })
 
     return HTTPException(
         status_code=500,
         detail=f"Erro interno: {str(exception)}"
     )
-
-    
-
