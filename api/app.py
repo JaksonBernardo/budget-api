@@ -1,7 +1,6 @@
 from fastapi import FastAPI, status
 from api.core.settings import Settings
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 from api.routers.segments import segment_router
 from api.routers.clients import client_router
@@ -14,6 +13,8 @@ from api.routers.companys import company_router
 from api.routers.employees import employee_router
 from api.routers.prices import price_router
 from api.routers.services import service_router
+
+from api.observer import request_counter
 
 app = FastAPI()
 
@@ -41,6 +42,17 @@ app.add_middleware(
     allow_methods = ["*"],
     allow_headers = ["*"]
 )
+
+@app.middleware("http")
+async def count_requests(request, call_next):
+
+    response = await call_next(request)
+
+    request_counter.add(1, attributes={
+        "status_code": response.status_code,
+    })
+
+    return response
 
 @app.get(
     path = "/health",

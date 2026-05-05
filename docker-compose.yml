@@ -3,13 +3,21 @@ services:
 
   olgtm:
     image: grafana/otel-lgtm
+    restart: unless-stopped
     ports:
       - "3000:3000"
       - "9090:9090"
       - "4318:4318"
       - "4317:4317"
+    environment:
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /otel-lgtm/grafana/conf/provisioning/dashboards/custom/custom-dashboard.json
+
     networks:
       - gestao-nexacore
+    volumes:
+      - ./lgtm-data:/data/
+      - ./custom-dashboard.json:/otel-lgtm/grafana/conf/provisioning/dashboards/custom/custom-dashboard.json:ro
+      - ./dashboards-provisioning.yaml:/otel-lgtm/grafana/conf/provisioning/dashboards/custom.yaml:ro
 
   budget_api:
     build: .
