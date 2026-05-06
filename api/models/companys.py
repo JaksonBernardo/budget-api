@@ -18,7 +18,8 @@ if TYPE_CHECKING:
         Price,
         Segment,
         Service,
-        Subscription
+        Subscription,
+        Budget
     )
 
 class State(str, Enum):
@@ -130,5 +131,10 @@ class Company(Base):
 
     subscriptions: Mapped[List["Subscription"]] = relationship(
         "Subscription",
+        back_populates = "company"
+    )
+
+    budgets: Mapped[List["Budget"]] = relationship(
+        "Budget",
         back_populates = "company"
     )

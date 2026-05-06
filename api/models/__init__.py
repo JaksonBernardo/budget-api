@@ -9,6 +9,7 @@ from api.models.materials import Classificate, Material, Movementation, Entrys, 
 from api.models.prices import Price
 from api.models.segments import Segment
 from api.models.services import Service, ServiceMaterial, ServiceEmployee, ServicePrice
+from api.models.budgets import Budget, BudgetService, TypeDiscount
 
 __all__ = [
     "Base",
@@ -37,5 +38,8 @@ __all__ = [
     "BillingType", 
     "PaymentCycle", 
     "StatusSubscription", 
-    "DiscountType"
+    "DiscountType",
+    "Budget", 
+    "BudgetService", 
+    "TypeDiscount"
 ]

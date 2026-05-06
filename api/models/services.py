@@ -13,7 +13,8 @@ if TYPE_CHECKING:
         Material,
         Employee,
         Price,
-        Segment
+        Segment,
+        BudgetService
     )
 
 
@@ -64,6 +65,11 @@ class Service(Base):
 
     prices: Mapped[List["ServicePrice"]] = relationship(
         "ServicePrice",
+        back_populates = "service"
+    )
+
+    budget_services: Mapped[List["BudgetService"]] = relationship(
+        "BudgetService",
         back_populates = "service"
     )
 

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 from enum import Enum
 from datetime import datetime
 from sqlalchemy import String, Integer, ForeignKey, DateTime, Boolean, func
@@ -8,7 +8,7 @@ from api.models import Base
 
 if TYPE_CHECKING:
 
-    from api.models import Company, Employee
+    from api.models import Company, Employee, Budget
 
 
 class User(Base):
@@ -38,6 +38,11 @@ class User(Base):
 
     employee: Mapped["Employee"] = relationship(
         "Employee",
+        back_populates = "user"
+    )
+
+    budgets: Mapped[List["Budget"]] = relationship(
+        "Budget",
         back_populates = "user"
     )
 

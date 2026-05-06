@@ -9,7 +9,8 @@ from api.models.companys import State
 if TYPE_CHECKING:
     from api.models import (
         Company,
-        Material
+        Material,
+        Budget
     )
 
 
@@ -71,6 +72,11 @@ class Client(Base):
     company: Mapped["Company"] = relationship(
         "Company",
         back_populates = "clients"
+    )
+
+    budgets: Mapped[List["Budget"]] = relationship(
+        "Budget",
+        back_populates = "client"
     )
 
 
