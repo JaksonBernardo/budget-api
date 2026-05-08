@@ -1,194 +1,150 @@
-# Budget API
+# Budget API 🚀
 
-Sistema para gerenciamento de orçamentos, precificação de serviços, pagamentos, recebimentos, faturamento e projetos.
+[![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![OpenTelemetry](https://img.shields.io/badge/OpenTelemetry-Enabled-blueviolet.svg)](https://opentelemetry.io/)
 
-## Funcionalidades
+Sistema robusto para gerenciamento de orçamentos, precificação de serviços, pagamentos, faturamento e controle de projetos. Desenvolvido com foco em escalabilidade, observabilidade e integração contínua.
 
-- **Autenticação**: Sistema de autenticação com JWT
-- **Empresas (Companies)**: Cadastro, atualização e exclusão de empresas assinantes com integração Asaas
-- **Planos**: Gerenciamento de planos de assinatura
-- **Assinaturas (Subscriptions)**: Criação e gerenciamento de assinaturas via Asaas
-- **Clientes**: Criação e gerenciamento de clientes
-- **Fornecedores**: Gerenciamento de fornecedores
-- **Materiais**: Controle de materiais
-- **Segmentos**: Organização por segmentos
-- **Usuários**: Gerenciamento de usuários por empresa
-- **Orçamentos**: Criação e gerenciamento de orçamentos
-- **Precificação de Serviços**: Definição e cálculo de preços de serviços
-- **Pagamentos**: Gerenciamento de pagamentos
-- **Recebimentos**: Controle de recebimentos
-- **Faturamento**: Gestão de faturamento
-- **Projetos**: Organização e acompanhamento de projetos
+## 📋 Visão Geral
 
-## Tecnologias
+O **Budget API** é uma solução completa para empresas que buscam automatizar seu fluxo financeiro e operacional. Desde a gestão de planos e assinaturas até o faturamento detalhado de projetos, a API oferece uma base sólida e monitorável para operações críticas.
 
-- Python 3.12
-- FastAPI
-- SQLAlchemy (Async)
-- Alembic (migrations)
-- Pydantic
-- Asaas API (integração de pagamentos)
-- MySQL
+## ✨ Funcionalidades Principais
 
-## Instalação
+- 🔐 **Autenticação Segura**: Implementação de JWT (JSON Web Tokens) para controle de acesso.
+- 🏢 **Gestão Multitenant**: Gerenciamento de empresas, usuários e permissões.
+- 💳 **Integração Asaas**: Automação completa de pagamentos, assinaturas e recebíveis via API Asaas.
+- 📊 **Precificação Inteligente**: Motores de cálculo para serviços, materiais e margens.
+- 🏗️ **Gestão de Projetos**: Controle de orçamentos e acompanhamento de entregáveis.
+- 📈 **Observabilidade Full-Stack**: Monitoramento em tempo real com OpenTelemetry e Grafana LGTM.
 
-```bash
-# Clonar o repositório
-git clone https://github.com/JaksonBernardo/budget-api.git
+## 🛠️ Stack Tecnológica
 
-# Entrar no diretório
-cd budget-api
+### Backend & Core
+- **FastAPI**: Framework web de alta performance.
+- **SQLAlchemy 2.0**: ORM assíncrono para manipulação de dados.
+- **Pydantic V2**: Validação de dados e definições de schemas.
+- **Alembic**: Gerenciamento de migrações de banco de dados.
 
-# Criar ambiente virtual
-python -m venv venv
+### Banco de Dados
+- **MySQL / MariaDB**: Armazenamento relacional robusto.
+- **aiomysql**: Driver assíncrono para máxima performance.
 
-# Ativar ambiente virtual
-.\venv\Scripts\activate  # Windows
-source venv/bin/activate  # Linux/Mac
+### Observabilidade (LGTM Stack)
+- **OpenTelemetry**: Coleta de métricas e traces.
+- **Grafana**: Dashboards e visualização de dados.
+- **Mimir/Prometheus**: Armazenamento de métricas.
+- **Loki**: Agregação de logs.
 
-# Instalar dependências
-pip install -r requirements.txt
+## 🏗️ Arquitetura
 
-# Configurar variáveis de ambiente
-cp .env.example .env
-# Edite o .env com suas configurações
+O projeto adota uma arquitetura em camadas bem definida, facilitando a manutenção e testabilidade:
 
-# Rodar migrations
-alembic upgrade head
-
-# Iniciar servidor
-uvicorn api.app:app --reload
+```text
+Routers (API) ──► Services (Business Logic) ──► Repositories (Data Access) ──► Models (Entities)
 ```
 
-## Configuração
+- **Schemas**: Contratos de entrada e saída (Pydantic).
+- **Security**: Middlewares e dependências de segurança.
+- **Observer**: Camada de instrumentação para telemetria.
 
-Copie o arquivo `.env.example` para `.env` e configure as variáveis de ambiente conforme necessário:
+## 🚀 Como Começar
 
-- `DATABASE_URL`: URL de conexão com o banco de dados
-- `ASAAS_ENVIRONMENT`: Ambiente da Asaas (`sandbox` ou `production`)
-- `ASAAS_API_KEY`: Chave de API da Asaas
-- `URL_CORS`: URL permitida para CORS
+### Pré-requisitos
+- Python 3.12+
+- Docker & Docker Compose (Recomendado)
+- MySQL 8.0+
 
-## API Endpoints
+### Instalação via Docker (Recomendado)
 
-### Auth
-- `POST /api/v1/auth/login` - Autenticação de usuário
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/JaksonBernardo/budget-api.git
+   cd budget-api
+   ```
 
-### Companies
-- `POST /api/v1/companies` - Criar nova empresa e assinatura
-- `GET /api/v1/companies` - Listar empresas
-- `GET /api/v1/companies/{id}` - Obter empresa por ID
-- `PUT /api/v1/companies/{id}` - Atualizar empresa
-- `DELETE /api/v1/companies/{id}` - Deletar empresa
+2. Configure as variáveis de ambiente:
+   ```bash
+   cp .env.example .env
+   # Edite as credenciais no arquivo .env
+   ```
 
-### Plans
-- `POST /api/v1/plans` - Criar plano
-- `GET /api/v1/plans` - Listar planos
-- `GET /api/v1/plans/{id}` - Obter plano por ID
-- `PUT /api/v1/plans/{id}` - Atualizar plano
-- `DELETE /api/v1/plans/{id}` - Deletar plano
+3. Suba o ambiente completo (API + Monitoring):
+   ```bash
+   docker-compose up -d
+   ```
 
-### Users
-- `POST /api/v1/users` - Criar usuário
-- `GET /api/v1/users` - Listar usuários
-- `GET /api/v1/users/{id}` - Obter usuário por ID
-- `PUT /api/v1/users/{id}` - Atualizar usuário
-- `DELETE /api/v1/users/{id}` - Deletar usuário
+A API estará disponível em `http://localhost:8001` e o Grafana em `http://localhost:3000`.
 
-### Clients
-- `POST /api/v1/clients` - Criar cliente
-- `GET /api/v1/clients` - Listar clientes
-- `GET /api/v1/clients/{id}` - Obter cliente por ID
-- `PUT /api/v1/clients/{id}` - Atualizar cliente
-- `DELETE /api/v1/clients/{id}` - Deletar cliente
+### Instalação Manual
 
-### Suppliers
-- `POST /api/v1/suppliers` - Criar fornecedor
-- `GET /api/v1/suppliers` - Listar fornecedores
-- `GET /api/v1/suppliers/{id}` - Obter fornecedor por ID
-- `PUT /api/v1/suppliers/{id}` - Atualizar fornecedor
-- `DELETE /api/v1/suppliers/{id}` - Deletar fornecedor
+1. Crie e ative o ambiente virtual:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate # Linux/Mac
+   # ou .\venv\Scripts\activate no Windows
+   ```
 
-### Materials
-- `POST /api/v1/materials` - Criar material
-- `GET /api/v1/materials` - Listar materiais
-- `GET /api/v1/materials/{id}` - Obter material por ID
-- `PUT /api/v1/materials/{id}` - Atualizar material
-- `DELETE /api/v1/materials/{id}` - Deletar material
+2. Instale as dependências:
+   ```bash
+   pip install -r requirements.txt
+   # Para desenvolvimento:
+   pip install -e .[dev]
+   ```
 
-### Segments
-- `POST /api/v1/segments` - Criar segmento
-- `GET /api/v1/segments` - Listar segmentos
-- `GET /api/v1/segments/{id}` - Obter segmento por ID
-- `PUT /api/v1/segments/{id}` - Atualizar segmento
-- `DELETE /api/v1/segments/{id}` - Deletar segmento
+3. Execute as migrações:
+   ```bash
+   alembic upgrade head
+   ```
 
-### Health
-- `GET /health` - Verificar status da API
+4. Inicie o servidor:
+   ```bash
+   uvicorn api.app:app --reload --port 8001
+   ```
 
-## Arquitetura
+## 📊 Observabilidade
 
-O projeto segue o padrão de camadas:
+A API está instrumentada para exportar métricas via OTLP. O dashboard customizado pode ser acessado no Grafana, onde é possível monitorar:
+- Volume de requisições por endpoint.
+- Taxa de sucesso/erro (HTTP status codes).
+- Latência de processamento.
+- Métricas de negócio (ex: tentativas de login).
 
-```
-Routers → Services → Repositories → Models
-```
+## 🧪 Testes
 
-- **Routers**: Definem os endpoints e fazem a orquestração
-- **Services**: Contêm a lógica de negócio
-- **Repositories**: Responsáveis pelo acesso ao banco de dados
-- **Models**: Definem as entidades do banco de dados
-- **Schemas**: Validação e serialização de dados com Pydantic
-
-## Integração Asaas
-
-A API integra com a Asaas para:
-- Criar clientes na plataforma de pagamentos
-- Gerenciar assinaturas (subscriptions)
-- Atualizar dados de clientes
-- Cancelar clientes e assinaturas
-
-## Testes
-
-O projeto utiliza pytest para testes automatizados.
-
-### Instalar dependências de desenvolvimento
-
-```bash
-pip install pytest pytest-asyncio pytest-cov pytest-mock httpx
-```
-
-### Rodar testes
+Garantimos a qualidade do código através de uma suíte de testes abrangente.
 
 ```bash
 # Rodar todos os testes
-python -m pytest
+pytest
 
-# Rodar testes com cobertura
-python -m pytest --cov=api --cov-report=html
-
-# Rodar testes específicos
-python -m pytest tests/unit/
-python -m pytest tests/integration/
-
-# Rodar testes em modo verbose
-python -m pytest -v
+# Gerar relatório de cobertura (HTML)
+pytest --cov-report=html
 ```
 
-### Estrutura de testes
+## 📂 Estrutura de Pastas
 
+```text
+.
+├── api/
+│   ├── core/           # Configurações globais
+│   ├── features/       # Lógicas transversais
+│   ├── models/         # Entidades SQLAlchemy
+│   ├── repositories/   # Camada de persistência
+│   ├── routers/        # Endpoints da API
+│   ├── schemas/        # Modelos Pydantic
+│   ├── services/       # Regras de negócio
+│   └── observer.py     # Configuração OpenTelemetry
+├── migrations/         # Arquivos do Alembic
+├── tests/              # Testes unitários e integração
+└── docker-compose.yml  # Orquestração de containers
 ```
-tests/
-├── conftest.py              # Fixtures e configurações globais
-├── unit/                    # Testes unitários
-│   ├── repositories/        # Testes de repositórios
-│   ├── services/            # Testes de serviços
-│   ├── test_schemas.py      # Testes de schemas
-│   └── test_exceptions.py   # Testes de exceptions
-└── integration/             # Testes de integração
-    └── routers/             # Testes de endpoints
-```
 
-## Licença
+## 📄 Licença
 
-MIT
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+---
+Desenvolvido por [Jakson Bernardo](https://github.com/JaksonBernardo)

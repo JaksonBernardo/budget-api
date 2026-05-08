@@ -1,0 +1,50 @@
+from typing import List, Optional
+from pydantic import BaseModel, Field
+from decimal import Decimal
+from datetime import date, datetime
+
+from api.models import TypeDiscount
+
+
+class BudgetServicesSchema(BaseModel):
+
+    service_id: int
+    qtd: int
+    service_value: Decimal = Field(ge = 0, max_digits = 12, decimal_places = 2)
+    total_value: Decimal = Field(ge = 0, max_digits = 12, decimal_places = 2)
+
+
+class BudgetSchema(BaseModel):
+
+    client_id: int
+    user_id: int
+    validity_date: date
+    date_acceptance: date
+    date_starter_services: date
+    status_id: int
+    payment_option: int
+    type_discount: TypeDiscount
+    value_discount: Decimal = Field(ge = 0, max_digits = 12, decimal_places = 2)
+    company_id: int
+
+    services: List[BudgetServicesSchema]
+
+
+class BudgetPublicSchema(BaseModel):
+
+    id: int
+    client_id: int
+    user_id: int
+    validity_date: date
+    date_acceptance: date
+    date_starter_services: date
+    status_id: int
+    payment_option: int
+    type_discount: TypeDiscount
+    value_discount: Decimal = Field(ge = 0, max_digits = 12, decimal_places = 2)
+    company_id: int
+    created_at: datetime
+    updated_at: datetime
+
+    services: List[BudgetServicesSchema] = []
+
