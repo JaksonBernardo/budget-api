@@ -21,7 +21,8 @@ if TYPE_CHECKING:
         Company,
         Client,
         Service,
-        User
+        User,
+        Price
     )
 
 
@@ -109,6 +110,10 @@ class BudgetService(Base):
         nullable = False
     )
     qtd: Mapped[int]
+    price_id: Mapped[int] = mapped_column(
+        ForeignKey('prices.id', ondelete = "RESTRICT"),
+        nullable = False
+    )
     service_value: Mapped[Decimal] = mapped_column(
         Numeric(12, 2),
         nullable = False
@@ -120,6 +125,7 @@ class BudgetService(Base):
 
     budget: Mapped["Budget"] = relationship(back_populates = "services")
     service: Mapped["Service"] = relationship(back_populates = "budget_services")
+    price: Mapped["Price"] = relationship(back_populates = "budget_services")
 
     __table_args__ = (
         CheckConstraint(

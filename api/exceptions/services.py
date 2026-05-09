@@ -14,3 +14,9 @@ class ServiceAccesDenied(Exception):
     def __init__(self, message: str = "Operação não permitida"):
         super().__init__(message)
         self.status_code = 403
+
+class ServicePriceNotFound(Exception):
+
+    def __init__(self, message: str = "O preço informado não pertence a este serviço"):
+        super().__init__(message)
+        self.status_code = 404

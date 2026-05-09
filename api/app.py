@@ -13,6 +13,7 @@ from api.routers.companys import company_router
 from api.routers.employees import employee_router
 from api.routers.prices import price_router
 from api.routers.services import service_router
+from api.routers.budgets import budget_router
 
 from api.observer import request_counter
 
@@ -29,7 +30,7 @@ app.include_router(material_router)
 app.include_router(employee_router)
 app.include_router(price_router)
 app.include_router(service_router)
-
+app.include_router(budget_router)
 
 
 origins = [

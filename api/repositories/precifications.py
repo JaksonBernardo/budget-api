@@ -134,6 +134,24 @@ class PrecificationServiceRepository:
 
         return result.scalar_one_or_none()
 
+    async def get_by_ids(self, company_id: int, service_ids: List[int]) -> List[Service]:
+
+        if not service_ids:
+
+            return []
+
+        query = select(Service).where(
+            Service.company_id == company_id,
+            Service.id.in_(service_ids)
+        ).options(
+            selectinload(Service.prices)
+        )
+
+        result = await self.__db.execute(query)
+
+        return result.scalars().all()
+
+
     async def get_by_segment_id(
         self, company_id: int, segment_id: int
     ) -> List[Service]:

@@ -7,7 +7,7 @@ from api.exceptions.users import UserNotFound, UserAlreadyExists, UserAccessDeni
 from api.exceptions.plans import PlanInvalidName, PlanNegativePrice, PlanNotFound, PlanAlreadyExists, PlanHaveCompanys
 from api.exceptions.employees import EmployeeNotFound, EmployeeAccessDenied, EmployeeInvalidData
 from api.exceptions.prices import PriceExceedValue, PriceInvalidName, PriceInvalidValue, PriceNotFound
-from api.exceptions.services import ServiceAccesDenied, ServiceInvalidName, ServiceNotFound
+from api.exceptions.services import ServiceAccesDenied, ServiceInvalidName, ServiceNotFound, ServicePriceNotFound
 
 __all__ = [
     "ZeroCompanyId",
@@ -44,5 +44,6 @@ __all__ = [
     "PriceNotFound",
     "ServiceAccesDenied", 
     "ServiceInvalidName", 
-    "ServiceNotFound"
+    "ServiceNotFound",
+    "ServicePriceNotFound"
 ]

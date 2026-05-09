@@ -1,11 +1,13 @@
 from typing import Optional
 from fastapi import APIRouter, status, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from api.exceptions import (
     CompanyNotFound,
     ServiceNotFound,
     ClientNotFound,
     UserNotFound,
+    ServicePriceNotFound,
 )
 from api.exceptions.map_exceptions import map_exception
 from api.repositories import (
@@ -22,8 +24,90 @@ from api.schemas import (
     BudgetPublicSchema,
     BudgetSchema
 )
-
+from api.services.budgets import BudgetService
 from api.security.dependencies import CurrentUser
+
+
+budget_router = APIRouter(
+    prefix = "/api/v1/budgets",
+    tags = ["Budgets"]
+)
+
+def get_company_repository(db: AsyncSession = Depends(get_session)) -> CompanyRepository:
+    
+    return CompanyRepository(db)
+
+def get_precification_repository(db: AsyncSession = Depends(get_session)) -> PrecificationServiceRepository:
+    
+    return PrecificationServiceRepository(db)
+
+def get_client_repository(db: AsyncSession = Depends(get_session)) -> ClientRepository:
+
+    return ClientRepository(db)
+
+def get_user_repository(db: AsyncSession = Depends(get_session)) -> UserRepository:
+
+    return UserRepository(db)
+
+def get_budget_repository(db: AsyncSession = Depends(get_session)) -> BudgetRepository:
+
+    return BudgetRepository(db)
+
+def get_budget_service_repository(db: AsyncSession = Depends(get_session)) -> BudgetServiceRepository:
+    
+    return BudgetServiceRepository(db)
+
+def get_budget_service(
+    company_repository: CompanyRepository = Depends(get_company_repository),
+    precification_repository: PrecificationServiceRepository = Depends(get_precification_repository),
+    client_repository: ClientRepository = Depends(get_client_repository),
+    user_repository: UserRepository = Depends(get_user_repository),
+    budget_repository: BudgetRepository = Depends(get_budget_repository),
+    budget_service_repository: BudgetServiceRepository = Depends(get_budget_service_repository),
+    db: AsyncSession = Depends(get_session)
+) -> BudgetService:
+    
+    return BudgetService(
+        company_repository,
+        precification_repository,
+        client_repository,
+        user_repository,
+        budget_repository,
+        budget_service_repository,
+        db
+    )
+
+
+@budget_router.post(
+    path = "/api/v1/budgets",
+    status_code = status.HTTP_201_CREATED,
+    summary = "Criando um orcamento",
+    response_model = BudgetPublicSchema,
+)
+async def create(
+    budget_data: BudgetSchema,
+    budget_service: BudgetService = Depends(get_budget_service),
+    current_user: CurrentUser = CurrentUser
+):
+    
+    try:
+
+        budget = await budget_service.create(budget_data)
+
+        return budget
+    
+    except (
+        CompanyNotFound,
+        ClientNotFound,
+        UserNotFound,
+        ServiceNotFound,
+        ServicePriceNotFound,
+    ) as e:
+        
+        raise map_exception(e)
+
+
+
 
 
 

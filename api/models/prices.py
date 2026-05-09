@@ -8,7 +8,7 @@ from api.models import Base
 
 if TYPE_CHECKING:
 
-    from api.models import Company, ServicePrice
+    from api.models import Company, ServicePrice, BudgetService
 
 
 class Price(Base):
@@ -62,6 +62,11 @@ class Price(Base):
 
     services: Mapped[List["ServicePrice"]] = relationship(
         "ServicePrice",
+        back_populates = "price"
+    )
+
+    budget_services: Mapped[List["BudgetService"]] = relationship(
+        "BudgetService",
         back_populates = "price"
     )
 

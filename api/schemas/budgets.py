@@ -9,6 +9,7 @@ from api.models import TypeDiscount
 class BudgetServicesSchema(BaseModel):
 
     service_id: int
+    price_id: int
     qtd: int
     service_value: Decimal = Field(ge = 0, max_digits = 12, decimal_places = 2)
     total_value: Decimal = Field(ge = 0, max_digits = 12, decimal_places = 2)

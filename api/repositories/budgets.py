@@ -39,4 +39,16 @@ class BudgetRepository:
 
         return budget
 
+    async def get_by_id(self, company_id: int, budget_id: int) -> Budget | None:
+
+        query = select(Budget).where(
+            Budget.company_id == company_id,
+            Budget.id == budget_id
+        ).options(
+            selectinload(Budget.services)
+        ).execution_options(populate_existing = True)
+
+        result = await self.__db.execute(query)
+
+        return result.scalar_one_or_none()
 

@@ -136,6 +136,10 @@ def map_exception(exception: Exception) -> HTTPException:
         ServiceAccesDenied: lambda e: HTTPException(
             status_code = getattr(e, "status_code", 403),
             detail = str(e)
+        ),
+        ServicePriceNotFound: lambda e: HTTPException(
+            status_code = getattr(e, "status_code", 404),
+            detail = str(e)
         )
     }
 
