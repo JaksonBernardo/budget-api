@@ -25,6 +25,7 @@ from api.schemas import (
     BudgetServicesSchema,
     BudgetPublicSchema,
     BudgetSchema,
+    BudgetUpdateSchema,
     ListBudgetPublicSchema
 )
 from api.services.budgets import BudgetService
@@ -174,3 +175,54 @@ async def get_budget(
         raise map_exception(e)
 
 
+@budget_router.put(
+    path = "/{company_id}/{budget_id}",
+    status_code = status.HTTP_200_OK,
+    summary = "Atualizando um orcamento",
+    response_model = BudgetPublicSchema
+)
+async def update(
+    company_id: int,
+    budget_id: int,
+    budget_data: BudgetUpdateSchema,
+    budget_service: BudgetService = Depends(get_budget_service),
+    current_user: CurrentUser = CurrentUser
+):
+    
+    try:
+
+        budget = await budget_service.update(company_id, budget_id, budget_data)
+
+        return budget
+    
+    except (
+        CompanyNotFound,
+        BudgetNotFound,
+        ClientNotFound,
+        UserNotFound,
+        ServiceNotFound,
+        ServicePriceNotFound,
+    ) as e:
+
+        raise map_exception(e)
+
+
+@budget_router.delete(
+    path = "/{company_id}/{budget_id}",
+    status_code = status.HTTP_204_NO_CONTENT,
+    summary = "Deletando um orcamento"
+)
+async def delete(
+    company_id: int,
+    budget_id: int,
+    budget_service: BudgetService = Depends(get_budget_service),
+    current_user: CurrentUser = CurrentUser
+):
+    
+    try:
+
+        await budget_service.delete(company_id, budget_id)
+    
+    except (CompanyNotFound, BudgetNotFound) as e:
+
+        raise map_exception(e)

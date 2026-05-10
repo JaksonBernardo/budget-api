@@ -12,6 +12,10 @@ class BudgetServicesSchema(BaseModel):
     price_id: int
     qtd: int
     service_value: Decimal = Field(ge = 0, max_digits = 12, decimal_places = 2)
+
+
+class BudgetServicesPublicSchema(BudgetServicesSchema):
+
     total_value: Decimal = Field(ge = 0, max_digits = 12, decimal_places = 2)
 
 
@@ -31,6 +35,21 @@ class BudgetSchema(BaseModel):
     services: List[BudgetServicesSchema]
 
 
+class BudgetUpdateSchema(BaseModel):
+
+    client_id: Optional[int] = None
+    user_id: Optional[int] = None
+    validity_date: Optional[date] = None
+    date_acceptance: Optional[date] = None
+    date_starter_services: Optional[date] = None
+    status_id: Optional[int] = None
+    payment_option: Optional[int] = None
+    type_discount: Optional[TypeDiscount] = None
+    value_discount: Optional[Decimal] = Field(None, ge = 0, max_digits = 12, decimal_places = 2)
+
+    services: Optional[List[BudgetServicesSchema]] = None
+
+
 class BudgetPublicSchema(BaseModel):
 
     id: int
@@ -47,7 +66,7 @@ class BudgetPublicSchema(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    services: List[BudgetServicesSchema] = []
+    services: List[BudgetServicesPublicSchema] = []
 
 
 
@@ -56,5 +75,3 @@ class ListBudgetPublicSchema(BaseModel):
     budgets: List[BudgetPublicSchema]
     limit: int
     offset: int
-
-

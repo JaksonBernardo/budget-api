@@ -16,3 +16,8 @@ class LoginSchema(BaseModel):
             raise ValueError("Senha deve ter pelo menos 6 caracteres")
 
         return value
+
+class LoginResponseSchema(BaseModel):
+    name: str
+    email: EmailStr
+    company_id: int

@@ -59,8 +59,7 @@ class TestBudgetEndpoints:
                         "service_id": 1,
                         "price_id": 10,
                         "qtd": 2,
-                        "service_value": "50.00",
-                        "total_value": "100.00"
+                        "service_value": "50.00"
                     }
                 ]
             }
@@ -92,8 +91,7 @@ class TestBudgetEndpoints:
                         "service_id": 1,
                         "price_id": 999, # Invalid
                         "qtd": 2,
-                        "service_value": "50.00",
-                        "total_value": "100.00"
+                        "service_value": "50.00"
                     }
                 ]
             }

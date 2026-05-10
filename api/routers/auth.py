@@ -3,7 +3,7 @@ import logging
 from fastapi import APIRouter, status, Depends, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.schemas import LoginSchema
+from api.schemas import LoginSchema, LoginResponseSchema
 from api.repositories.users import UserRepository
 from api.core.database import get_session
 from api.security.password import verify_password
@@ -26,6 +26,7 @@ def get_user_repository(db: AsyncSession = Depends(get_session)) -> UserReposito
     path="/",
     status_code=status.HTTP_200_OK,
     summary="Rota de autenticação para acesso à API",
+    response_model=LoginResponseSchema
 )
 async def auth(
     login_data: LoginSchema,
@@ -48,7 +49,11 @@ async def auth(
             max_age=3600 # 1 hour
         )
         
-        return {"message": "Login realizado com sucesso"}
+        return LoginResponseSchema(
+            name=user.name,
+            email=user.email,
+            company_id=user.company_id
+        )
 
     except UserNotFound as e:
         raise map_exception(e)
@@ -67,4 +72,3 @@ async def logout(response: Response):
         samesite="lax"
     )
     return {"message": "Logout realizado com sucesso"}
-

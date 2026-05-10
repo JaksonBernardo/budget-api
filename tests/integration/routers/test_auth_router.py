@@ -11,7 +11,7 @@ async def test_client():
 
 class TestAuthEndpoints:
     @pytest.mark.asyncio
-    async def test_auth_success_sets_cookie(self, test_client: AsyncClient):
+    async def test_auth_success_sets_cookie_and_returns_user_info(self, test_client: AsyncClient):
         # Mock user
         mock_user = MagicMock()
         mock_user.id = 1
@@ -32,7 +32,11 @@ class TestAuthEndpoints:
             )
 
             assert response.status_code == 200
-            assert response.json() == {"message": "Login realizado com sucesso"}
+            data = response.json()
+            assert data["name"] == "Test User"
+            assert data["email"] == "test@example.com"
+            assert data["company_id"] == 1
+            assert "access_token" not in data
             assert "access_token" in response.cookies
             assert response.cookies["access_token"] == "fake-token"
 

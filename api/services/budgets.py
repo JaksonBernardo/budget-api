@@ -19,6 +19,7 @@ from api.repositories import (
 from api.schemas import (
     BudgetPublicSchema,
     BudgetSchema,
+    BudgetUpdateSchema,
     BudgetServicesSchema
 )
 from api.exceptions import (
@@ -103,7 +104,7 @@ class BudgetService:
                         "price_id": serv.price_id,
                         "qtd": serv.qtd,
                         "service_value": serv.service_value,
-                        "total_value": serv.total_value
+                        "total_value": serv.qtd * serv.service_value
                     })
 
             _BRAZIL_TIMEZONE_ = pytz.timezone("America/Sao_Paulo")
@@ -139,7 +140,7 @@ class BudgetService:
         
         except Exception as ex:
 
-            self.__db.rollback()
+            await self.__db.rollback()
 
             raise ex
 
@@ -184,4 +185,73 @@ class BudgetService:
 
         return budget
 
+    async def update(self, company_id: int, budget_id: int, budget_data: BudgetUpdateSchema) -> Budget:
 
+        try:
+            budget = await self.get(company_id, budget_id)
+
+            if budget_data.client_id:
+                client = await self.__client_repository.get_by_id(budget_data.client_id)
+                if not client: raise ClientNotFound()
+
+            if budget_data.user_id:
+                user = await self.__user_repository.get_by_id(budget_data.user_id)
+                if not user: raise UserNotFound()
+
+            update_data = budget_data.model_dump(exclude_unset=True, exclude={"services"})
+            
+            _BRAZIL_TIMEZONE_ = pytz.timezone("America/Sao_Paulo")
+            update_data["updated_at"] = datetime.now(_BRAZIL_TIMEZONE_)
+
+            if budget_data.services is not None:
+                await self.__budget_service_repository.delete_by_budget_id(budget_id)
+
+                if budget_data.services:
+                    service_ids = {item.service_id for item in budget_data.services}
+                    services = await self.__precification_repository.get_by_ids(company_id, list(service_ids))
+
+                    if len(services) != len(service_ids): raise ServiceNotFound()
+
+                    services_map = {s.id : s for s in services}
+                    budget_service_rows = []
+
+                    for serv in budget_data.services:
+                        service_entity = services_map[serv.service_id]
+                        service_price_ids = {p.price_id for p in service_entity.prices}
+                        
+                        if serv.price_id not in service_price_ids:
+                            raise ServicePriceNotFound()
+
+                        budget_service_rows.append({
+                            "budget_id": budget_id,
+                            "service_id": service_entity.id,
+                            "price_id": serv.price_id,
+                            "qtd": serv.qtd,
+                            "service_value": serv.service_value,
+                            "total_value": serv.qtd * serv.service_value
+                        })
+                    
+                    await self.__budget_service_repository.save(budget_service_rows)
+
+            updated_budget = await self.__budget_repository.update(company_id, budget_id, update_data)
+            
+            await self.__db.commit()
+            return updated_budget
+
+        except Exception as ex:
+            await self.__db.rollback()
+            raise ex
+
+    async def delete(self, company_id: int, budget_id: int) -> None:
+
+        try:
+            await self.get(company_id, budget_id)
+            
+            await self.__budget_service_repository.delete_by_budget_id(budget_id)
+            await self.__budget_repository.delete(company_id, budget_id)
+            
+            await self.__db.commit()
+
+        except Exception as ex:
+            await self.__db.rollback()
+            raise ex

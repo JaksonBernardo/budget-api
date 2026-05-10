@@ -25,7 +25,8 @@ from api.schemas.materials import (
 )
 from api.schemas.auth import (
     LoginSchema,
-    Token
+    Token,
+    LoginResponseSchema
 )
 from api.schemas.users import (
     UserCreateSchema,
@@ -71,7 +72,9 @@ from api.schemas.services import (
 )
 from api.schemas.budgets import (
     BudgetSchema,
+    BudgetUpdateSchema,
     BudgetServicesSchema,
+    BudgetServicesPublicSchema,
     BudgetPublicSchema,
     ListBudgetPublicSchema
 )
@@ -127,7 +130,10 @@ __all__ = [
     "ListServicePublicSchema",
     "ServiceUpdateSchema",
     "BudgetSchema",
+    "BudgetUpdateSchema",
     "BudgetServicesSchema",
+    "BudgetServicesPublicSchema",
     "BudgetPublicSchema",
-    "ListBudgetPublicSchema"
+    "ListBudgetPublicSchema",
+    "LoginResponseSchema"
 ]

@@ -25,11 +25,18 @@ class BudgetServiceRepository:
 
         await self.__db.flush()
 
+    async def delete_by_budget_id(self, budget_id: int) -> None:
+
+        query = delete(BudgetService).where(BudgetService.budget_id == budget_id)
+
+        await self.__db.execute(query)
+        await self.__db.flush()
+
 
 class BudgetRepository:
 
     def __init__(self, db: AsyncSession):
-        
+
         self.__db = db
 
     async def save(self, budget: Budget) -> Budget:
@@ -63,7 +70,7 @@ class BudgetRepository:
         year: Optional[int] = datetime.now().year,
         month: Optional[int] = datetime.now().month
     ):
-        
+
         query = select(Budget).where(Budget.company_id == company_id)
 
         if client_id:
@@ -86,3 +93,25 @@ class BudgetRepository:
         results = await self.__db.execute(query)
 
         return results.scalars().all()
+
+    async def update(self, company_id: int, budget_id: int, budget_data: Dict[str, Any]) -> Budget:
+
+        query = update(Budget).where(
+            Budget.company_id == company_id,
+            Budget.id == budget_id
+        ).values(**budget_data)
+
+        await self.__db.execute(query)
+        await self.__db.flush()
+
+        return await self.get_by_id(company_id, budget_id)
+
+    async def delete(self, company_id: int, budget_id: int) -> None:
+
+        query = delete(Budget).where(
+            Budget.company_id == company_id,
+            Budget.id == budget_id
+        )
+
+        await self.__db.execute(query)
+        await self.__db.flush()
