@@ -115,7 +115,7 @@ async def create(
     summary = "Listando os orcamentos",
     response_model = ListBudgetPublicSchema
 )
-async def list(
+async def list_budgets(
     company_id: int,
     budget_service: BudgetService = Depends(get_budget_service),
     current_user: CurrentUser = CurrentUser,
@@ -150,6 +150,27 @@ async def list(
         raise map_exception(e)
 
 
+@budget_router.get(
+    path = "/{company_id}/{budget_id}",
+    status_code = status.HTTP_200_OK,
+    summary = "Selecionando um orcamento especifico",
+    response_model = BudgetPublicSchema
+)
+async def get_budget(
+    company_id: int,
+    budget_id: int,
+    budget_service: BudgetService = Depends(get_budget_service),
+    current_user: CurrentUser = CurrentUser
+):
+    
+    try:
 
+        budget = await budget_service.get(company_id, budget_id)
+
+        return budget
+    
+    except (CompanyNotFound, BudgetNotFound) as e:
+
+        raise map_exception(e)
 
 

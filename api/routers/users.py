@@ -103,6 +103,25 @@ async def get_user(
         raise map_exception(e)
 
 
+
+@user_router.delete(
+    path="/{user_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Deletando um usuário"
+)
+async def delete_user(
+    user_id: int,
+    user_service: UserService = Depends(get_user_service),
+    current_user: CurrentUser = CurrentUser,
+):
+    try:
+        await user_service.delete(user_id)
+
+    except UserNotFound as e:
+        raise map_exception(e)
+
+
+
 @user_router.put(
     path="/{user_id}",
     status_code=status.HTTP_200_OK,
@@ -122,19 +141,3 @@ async def update_user(
     except (UserNotFound, UserAlreadyExists) as e:
         raise map_exception(e)
 
-
-@user_router.delete(
-    path="/{user_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
-    summary="Deletando um usuário"
-)
-async def delete_user(
-    user_id: int,
-    user_service: UserService = Depends(get_user_service),
-    current_user: CurrentUser = CurrentUser,
-):
-    try:
-        await user_service.delete(user_id)
-
-    except UserNotFound as e:
-        raise map_exception(e)

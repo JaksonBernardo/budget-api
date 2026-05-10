@@ -27,6 +27,7 @@ from api.exceptions import (
     ClientNotFound,
     UserNotFound,
     ServicePriceNotFound,
+    BudgetNotFound
 )
 
 
@@ -148,7 +149,7 @@ class BudgetService:
         offset: int,
         limit: int,
         client_id: Optional[int] = None,
-        user_id: Optional[int] = None, 
+        user_id: Optional[int] = None,
         year: Optional[int] = datetime.now().year,
         month: Optional[int] = datetime.now().month
     ) -> List[Budget]:
@@ -169,5 +170,18 @@ class BudgetService:
 
         return budgets
 
+    async def get(self, company_id: int, budget_id: int) -> Budget | None:
+
+        company = await self.__company_repository.get_by_id(company_id)
+
+        if not company: raise CompanyNotFound()
+
+        budget = await self.__budget_repository.get_by_id(
+            company_id, budget_id
+        )
+
+        if not budget: raise BudgetNotFound()
+
+        return budget
 
 
