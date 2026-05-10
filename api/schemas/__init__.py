@@ -72,7 +72,8 @@ from api.schemas.services import (
 from api.schemas.budgets import (
     BudgetSchema,
     BudgetServicesSchema,
-    BudgetPublicSchema
+    BudgetPublicSchema,
+    ListBudgetPublicSchema
 )
 
 __all__ = [
@@ -127,5 +128,6 @@ __all__ = [
     "ServiceUpdateSchema",
     "BudgetSchema",
     "BudgetServicesSchema",
-    "BudgetPublicSchema"
+    "BudgetPublicSchema",
+    "ListBudgetPublicSchema"
 ]

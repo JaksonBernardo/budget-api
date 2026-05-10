@@ -1,4 +1,5 @@
 from typing import Optional
+from datetime import datetime
 from fastapi import APIRouter, status, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -8,6 +9,7 @@ from api.exceptions import (
     ClientNotFound,
     UserNotFound,
     ServicePriceNotFound,
+    BudgetNotFound
 )
 from api.exceptions.map_exceptions import map_exception
 from api.repositories import (
@@ -22,7 +24,8 @@ from api.core.database import get_session
 from api.schemas import (
     BudgetServicesSchema,
     BudgetPublicSchema,
-    BudgetSchema
+    BudgetSchema,
+    ListBudgetPublicSchema
 )
 from api.services.budgets import BudgetService
 from api.security.dependencies import CurrentUser
@@ -106,7 +109,45 @@ async def create(
         
         raise map_exception(e)
 
+@budget_router.get(
+    path = "/{company_id}",
+    status_code = status.HTTP_200_OK,
+    summary = "Listando os orcamentos",
+    response_model = ListBudgetPublicSchema
+)
+async def list(
+    company_id: int,
+    budget_service: BudgetService = Depends(get_budget_service),
+    current_user: CurrentUser = CurrentUser,
+    offset: int = Query(0, ge = 0, description = "Registros a serem pulados"),
+    limit: int = Query(20, ge = 1, le = 100, description = "Qtd máxima de registros apresentados"),
+    client: Optional[int] = Query(None, description = "Pesquisar pelo ID de algum cliente"),
+    user: Optional[int] = Query(None, description = "Usuario que criou o orcamento"),
+    year: Optional[int] = Query(datetime.now().year, ge = 1, description = "Pesquisar pelo ano do orcamento"),
+    month: Optional[int] = Query(datetime.now().month, ge = 1, le = 12, description = "Pesquisar pelo mes do orcamento")
+):
+    
+    try:
 
+        budgets = await budget_service.list(
+            company_id,
+            offset,
+            limit,
+            client,
+            user,
+            year,
+            month
+        )
+
+        return {
+            "budgets": budgets,
+            "limit": limit,
+            "offset": offset
+        }
+
+    except (CompanyNotFound, ) as e:
+
+        raise map_exception(e)
 
 
 

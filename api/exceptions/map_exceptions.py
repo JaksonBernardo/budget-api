@@ -140,6 +140,10 @@ def map_exception(exception: Exception) -> HTTPException:
         ServicePriceNotFound: lambda e: HTTPException(
             status_code = getattr(e, "status_code", 404),
             detail = str(e)
+        ),
+        BudgetNotFound: lambda e: HTTPException(
+            status_code = getattr(e, "status_code", 404),
+            detail = str(e)
         )
     }
 

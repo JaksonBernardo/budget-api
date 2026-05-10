@@ -49,3 +49,12 @@ class BudgetPublicSchema(BaseModel):
 
     services: List[BudgetServicesSchema] = []
 
+
+
+class ListBudgetPublicSchema(BaseModel):
+
+    budgets: List[BudgetPublicSchema]
+    limit: int
+    offset: int
+
+

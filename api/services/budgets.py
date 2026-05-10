@@ -142,5 +142,32 @@ class BudgetService:
 
             raise ex
 
+    async def list(
+        self,
+        company_id: int,
+        offset: int,
+        limit: int,
+        client_id: Optional[int] = None,
+        user_id: Optional[int] = None, 
+        year: Optional[int] = datetime.now().year,
+        month: Optional[int] = datetime.now().month
+    ) -> List[Budget]:
+        
+        company = await self.__company_repository.get_by_id(company_id)
+
+        if not company: raise CompanyNotFound()
+
+        budgets = await self.__budget_repository.get_by_company_id(
+            company_id,
+            offset,
+            limit,
+            client_id,
+            user_id,
+            year,
+            month
+        )
+
+        return budgets
+
 
 

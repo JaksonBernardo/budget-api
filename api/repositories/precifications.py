@@ -151,7 +151,6 @@ class PrecificationServiceRepository:
 
         return result.scalars().all()
 
-
     async def get_by_segment_id(
         self, company_id: int, segment_id: int
     ) -> List[Service]:
