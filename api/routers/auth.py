@@ -1,11 +1,9 @@
 import logging
 
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, status, Depends, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from opentelemetry.sdk.resources import Resource
-
-from api.schemas import LoginSchema, Token
+from api.schemas import LoginSchema
 from api.repositories.users import UserRepository
 from api.core.database import get_session
 from api.security.password import verify_password
@@ -28,10 +26,10 @@ def get_user_repository(db: AsyncSession = Depends(get_session)) -> UserReposito
     path="/",
     status_code=status.HTTP_200_OK,
     summary="Rota de autenticação para acesso à API",
-    response_model=Token
 )
 async def auth(
     login_data: LoginSchema,
+    response: Response,
     user_repo: UserRepository = Depends(get_user_repository)
 ):
     try:
@@ -40,7 +38,33 @@ async def auth(
             raise UserNotFound("Credenciais inválidas")
 
         access_token = create_access_token(subject=user.id, company_id=user.company_id, username=user.name)
-        return Token(access_token=access_token, token_type="bearer")
+        
+        response.set_cookie(
+            key="access_token",
+            value=access_token,
+            httponly=True,
+            secure=True,  # Set to True in production (HTTPS)
+            samesite="lax",
+            max_age=3600 # 1 hour
+        )
+        
+        return {"message": "Login realizado com sucesso"}
 
     except UserNotFound as e:
         raise map_exception(e)
+
+
+@auth_router.post(
+    path="/logout",
+    status_code=status.HTTP_200_OK,
+    summary="Rota para logout, removendo o cookie de acesso",
+)
+async def logout(response: Response):
+    response.delete_cookie(
+        key="access_token",
+        httponly=True,
+        secure=True,
+        samesite="lax"
+    )
+    return {"message": "Logout realizado com sucesso"}
+

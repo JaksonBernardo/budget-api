@@ -79,7 +79,7 @@ def get_budget_service(
 
 
 @budget_router.post(
-    path = "/api/v1/budgets",
+    path = "/",
     status_code = status.HTTP_201_CREATED,
     summary = "Criando um orcamento",
     response_model = BudgetPublicSchema,

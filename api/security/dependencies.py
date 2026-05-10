@@ -1,7 +1,7 @@
-from typing import Annotated
+from typing import Annotated, Optional
 
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import APIKeyCookie
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.core.database import get_session
@@ -9,21 +9,26 @@ from api.repositories.users import UserRepository
 from api.security.jwt import decode_access_token
 from api.models import User
 
-security = HTTPBearer()
+cookie_scheme = APIKeyCookie(name="access_token", auto_error=False)
 
 
 async def get_current_user(
-    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
+    token: Annotated[Optional[str], Depends(cookie_scheme)],
     db: AsyncSession = Depends(get_session)
 ) -> User:
 
-    user_id = decode_access_token(credentials.credentials)
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token não encontrado nos cookies",
+        )
+
+    user_id = decode_access_token(token)
 
     if user_id is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token inválido ou expirado",
-            headers={"WWW-Authenticate": "Bearer"},
         )
 
     user_repo = UserRepository(db)
@@ -34,7 +39,6 @@ async def get_current_user(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuário não encontrado",
-            headers={"WWW-Authenticate": "Bearer"},
         )
 
     return user

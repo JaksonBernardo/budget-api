@@ -11,13 +11,19 @@ from api.exceptions.segments import (
 )
 from api.exceptions.companys import CompanyNotFound
 
+@pytest.fixture
+def mock_precification_repository():
+    """Mock do repositório de precificação"""
+    repo = MagicMock()
+    repo.get_by_segment_id = AsyncMock(return_value=[])
+    return repo
 
 class TestSegmentServiceCreate:
     """Testes para método create do SegmentService"""
 
     @pytest.mark.asyncio
     async def test_create_segment_success(
-        self, mock_segment_repository, mock_company_repository,
+        self, mock_segment_repository, mock_company_repository, mock_precification_repository,
         sample_segment_data, sample_company_model
     ):
         """Testa criação de segmento com sucesso"""
@@ -31,7 +37,7 @@ class TestSegmentServiceCreate:
         saved_segment.updated_at = datetime.now()
         mock_segment_repository.save = AsyncMock(return_value=saved_segment)
 
-        service = SegmentService(mock_segment_repository, mock_company_repository)
+        service = SegmentService(mock_segment_repository, mock_company_repository, mock_precification_repository)
         segment_data = MagicMock()
         segment_data.name = sample_segment_data["name"]
         segment_data.contract = sample_segment_data["contract"]
@@ -45,13 +51,13 @@ class TestSegmentServiceCreate:
 
     @pytest.mark.asyncio
     async def test_create_segment_company_not_found(
-        self, mock_segment_repository, mock_company_repository,
+        self, mock_segment_repository, mock_company_repository, mock_precification_repository,
         sample_segment_data
     ):
         """Testa que criação de segmento lança CompanyNotFound quando empresa não existe"""
         mock_company_repository.get_by_id = AsyncMock(return_value=None)
 
-        service = SegmentService(mock_segment_repository, mock_company_repository)
+        service = SegmentService(mock_segment_repository, mock_company_repository, mock_precification_repository)
 
         with pytest.raises(CompanyNotFound):
             await service.create(MagicMock(**sample_segment_data))
@@ -65,7 +71,7 @@ class TestSegmentServiceList:
 
     @pytest.mark.asyncio
     async def test_list_segments_success(
-        self, mock_segment_repository, mock_company_repository,
+        self, mock_segment_repository, mock_company_repository, mock_precification_repository,
         sample_company_model
     ):
         """Testa listagem de segmentos com sucesso"""
@@ -78,7 +84,7 @@ class TestSegmentServiceList:
         mock_segment_2.name = "Segmento 2"
         mock_segment_repository.get_by_company_id = AsyncMock(return_value=[mock_segment_1, mock_segment_2])
 
-        service = SegmentService(mock_segment_repository, mock_company_repository)
+        service = SegmentService(mock_segment_repository, mock_company_repository, mock_precification_repository)
         result = await service.list(company_id=1, offset=0, limit=20, search=None)
 
         assert len(result) == 2
@@ -87,26 +93,26 @@ class TestSegmentServiceList:
 
     @pytest.mark.asyncio
     async def test_list_segments_with_search(
-        self, mock_segment_repository, mock_company_repository,
+        self, mock_segment_repository, mock_company_repository, mock_precification_repository,
         sample_company_model
     ):
         """Testa listagem de segmentos com busca"""
         mock_company_repository.get_by_id = AsyncMock(return_value=sample_company_model)
         mock_segment_repository.get_by_company_id = AsyncMock(return_value=[])
 
-        service = SegmentService(mock_segment_repository, mock_company_repository)
+        service = SegmentService(mock_segment_repository, mock_company_repository, mock_precification_repository)
         await service.list(company_id=1, offset=0, limit=20, search="teste")
 
         mock_segment_repository.get_by_company_id.assert_called_once_with(1, 0, 20, "%teste%")
 
     @pytest.mark.asyncio
     async def test_list_segments_company_not_found(
-        self, mock_segment_repository, mock_company_repository
+        self, mock_segment_repository, mock_company_repository, mock_precification_repository
     ):
         """Testa que listagem lança CompanyNotFound quando empresa não existe"""
         mock_company_repository.get_by_id = AsyncMock(return_value=None)
 
-        service = SegmentService(mock_segment_repository, mock_company_repository)
+        service = SegmentService(mock_segment_repository, mock_company_repository, mock_precification_repository)
 
         with pytest.raises(CompanyNotFound):
             await service.list(company_id=999, offset=0, limit=20, search=None)
@@ -117,14 +123,14 @@ class TestSegmentServiceGet:
 
     @pytest.mark.asyncio
     async def test_get_segment_success(
-        self, mock_segment_repository, mock_company_repository,
+        self, mock_segment_repository, mock_company_repository, mock_precification_repository,
         sample_company_model, sample_segment_model
     ):
         """Testa obtenção de segmento com sucesso"""
         mock_company_repository.get_by_id = AsyncMock(return_value=sample_company_model)
         mock_segment_repository.get_by_id = AsyncMock(return_value=sample_segment_model)
 
-        service = SegmentService(mock_segment_repository, mock_company_repository)
+        service = SegmentService(mock_segment_repository, mock_company_repository, mock_precification_repository)
         result = await service.get(company_id=1, segment_id=1)
 
         assert result is not None
@@ -133,26 +139,26 @@ class TestSegmentServiceGet:
 
     @pytest.mark.asyncio
     async def test_get_segment_company_not_found(
-        self, mock_segment_repository, mock_company_repository
+        self, mock_segment_repository, mock_company_repository, mock_precification_repository
     ):
         """Testa que obtenção lança CompanyNotFound quando empresa não existe"""
         mock_company_repository.get_by_id = AsyncMock(return_value=None)
 
-        service = SegmentService(mock_segment_repository, mock_company_repository)
+        service = SegmentService(mock_segment_repository, mock_company_repository, mock_precification_repository)
 
         with pytest.raises(CompanyNotFound):
             await service.get(company_id=999, segment_id=1)
 
     @pytest.mark.asyncio
     async def test_get_segment_not_found(
-        self, mock_segment_repository, mock_company_repository,
+        self, mock_segment_repository, mock_company_repository, mock_precification_repository,
         sample_company_model
     ):
         """Testa que obtenção lança SegmentNotFound quando segmento não existe"""
         mock_company_repository.get_by_id = AsyncMock(return_value=sample_company_model)
         mock_segment_repository.get_by_id = AsyncMock(return_value=None)
 
-        service = SegmentService(mock_segment_repository, mock_company_repository)
+        service = SegmentService(mock_segment_repository, mock_company_repository, mock_precification_repository)
 
         with pytest.raises(SegmentNotFound):
             await service.get(company_id=1, segment_id=999)
@@ -163,7 +169,7 @@ class TestSegmentServiceDelete:
 
     @pytest.mark.asyncio
     async def test_delete_segment_success(
-        self, mock_segment_repository, mock_company_repository,
+        self, mock_segment_repository, mock_company_repository, mock_precification_repository,
         sample_company_model, sample_segment_model
     ):
         """Testa exclusão de segmento com sucesso"""
@@ -171,21 +177,21 @@ class TestSegmentServiceDelete:
         mock_segment_repository.get_by_id = AsyncMock(return_value=sample_segment_model)
         mock_segment_repository.delete_by_id = AsyncMock()
 
-        service = SegmentService(mock_segment_repository, mock_company_repository)
+        service = SegmentService(mock_segment_repository, mock_company_repository, mock_precification_repository)
         await service.delete(company_id=1, segment_id=1)
 
         mock_segment_repository.delete_by_id.assert_called_once_with(1, 1)
 
     @pytest.mark.asyncio
     async def test_delete_segment_not_found(
-        self, mock_segment_repository, mock_company_repository,
+        self, mock_segment_repository, mock_company_repository, mock_precification_repository,
         sample_company_model
     ):
         """Testa que exclusão lança SegmentNotFound quando segmento não existe"""
         mock_company_repository.get_by_id = AsyncMock(return_value=sample_company_model)
         mock_segment_repository.get_by_id = AsyncMock(return_value=None)
 
-        service = SegmentService(mock_segment_repository, mock_company_repository)
+        service = SegmentService(mock_segment_repository, mock_company_repository, mock_precification_repository)
 
         with pytest.raises(SegmentNotFound):
             await service.delete(company_id=1, segment_id=999)
@@ -196,7 +202,7 @@ class TestSegmentServiceUpdate:
 
     @pytest.mark.asyncio
     async def test_update_segment_success(
-        self, mock_segment_repository, mock_company_repository,
+        self, mock_segment_repository, mock_company_repository, mock_precification_repository,
         sample_company_model, sample_segment_model
     ):
         """Testa atualização de segmento com sucesso"""
@@ -204,7 +210,7 @@ class TestSegmentServiceUpdate:
         mock_segment_repository.get_by_id = AsyncMock(return_value=sample_segment_model)
         mock_segment_repository.update = AsyncMock(return_value=sample_segment_model)
 
-        service = SegmentService(mock_segment_repository, mock_company_repository)
+        service = SegmentService(mock_segment_repository, mock_company_repository, mock_precification_repository)
         update_data = {
             "name": "Nome Atualizado",
             "company_id": 1,
@@ -217,14 +223,14 @@ class TestSegmentServiceUpdate:
 
     @pytest.mark.asyncio
     async def test_update_segment_invalid_name(
-        self, mock_segment_repository, mock_company_repository,
+        self, mock_segment_repository, mock_company_repository, mock_precification_repository,
         sample_company_model, sample_segment_model
     ):
         """Testa que atualização com nome vazio lança SegmentInvalidName"""
         mock_company_repository.get_by_id = AsyncMock(return_value=sample_company_model)
         mock_segment_repository.get_by_id = AsyncMock(return_value=sample_segment_model)
 
-        service = SegmentService(mock_segment_repository, mock_company_repository)
+        service = SegmentService(mock_segment_repository, mock_company_repository, mock_precification_repository)
         update_data = {
             "name": "",
             "company_id": 1,
@@ -235,7 +241,7 @@ class TestSegmentServiceUpdate:
 
     @pytest.mark.asyncio
     async def test_update_segment_access_denied(
-        self, mock_segment_repository, mock_company_repository,
+        self, mock_segment_repository, mock_company_repository, mock_precification_repository,
         sample_company_model, sample_segment_model
     ):
         """Testa que atualização com company_id diferente lança SegmentAccesDenied"""
@@ -243,7 +249,7 @@ class TestSegmentServiceUpdate:
         sample_segment_model.company_id = 1
         mock_segment_repository.get_by_id = AsyncMock(return_value=sample_segment_model)
 
-        service = SegmentService(mock_segment_repository, mock_company_repository)
+        service = SegmentService(mock_segment_repository, mock_company_repository, mock_precification_repository)
         update_data = {
             "name": "Nome Atualizado",
             "company_id": 2,  # Diferente do original

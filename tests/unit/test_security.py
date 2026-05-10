@@ -5,7 +5,8 @@ from api.security.jwt import create_access_token, decode_access_token
 def test_create_and_decode_access_token():
     user_id = 1
     company_id = 1
-    token = create_access_token(user_id, company_id)
+    username = "testuser"
+    token = create_access_token(user_id, company_id, username)
     assert isinstance(token, str)
     
     decoded_id = decode_access_token(token)

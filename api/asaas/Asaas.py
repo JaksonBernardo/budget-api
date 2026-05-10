@@ -81,8 +81,8 @@ class AsaasCustomers(Asaas):
             
         except json.JSONDecodeError as e:
             logger.error(f"Failed to parse JSON response from Asaas: {e}")
-            raise ValueError(f"Invalid JSON response from Asaas API: {e}")
-        
+            raise ValueError(f"Invalid JSON response from Asaas API: {e}")    
+
     def delete_customer(self, data: Dict):
         
         base_url = super().get_base_url()
