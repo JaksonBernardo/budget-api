@@ -9,7 +9,8 @@ from api.exceptions import (
     ClientNotFound,
     UserNotFound,
     ServicePriceNotFound,
-    BudgetNotFound
+    BudgetNotFound,
+    StatusBudgetNotFound
 )
 from api.exceptions.map_exceptions import map_exception
 from api.repositories import (
@@ -18,6 +19,7 @@ from api.repositories import (
     ClientRepository,
     UserRepository,
     BudgetRepository,
+    StatusBudgetRepository,
     BudgetServiceRepository
 )
 from api.core.database import get_session
@@ -61,6 +63,10 @@ def get_budget_service_repository(db: AsyncSession = Depends(get_session)) -> Bu
     
     return BudgetServiceRepository(db)
 
+def get_status_budget_repository(db: AsyncSession = Depends(get_session)) -> StatusBudgetRepository:
+
+    return StatusBudgetRepository(db)
+
 def get_budget_service(
     company_repository: CompanyRepository = Depends(get_company_repository),
     precification_repository: PrecificationServiceRepository = Depends(get_precification_repository),
@@ -68,6 +74,7 @@ def get_budget_service(
     user_repository: UserRepository = Depends(get_user_repository),
     budget_repository: BudgetRepository = Depends(get_budget_repository),
     budget_service_repository: BudgetServiceRepository = Depends(get_budget_service_repository),
+    status_budget_repository: StatusBudgetRepository = Depends(get_status_budget_repository),
     db: AsyncSession = Depends(get_session)
 ) -> BudgetService:
     
@@ -78,6 +85,7 @@ def get_budget_service(
         user_repository,
         budget_repository,
         budget_service_repository,
+        status_budget_repository,
         db
     )
 

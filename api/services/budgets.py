@@ -14,7 +14,8 @@ from api.repositories import (
     ClientRepository,
     UserRepository,
     BudgetRepository,
-    BudgetServiceRepository
+    BudgetServiceRepository,
+    StatusBudgetRepository
 )
 from api.schemas import (
     BudgetPublicSchema,
@@ -28,6 +29,7 @@ from api.exceptions import (
     ClientNotFound,
     UserNotFound,
     ServicePriceNotFound,
+    StatusBudgetNotFound,
     BudgetNotFound
 )
 
@@ -43,6 +45,7 @@ class BudgetService:
         user_repository: UserRepository,
         budget_repository: BudgetRepository,
         budget_service_repository: BudgetServiceRepository,
+        status_budget_repository: StatusBudgetRepository,
         db: AsyncSession
     ) -> None:
         
@@ -52,6 +55,7 @@ class BudgetService:
         self.__user_repository = user_repository
         self.__budget_repository = budget_repository
         self.__budget_service_repository = budget_service_repository
+        self.__status_budget_repository = status_budget_repository
         self.__db = db
 
     async def create(self, budget_data: BudgetSchema) -> Budget:
@@ -62,7 +66,7 @@ class BudgetService:
                 self.__company_repository.get_by_id(budget_data.company_id),
                 self.__client_repository.get_by_id(budget_data.client_id),
                 self.__user_repository.get_by_id(budget_data.user_id),
-                # VERIFICACAO PENDENTE PARA STATUS_ID
+                self.__status_budget_repository.get_by_id(budget_data.status_id),
                 # VERIFICACAO PENDENTE PARA FORMA DE PAGAMENTO
             )
 
@@ -198,15 +202,21 @@ class BudgetService:
                 user = await self.__user_repository.get_by_id(budget_data.user_id)
                 if not user: raise UserNotFound()
 
+            if budget_data.status_id:
+                status_budget = await self.__status_budget_repository.get_by_id(budget_data.status_id)
+                if not status_budget: StatusBudgetNotFound()
+
             update_data = budget_data.model_dump(exclude_unset=True, exclude={"services"})
             
             _BRAZIL_TIMEZONE_ = pytz.timezone("America/Sao_Paulo")
             update_data["updated_at"] = datetime.now(_BRAZIL_TIMEZONE_)
 
             if budget_data.services is not None:
+                
                 await self.__budget_service_repository.delete_by_budget_id(budget_id)
 
                 if budget_data.services:
+
                     service_ids = {item.service_id for item in budget_data.services}
                     services = await self.__precification_repository.get_by_ids(company_id, list(service_ids))
 

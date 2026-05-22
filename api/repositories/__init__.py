@@ -15,6 +15,7 @@ from api.repositories.precifications import (
     ServiceMaterialRepository, 
     ServicePriceRepository
 )
+from api.repositories.status_budgets import StatusBudgetRepository
 from api.repositories.budgets import (
     BudgetRepository,
     BudgetServiceRepository
@@ -36,6 +37,7 @@ __all__ = [
     "ServiceEmployeeRepository", 
     "ServiceMaterialRepository", 
     "ServicePriceRepository",
+    "StatusBudgetRepository",
     "BudgetRepository",
     "BudgetServiceRepository"
 ]
