@@ -11,3 +11,9 @@ class StatusBudgetNotFound(Exception):
         super().__init__(message)
         self.status_code = 404
 
+class StatusBudgetIsSaleAlreadyExists(Exception):
+
+    def __init__(self, message: str = "Já existe um status de venda configurado para esta empresa"):
+        super().__init__(message)
+        self.status_code = 400
+

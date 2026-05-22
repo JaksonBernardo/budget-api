@@ -149,6 +149,10 @@ def map_exception(exception: Exception) -> HTTPException:
             status_code = getattr(e, "status_code", 400),
             detail = str(e)
         ),
+        StatusBudgetIsSaleAlreadyExists: lambda e: HTTPException(
+            status_code = getattr(e, "status_code", 400),
+            detail = str(e)
+        ),
         BudgetNotFound: lambda e: HTTPException(
             status_code = getattr(e, "status_code", 404),
             detail = str(e)
