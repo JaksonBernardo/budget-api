@@ -175,6 +175,27 @@ async def get_budget(
         raise map_exception(e)
 
 
+@budget_router.delete(
+    path = "/{company_id}/{budget_id}",
+    status_code = status.HTTP_204_NO_CONTENT,
+    summary = "Deletando um orcamento"
+)
+async def delete(
+    company_id: int,
+    budget_id: int,
+    budget_service: BudgetService = Depends(get_budget_service),
+    current_user: CurrentUser = CurrentUser
+):
+    
+    try:
+
+        await budget_service.delete(company_id, budget_id)
+    
+    except (CompanyNotFound, BudgetNotFound) as e:
+
+        raise map_exception(e)
+    
+
 @budget_router.put(
     path = "/{company_id}/{budget_id}",
     status_code = status.HTTP_200_OK,
@@ -207,22 +228,4 @@ async def update(
         raise map_exception(e)
 
 
-@budget_router.delete(
-    path = "/{company_id}/{budget_id}",
-    status_code = status.HTTP_204_NO_CONTENT,
-    summary = "Deletando um orcamento"
-)
-async def delete(
-    company_id: int,
-    budget_id: int,
-    budget_service: BudgetService = Depends(get_budget_service),
-    current_user: CurrentUser = CurrentUser
-):
-    
-    try:
 
-        await budget_service.delete(company_id, budget_id)
-    
-    except (CompanyNotFound, BudgetNotFound) as e:
-
-        raise map_exception(e)

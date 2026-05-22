@@ -36,6 +36,7 @@ class TestBudgetEndpoints:
             mock_budget.payment_option = 1
             mock_budget.type_discount = TypeDiscount.FIXED
             mock_budget.value_discount = Decimal("10.00")
+            mock_budget.total_value = Decimal("90.00") # Mocked total value
             mock_budget.company_id = 1
             mock_budget.created_at = date(2026, 5, 9)
             mock_budget.updated_at = date(2026, 5, 9)
@@ -67,7 +68,9 @@ class TestBudgetEndpoints:
             response = await test_client.post("/api/v1/budgets/", json=payload)
             
             assert response.status_code == 201
-            assert response.json()["id"] == 1
+            data = response.json()
+            assert data["id"] == 1
+            assert data["total_value"] == "90.00"
 
     @pytest.mark.asyncio
     async def test_create_budget_invalid_price_id(self, test_client: AsyncClient):

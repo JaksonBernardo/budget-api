@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from decimal import Decimal
 from datetime import date, datetime
 
@@ -51,6 +51,7 @@ class BudgetUpdateSchema(BaseModel):
 
 
 class BudgetPublicSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
 
     id: int
     client_id: int
@@ -62,6 +63,7 @@ class BudgetPublicSchema(BaseModel):
     payment_option: int
     type_discount: TypeDiscount
     value_discount: Decimal = Field(ge = 0, max_digits = 12, decimal_places = 2)
+    total_value: Decimal = Field(ge = 0, max_digits = 12, decimal_places = 2)
     company_id: int
     created_at: datetime
     updated_at: datetime

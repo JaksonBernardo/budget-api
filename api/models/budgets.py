@@ -22,7 +22,8 @@ if TYPE_CHECKING:
         Client,
         Service,
         User,
-        Price
+        Price,
+        StatusBudget
     )
 
 
@@ -47,7 +48,10 @@ class Budget(Base):
     validity_date: Mapped[date] = mapped_column(Date, nullable = True)
     date_acceptance: Mapped[date] = mapped_column(Date, nullable = True)
     date_starter_services: Mapped[date] = mapped_column(Date, nullable = True)
-    status_id: Mapped[int]
+    status_id: Mapped[int] = mapped_column(
+        ForeignKey('status_budgets.id', ondelete = "RESTRICT"),
+        nullable = False
+    )
     payment_option: Mapped[int]
     type_discount: Mapped[TypeDiscount] = mapped_column(
         String(30), 
@@ -76,10 +80,26 @@ class Budget(Base):
     client: Mapped["Client"] = relationship(back_populates = "budgets")
     user: Mapped["User"] = relationship(back_populates = "budgets")
     company: Mapped["Company"] = relationship(back_populates = "budgets")
+    status: Mapped["StatusBudget"] = relationship(back_populates = "budgets")
     services: Mapped[List["BudgetService"]] = relationship(
         back_populates = "budget",
         cascade = "all, delete-orphan"
     )
+
+    @property
+    def total_value(self) -> Decimal:
+        
+        total = sum((s.total_value for s in self.services), Decimal("0.00"))
+        
+        if self.type_discount == TypeDiscount.FIXED:
+            
+            total -= self.value_discount
+        
+        else:
+            
+            total -= total * (self.value_discount / Decimal("100.00"))
+        
+        return max(total, Decimal("0.00"))
 
     __table_args__ = (
         CheckConstraint(

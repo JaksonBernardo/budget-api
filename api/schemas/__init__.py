@@ -78,6 +78,12 @@ from api.schemas.budgets import (
     BudgetPublicSchema,
     ListBudgetPublicSchema
 )
+from api.schemas.status_budgets import (
+    StatusBudgetSchema,
+    StatusBudgetPublicSchema,
+    StatusBudgetUpdateSchema,
+    ListStatusBudgetPublicSchema
+)
 
 __all__ = [
     "SegmentSchema",
@@ -135,5 +141,9 @@ __all__ = [
     "BudgetServicesPublicSchema",
     "BudgetPublicSchema",
     "ListBudgetPublicSchema",
-    "LoginResponseSchema"
+    "LoginResponseSchema",
+    "StatusBudgetSchema",
+    "StatusBudgetPublicSchema",
+    "StatusBudgetUpdateSchema",
+    "ListStatusBudgetPublicSchema"
 ]
