@@ -83,7 +83,9 @@ async def list_status(
 ):
     
     try:
+
         statuses = await status_budget_service.list(company_id, offset, limit, search)
+
         return {
             "status": statuses,
             "limit": limit,
@@ -108,9 +110,11 @@ async def get_status(
 ):
     
     try:
+
         return await status_budget_service.get(company_id, status_id)
     
     except (CompanyNotFound, StatusBudgetNotFound) as e:
+
         raise map_exception(e)
 
 
@@ -127,9 +131,11 @@ async def delete(
 ):
     
     try:
+    
         await status_budget_service.delete(company_id, status_id)
     
     except (CompanyNotFound, StatusBudgetNotFound) as e:
+
         raise map_exception(e)
     
 
@@ -148,7 +154,9 @@ async def update(
 ):
     
     try:
+
         return await status_budget_service.update(company_id, status_id, status_data)
     
     except (CompanyNotFound, StatusBudgetNotFound) as e:
+
         raise map_exception(e)

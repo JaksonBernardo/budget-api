@@ -23,7 +23,8 @@ if TYPE_CHECKING:
         Service,
         User,
         Price,
-        StatusBudget
+        StatusBudget,
+        PaymentCondition
     )
 
 
@@ -52,7 +53,10 @@ class Budget(Base):
         ForeignKey('status_budgets.id', ondelete = "RESTRICT"),
         nullable = False
     )
-    payment_option: Mapped[int]
+    payment_condition: Mapped[int] = mapped_column(
+        ForeignKey('payment_conditions.id', ondelete = "RESTRICT"),
+        nullable = False
+    )
     type_discount: Mapped[TypeDiscount] = mapped_column(
         String(30), 
         nullable = False,
@@ -81,6 +85,7 @@ class Budget(Base):
     user: Mapped["User"] = relationship(back_populates = "budgets")
     company: Mapped["Company"] = relationship(back_populates = "budgets")
     status: Mapped["StatusBudget"] = relationship(back_populates = "budgets")
+    payment_condition_rel: Mapped["PaymentCondition"] = relationship(back_populates = "budgets")
     services: Mapped[List["BudgetService"]] = relationship(
         back_populates = "budget",
         cascade = "all, delete-orphan"
