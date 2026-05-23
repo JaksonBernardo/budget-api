@@ -84,6 +84,12 @@ from api.schemas.status_budgets import (
     StatusBudgetUpdateSchema,
     ListStatusBudgetPublicSchema
 )
+from api.schemas.payment_conditions import (
+    PaymentConditionSchema,
+    PaymentConditionPublicSchema,
+    PaymentConditionUpdateSchema,
+    ListPaymentConditionPublicSchema
+)
 
 __all__ = [
     "SegmentSchema",
@@ -145,5 +151,9 @@ __all__ = [
     "StatusBudgetSchema",
     "StatusBudgetPublicSchema",
     "StatusBudgetUpdateSchema",
-    "ListStatusBudgetPublicSchema"
+    "ListStatusBudgetPublicSchema",
+    "PaymentConditionSchema",
+    "PaymentConditionPublicSchema",
+    "PaymentConditionUpdateSchema",
+    "ListPaymentConditionPublicSchema"
 ]

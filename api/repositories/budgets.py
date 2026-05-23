@@ -115,3 +115,14 @@ class BudgetRepository:
 
         await self.__db.execute(query)
         await self.__db.flush()
+
+    async def get_by_payment_condition(self, company_id: int, payment_condition_id: int) -> List[Budget]:
+
+        query = select(Budget).where(
+            Budget.company_id == company_id,
+            Budget.payment_condition == payment_condition_id
+        )
+
+        result = await self.__db.execute(query)
+
+        return result.scalars().all()

@@ -10,7 +10,8 @@ from api.exceptions import (
     UserNotFound,
     ServicePriceNotFound,
     BudgetNotFound,
-    StatusBudgetNotFound
+    StatusBudgetNotFound,
+    PaymentConditionNotFound
 )
 from api.exceptions.map_exceptions import map_exception
 from api.repositories import (
@@ -20,7 +21,8 @@ from api.repositories import (
     UserRepository,
     BudgetRepository,
     StatusBudgetRepository,
-    BudgetServiceRepository
+    BudgetServiceRepository,
+    PaymentConditionRepository
 )
 from api.core.database import get_session
 from api.schemas import (
@@ -67,6 +69,10 @@ def get_status_budget_repository(db: AsyncSession = Depends(get_session)) -> Sta
 
     return StatusBudgetRepository(db)
 
+def get_payment_condition_repository(db: AsyncSession = Depends(get_session)) -> PaymentConditionRepository:
+
+    return PaymentConditionRepository(db)
+
 def get_budget_service(
     company_repository: CompanyRepository = Depends(get_company_repository),
     precification_repository: PrecificationServiceRepository = Depends(get_precification_repository),
@@ -75,6 +81,7 @@ def get_budget_service(
     budget_repository: BudgetRepository = Depends(get_budget_repository),
     budget_service_repository: BudgetServiceRepository = Depends(get_budget_service_repository),
     status_budget_repository: StatusBudgetRepository = Depends(get_status_budget_repository),
+    payment_condition_repository: PaymentConditionRepository = Depends(get_payment_condition_repository),
     db: AsyncSession = Depends(get_session)
 ) -> BudgetService:
     
@@ -86,6 +93,7 @@ def get_budget_service(
         budget_repository,
         budget_service_repository,
         status_budget_repository,
+        payment_condition_repository,
         db
     )
 
@@ -114,6 +122,8 @@ async def create(
         UserNotFound,
         ServiceNotFound,
         ServicePriceNotFound,
+        StatusBudgetNotFound,
+        PaymentConditionNotFound
     ) as e:
         
         raise map_exception(e)
@@ -231,6 +241,8 @@ async def update(
         UserNotFound,
         ServiceNotFound,
         ServicePriceNotFound,
+        StatusBudgetNotFound,
+        PaymentConditionNotFound
     ) as e:
 
         raise map_exception(e)

@@ -15,7 +15,8 @@ from api.repositories import (
     UserRepository,
     BudgetRepository,
     BudgetServiceRepository,
-    StatusBudgetRepository
+    StatusBudgetRepository,
+    PaymentConditionRepository
 )
 from api.schemas import (
     BudgetPublicSchema,
@@ -30,7 +31,8 @@ from api.exceptions import (
     UserNotFound,
     ServicePriceNotFound,
     StatusBudgetNotFound,
-    BudgetNotFound
+    BudgetNotFound,
+    PaymentConditionNotFound
 )
 
 
@@ -46,6 +48,7 @@ class BudgetService:
         budget_repository: BudgetRepository,
         budget_service_repository: BudgetServiceRepository,
         status_budget_repository: StatusBudgetRepository,
+        payment_condition_repository: PaymentConditionRepository,
         db: AsyncSession
     ) -> None:
         
@@ -56,18 +59,19 @@ class BudgetService:
         self.__budget_repository = budget_repository
         self.__budget_service_repository = budget_service_repository
         self.__status_budget_repository = status_budget_repository
+        self.__payment_condition_repository = payment_condition_repository
         self.__db = db
 
     async def create(self, budget_data: BudgetSchema) -> Budget:
 
         try:
 
-            company, client, user = await asyncio.gather(
+            company, client, user, status_budget, payment_condition = await asyncio.gather(
                 self.__company_repository.get_by_id(budget_data.company_id),
                 self.__client_repository.get_by_id(budget_data.client_id),
                 self.__user_repository.get_by_id(budget_data.user_id),
-                self.__status_budget_repository.get_by_id(budget_data.status_id),
-                # VERIFICACAO PENDENTE PARA FORMA DE PAGAMENTO
+                self.__status_budget_repository.get_by_id(budget_data.company_id, budget_data.status_id),
+                self.__payment_condition_repository.get_by_id(budget_data.company_id, budget_data.payment_condition)
             )
 
             if not company: raise CompanyNotFound()
@@ -75,6 +79,10 @@ class BudgetService:
             if not client: raise ClientNotFound()
             
             if not user: raise UserNotFound()
+
+            if not status_budget: raise StatusBudgetNotFound()
+
+            if not payment_condition: raise PaymentConditionNotFound()
             
             budget_service_rows = []
 
@@ -120,7 +128,7 @@ class BudgetService:
                 date_acceptance = budget_data.date_acceptance,
                 date_starter_services = budget_data.date_starter_services,
                 status_id = budget_data.status_id,
-                payment_option = budget_data.payment_option,
+                payment_condition = budget_data.payment_condition,
                 type_discount = budget_data.type_discount,
                 value_discount = budget_data.value_discount,
                 company_id = budget_data.company_id,
@@ -204,7 +212,11 @@ class BudgetService:
 
             if budget_data.status_id:
                 status_budget = await self.__status_budget_repository.get_by_id(budget_data.status_id)
-                if not status_budget: StatusBudgetNotFound()
+                if not status_budget: raise StatusBudgetNotFound()
+
+            if budget_data.payment_condition:
+                payment_condition = await self.__payment_condition_repository.get_by_id(company_id, budget_data.payment_condition)
+                if not payment_condition: raise PaymentConditionNotFound()
 
             update_data = budget_data.model_dump(exclude_unset=True, exclude={"services"})
             
@@ -246,7 +258,7 @@ class BudgetService:
             updated_budget = await self.__budget_repository.update(company_id, budget_id, update_data)
             
             await self.__db.commit()
-            return updated_budget
+            return await self.__budget_repository.get_by_id(company_id, budget_id)
 
         except Exception as ex:
             await self.__db.rollback()

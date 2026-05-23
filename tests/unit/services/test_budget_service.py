@@ -38,6 +38,14 @@ def mock_budget_service_repository():
     return MagicMock()
 
 @pytest.fixture
+def mock_status_budget_repository():
+    return MagicMock()
+
+@pytest.fixture
+def mock_payment_condition_repository():
+    return MagicMock()
+
+@pytest.fixture
 def mock_db_session():
     session = MagicMock()
     session.commit = AsyncMock()
@@ -52,6 +60,8 @@ def budget_service(
     mock_user_repository,
     mock_budget_repository,
     mock_budget_service_repository,
+    mock_status_budget_repository,
+    mock_payment_condition_repository,
     mock_db_session
 ):
     return BudgetService(
@@ -61,6 +71,8 @@ def budget_service(
         mock_user_repository,
         mock_budget_repository,
         mock_budget_service_repository,
+        mock_status_budget_repository,
+        mock_payment_condition_repository,
         mock_db_session
     )
 
@@ -73,7 +85,7 @@ def sample_budget_schema():
         date_acceptance=date(2026, 5, 10),
         date_starter_services=date(2026, 5, 15),
         status_id=1,
-        payment_option=1,
+        payment_condition=1,
         type_discount=TypeDiscount.FIXED,
         value_discount=Decimal("10.00"),
         company_id=1,
@@ -99,12 +111,16 @@ class TestBudgetServiceCreate:
         mock_precification_repository,
         mock_budget_repository,
         mock_budget_service_repository,
+        mock_status_budget_repository,
+        mock_payment_condition_repository,
         sample_budget_schema
     ):
         # Mocks
         mock_company_repository.get_by_id = AsyncMock(return_value=MagicMock())
         mock_client_repository.get_by_id = AsyncMock(return_value=MagicMock())
         mock_user_repository.get_by_id = AsyncMock(return_value=MagicMock())
+        mock_status_budget_repository.get_by_id = AsyncMock(return_value=MagicMock())
+        mock_payment_condition_repository.get_by_id = AsyncMock(return_value=MagicMock())
         
         # Mock service and its prices
         mock_service = MagicMock()
@@ -141,11 +157,15 @@ class TestBudgetServiceCreate:
         mock_client_repository, 
         mock_user_repository, 
         mock_precification_repository,
+        mock_status_budget_repository,
+        mock_payment_condition_repository,
         sample_budget_schema
     ):
         mock_company_repository.get_by_id = AsyncMock(return_value=MagicMock())
         mock_client_repository.get_by_id = AsyncMock(return_value=MagicMock())
         mock_user_repository.get_by_id = AsyncMock(return_value=MagicMock())
+        mock_status_budget_repository.get_by_id = AsyncMock(return_value=MagicMock())
+        mock_payment_condition_repository.get_by_id = AsyncMock(return_value=MagicMock())
         
         # Mock service with DIFFERENT price_id
         mock_service = MagicMock()
@@ -166,11 +186,15 @@ class TestBudgetServiceCreate:
         mock_client_repository, 
         mock_user_repository, 
         mock_precification_repository,
+        mock_status_budget_repository,
+        mock_payment_condition_repository,
         sample_budget_schema
     ):
         mock_company_repository.get_by_id = AsyncMock(return_value=MagicMock())
         mock_client_repository.get_by_id = AsyncMock(return_value=MagicMock())
         mock_user_repository.get_by_id = AsyncMock(return_value=MagicMock())
+        mock_status_budget_repository.get_by_id = AsyncMock(return_value=MagicMock())
+        mock_payment_condition_repository.get_by_id = AsyncMock(return_value=MagicMock())
         
         # Return empty list for services
         mock_precification_repository.get_by_ids = AsyncMock(return_value=[])
@@ -185,11 +209,15 @@ class TestBudgetServiceCreate:
         mock_company_repository, 
         mock_client_repository,
         mock_user_repository,
+        mock_status_budget_repository,
+        mock_payment_condition_repository,
         sample_budget_schema
     ):
         mock_company_repository.get_by_id = AsyncMock(return_value=None)
         mock_client_repository.get_by_id = AsyncMock(return_value=MagicMock())
         mock_user_repository.get_by_id = AsyncMock(return_value=MagicMock())
+        mock_status_budget_repository.get_by_id = AsyncMock(return_value=MagicMock())
+        mock_payment_condition_repository.get_by_id = AsyncMock(return_value=MagicMock())
         
         with pytest.raises(CompanyNotFound):
             await budget_service.create(sample_budget_schema)

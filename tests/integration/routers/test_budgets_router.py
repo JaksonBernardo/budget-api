@@ -33,7 +33,7 @@ class TestBudgetEndpoints:
             mock_budget.date_acceptance = date(2026, 5, 10)
             mock_budget.date_starter_services = date(2026, 5, 15)
             mock_budget.status_id = 1
-            mock_budget.payment_option = 1
+            mock_budget.payment_condition = 1
             mock_budget.type_discount = TypeDiscount.FIXED
             mock_budget.value_discount = Decimal("10.00")
             mock_budget.total_value = Decimal("90.00") # Mocked total value
@@ -51,7 +51,7 @@ class TestBudgetEndpoints:
                 "date_acceptance": "2026-05-10",
                 "date_starter_services": "2026-05-15",
                 "status_id": 1,
-                "payment_option": 1,
+                "payment_condition": 1,
                 "type_discount": "FIXED",
                 "value_discount": "10.00",
                 "company_id": 1,
@@ -85,7 +85,7 @@ class TestBudgetEndpoints:
                 "date_acceptance": "2026-05-10",
                 "date_starter_services": "2026-05-15",
                 "status_id": 1,
-                "payment_option": 1,
+                "payment_condition": 1,
                 "type_discount": "FIXED",
                 "value_discount": "10.00",
                 "company_id": 1,

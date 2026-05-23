@@ -156,6 +156,26 @@ def map_exception(exception: Exception) -> HTTPException:
         BudgetNotFound: lambda e: HTTPException(
             status_code = getattr(e, "status_code", 404),
             detail = str(e)
+        ),
+        PaymentConditionNotFound: lambda e: HTTPException(
+            status_code = getattr(e, "status_code", 404),
+            detail = str(e)
+        ),
+        PaymentConditionAccesDenied: lambda e: HTTPException(
+            status_code = getattr(e, "status_code", 403),
+            detail = str(e)
+        ),
+        PaymentConditionAssociatedWithBudget: lambda e: HTTPException(
+            status_code = getattr(e, "status_code", 400),
+            detail = str(e)
+        ),
+        PaymentConditionInvalidName: lambda e: HTTPException(
+            status_code = getattr(e, "status_code", 400),
+            detail = str(e)
+        ),
+        PaymentConditionNameAlreadyExists: lambda e: HTTPException(
+            status_code = getattr(e, "status_code", 400),
+            detail = str(e)
         )
     }
 
