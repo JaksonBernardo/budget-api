@@ -9,6 +9,7 @@ from api.exceptions.employees import EmployeeNotFound, EmployeeAccessDenied, Emp
 from api.exceptions.prices import PriceExceedValue, PriceInvalidName, PriceInvalidValue, PriceNotFound
 from api.exceptions.services import ServiceAccesDenied, ServiceInvalidName, ServiceNotFound, ServicePriceNotFound
 from api.exceptions.status_budgets import StatusBudgetInvalidName, StatusBudgetNotFound, StatusBudgetIsSaleAlreadyExists
+from api.exceptions.status_projects import StatusProjectInvalidName, StatusProjectNotFound, StatusProjectIsCompletedAlreadyExists, StatusProjectAccesDenied
 from api.exceptions.payment_conditions import (
     PaymentConditionInvalidName, 
     PaymentConditionNameAlreadyExists, 
@@ -58,6 +59,10 @@ __all__ = [
     "StatusBudgetInvalidName",
     "StatusBudgetNotFound",
     "StatusBudgetIsSaleAlreadyExists",
+    "StatusProjectInvalidName",
+    "StatusProjectNotFound",
+    "StatusProjectIsCompletedAlreadyExists",
+    "StatusProjectAccesDenied",
     "PaymentConditionInvalidName", 
     "PaymentConditionNameAlreadyExists", 
     "PaymentConditionNotFound",

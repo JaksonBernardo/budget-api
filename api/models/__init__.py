@@ -10,8 +10,10 @@ from api.models.prices import Price
 from api.models.segments import Segment
 from api.models.services import Service, ServiceMaterial, ServiceEmployee, ServicePrice
 from api.models.status_budget import StatusBudget
+from api.models.status_project import StatusProject
 from api.models.payment_conditions import PaymentCondition, PaymentInstallment
 from api.models.budgets import Budget, BudgetService, TypeDiscount
+from api.models.projects import Project, ProjectService, ProjectOrigin
 
 __all__ = [
     "Base",
@@ -42,9 +44,13 @@ __all__ = [
     "StatusSubscription", 
     "DiscountType",
     "StatusBudget",
+    "StatusProject",
     "PaymentCondition",
     "PaymentInstallment",
     "Budget", 
     "BudgetService", 
-    "TypeDiscount"
+    "TypeDiscount",
+    "Project",
+    "ProjectService",
+    "ProjectOrigin"
 ]

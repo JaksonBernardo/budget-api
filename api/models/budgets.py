@@ -24,7 +24,8 @@ if TYPE_CHECKING:
         User,
         Price,
         StatusBudget,
-        PaymentCondition
+        PaymentCondition,
+        Project
     )
 
 
@@ -90,6 +91,8 @@ class Budget(Base):
         back_populates = "budget",
         cascade = "all, delete-orphan"
     )
+
+    projects: Mapped[List["Project"]] = relationship(back_populates = "budget")
 
     @property
     def total_value(self) -> Decimal:

@@ -73,6 +73,11 @@ class Service(Base):
         back_populates = "service"
     )
 
+    project_services: Mapped[List["ProjectService"]] = relationship(
+        "ProjectService",
+        back_populates = "service"
+    )
+
 
 class ServiceMaterial(Base):
 
