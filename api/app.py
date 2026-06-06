@@ -17,6 +17,7 @@ from api.routers.budgets import budget_router
 from api.routers.status_budgets import status_budget_router
 from api.routers.status_projects import status_project_router
 from api.routers.payment_conditions import payment_condition_router
+from api.routers.projects import project_router
 
 from api.observer import request_counter
 
@@ -37,6 +38,7 @@ app.include_router(budget_router)
 app.include_router(status_budget_router)
 app.include_router(status_project_router)
 app.include_router(payment_condition_router)
+app.include_router(project_router)
 
 
 origins = [

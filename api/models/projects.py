@@ -121,11 +121,13 @@ class ProjectService(Base):
     )
     start_date: Mapped[date] = mapped_column(
         Date,
-        nullable=True
+        default = None,
+        nullable = True
     )
     delivery_date: Mapped[date] = mapped_column(
         Date,
-        nullable=True
+        default = None,
+        nullable = True
     )
 
     project: Mapped["Project"] = relationship(back_populates = "services")

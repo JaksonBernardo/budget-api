@@ -192,6 +192,14 @@ def map_exception(exception: Exception) -> HTTPException:
         PaymentConditionNameAlreadyExists: lambda e: HTTPException(
             status_code = getattr(e, "status_code", 400),
             detail = str(e)
+        ),
+        ProjectNotFound: lambda e: HTTPException(
+            status_code = getattr(e, "status_code"),
+            detail = str(e)
+        ),
+        ProjectInvalidOs: lambda e: HTTPException(
+            status_code = getattr(e, "status_code"),
+            detail = str(e)
         )
     }
 

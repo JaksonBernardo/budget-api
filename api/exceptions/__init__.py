@@ -18,6 +18,7 @@ from api.exceptions.payment_conditions import (
     PaymentConditionAssociatedWithBudget
 )
 from api.exceptions.budgets import BudgetNotFound
+from api.exceptions.projects import ProjectInvalidOs, ProjectNotFound
 
 __all__ = [
     "ZeroCompanyId",
@@ -68,5 +69,7 @@ __all__ = [
     "PaymentConditionNotFound",
     "PaymentConditionAccesDenied",
     "PaymentConditionAssociatedWithBudget",
-    "BudgetNotFound"
+    "BudgetNotFound",
+    "ProjectInvalidOs", 
+    "ProjectNotFound"
 ]

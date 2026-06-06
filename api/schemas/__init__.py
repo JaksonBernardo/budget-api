@@ -96,6 +96,14 @@ from api.schemas.payment_conditions import (
     PaymentConditionUpdateSchema,
     ListPaymentConditionPublicSchema
 )
+from api.schemas.projects import (
+    ProjectSchema,
+    ProjectPublicSchema,
+    ProjectServiceSchema,
+    ProjectServicePublicSchema,
+    ProjectUpdateSchema,
+    ListProjectPublicSchema
+)
 
 __all__ = [
     "SegmentSchema",
@@ -165,5 +173,11 @@ __all__ = [
     "PaymentConditionSchema",
     "PaymentConditionPublicSchema",
     "PaymentConditionUpdateSchema",
-    "ListPaymentConditionPublicSchema"
+    "ListPaymentConditionPublicSchema",
+    "ProjectSchema",
+    "ProjectPublicSchema",
+    "ProjectServiceSchema",
+    "ProjectServicePublicSchema",
+    "ProjectUpdateSchema",
+    "ListProjectPublicSchema"
 ]
