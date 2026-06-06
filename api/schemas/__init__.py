@@ -76,7 +76,8 @@ from api.schemas.budgets import (
     BudgetServicesSchema,
     BudgetServicesPublicSchema,
     BudgetPublicSchema,
-    ListBudgetPublicSchema
+    ListBudgetPublicSchema,
+    BudgetUpdateStatusSchema
 )
 from api.schemas.status_budgets import (
     StatusBudgetSchema,

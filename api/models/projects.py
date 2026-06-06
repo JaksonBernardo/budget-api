@@ -57,8 +57,8 @@ class Project(Base):
         nullable=False
     )
     status_id: Mapped[int] = mapped_column(
-        ForeignKey("status_projects.id", ondelete="RESTRICT"),
-        nullable=False
+        ForeignKey("status_projects.id", ondelete="SET NULL"),
+        nullable = True
     )
     start_date: Mapped[date] = mapped_column(
         Date,

@@ -22,13 +22,16 @@ from api.repositories import (
     BudgetRepository,
     StatusBudgetRepository,
     BudgetServiceRepository,
-    PaymentConditionRepository
+    PaymentConditionRepository,
+    ProjectRepository,
+    ProjectServiceRepository
 )
 from api.core.database import get_session
 from api.schemas import (
     BudgetServicesSchema,
     BudgetPublicSchema,
     BudgetSchema,
+    BudgetUpdateStatusSchema,
     BudgetUpdateSchema,
     ListBudgetPublicSchema
 )
@@ -73,6 +76,14 @@ def get_payment_condition_repository(db: AsyncSession = Depends(get_session)) ->
 
     return PaymentConditionRepository(db)
 
+def get_project_repository(db: AsyncSession = Depends(get_session)) -> ProjectRepository:
+
+    return ProjectRepository(db)
+
+def get_project_service_repository(db: AsyncSession = Depends(get_session)) -> ProjectServiceRepository:
+
+    return ProjectServiceRepository(db)
+
 def get_budget_service(
     company_repository: CompanyRepository = Depends(get_company_repository),
     precification_repository: PrecificationServiceRepository = Depends(get_precification_repository),
@@ -82,6 +93,8 @@ def get_budget_service(
     budget_service_repository: BudgetServiceRepository = Depends(get_budget_service_repository),
     status_budget_repository: StatusBudgetRepository = Depends(get_status_budget_repository),
     payment_condition_repository: PaymentConditionRepository = Depends(get_payment_condition_repository),
+    project_repository: ProjectRepository = Depends(get_project_repository),
+    project_service_repository: ProjectServiceRepository = Depends(get_project_service_repository),
     db: AsyncSession = Depends(get_session)
 ) -> BudgetService:
     
@@ -94,6 +107,8 @@ def get_budget_service(
         budget_service_repository,
         status_budget_repository,
         payment_condition_repository,
+        project_repository,
+        project_service_repository,
         db
     )
 
@@ -127,6 +142,7 @@ async def create(
     ) as e:
         
         raise map_exception(e)
+
 
 @budget_router.get(
     path = "/{company_id}",
@@ -212,7 +228,36 @@ async def delete(
     except (CompanyNotFound, BudgetNotFound) as e:
 
         raise map_exception(e)
+
+
+@budget_router.patch(
+    path = "/status/{company_id}/{budget_id}",
+    status_code = status.HTTP_200_OK,
+    summary = "Atualizando o status de um orcamento",
+    response_model = BudgetPublicSchema
+)
+async def update_status(
+    company_id: int,
+    budget_id: int,
+    data: BudgetUpdateStatusSchema,
+    budget_service: BudgetService = Depends(get_budget_service),
+    current_user: CurrentUser = CurrentUser
+):
     
+    try:
+
+        budget = await budget_service.update_status(company_id, budget_id, data)
+
+        return budget
+
+    except (
+        CompanyNotFound, 
+        BudgetNotFound, 
+        StatusBudgetNotFound
+    ) as e:
+
+        raise map_exception(e)
+
 
 @budget_router.put(
     path = "/{company_id}/{budget_id}",

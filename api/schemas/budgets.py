@@ -71,6 +71,9 @@ class BudgetPublicSchema(BaseModel):
     services: List[BudgetServicesPublicSchema] = []
 
 
+class BudgetUpdateStatusSchema(BaseModel):
+
+    status_id: int
 
 class ListBudgetPublicSchema(BaseModel):
 

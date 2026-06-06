@@ -65,6 +65,31 @@ class ProjectRepository:
         return result.scalar_one_or_none()
 
 
+    async def get_by_budget_id(self, company_id: int, budget_id: int) -> Project | None:
+
+        query = select(Project).where(
+            Project.company_id == company_id,
+            Project.budget_id == budget_id
+        ).options(
+            selectinload(Project.services)
+        ).execution_options(populate_existing = True)
+
+        result = await self.__db.execute(query)
+
+        return result.scalar_one_or_none()
+
+
+    async def delete(self, company_id: int, project_id: int) -> None:
+
+        query = delete(Project).where(
+            Project.company_id == company_id,
+            Project.id == project_id
+        )
+
+        await self.__db.execute(query)
+        await self.__db.flush()
+
+
     
 
 

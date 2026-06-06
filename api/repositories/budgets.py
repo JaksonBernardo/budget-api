@@ -53,7 +53,8 @@ class BudgetRepository:
             Budget.company_id == company_id,
             Budget.id == budget_id
         ).options(
-            selectinload(Budget.services)
+            selectinload(Budget.services).selectinload(BudgetService.service),
+            selectinload(Budget.status)
         ).execution_options(populate_existing = True)
 
         result = await self.__db.execute(query)
