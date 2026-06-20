@@ -51,6 +51,16 @@ class TestProjectEndpoints:
             mock_service.start_date = None
             mock_service.delivery_date = None
 
+            mock_material = MagicMock()
+            mock_material.id = 1
+            mock_material.project_service_id = 1
+            mock_material.material_id = 1
+            mock_material.material_name = "Test Material"
+            mock_material.quantity = Decimal("10.00")
+            mock_material.unit_cost = Decimal("5.00")
+            mock_material.total_cost = Decimal("50.00")
+
+            mock_service.materials = [mock_material]
             mock_project.services = [mock_service]
             
             mock_create.return_value = mock_project
@@ -84,6 +94,9 @@ class TestProjectEndpoints:
             assert data["code"] == "PRJ-001"
             assert data["services"][0]["start_date"] is None
             assert data["services"][0]["delivery_date"] is None
+            assert len(data["services"][0]["materials"]) == 1
+            assert data["services"][0]["materials"][0]["material_name"] == "Test Material"
+            assert data["services"][0]["materials"][0]["total_cost"] == "50.00"
 
     @pytest.mark.asyncio
     async def test_create_project_without_budget_id_success(self, test_client: AsyncClient):
@@ -146,3 +159,29 @@ class TestProjectEndpoints:
             
             assert response.status_code == 404
             assert response.json()["detail"] == "Company não encontrada"
+
+    @pytest.mark.asyncio
+    async def test_update_service_delivery_success(self, test_client: AsyncClient):
+        with patch("api.services.projects.ProjectService.update_service_delivery", new_callable=AsyncMock) as mock_update:
+            mock_service = MagicMock()
+            mock_service.id = 1
+            mock_service.service_id = 10
+            mock_service.service_name = "Delivered Service"
+            mock_service.service_qtd = 1
+            mock_service.service_value = Decimal("100.00")
+            mock_service.service_total_value = Decimal("100.00")
+            mock_service.is_delivered = True
+            mock_service.start_date = None
+            mock_service.delivery_date = None
+            
+            mock_update.return_value = mock_service
+            
+            payload = {"is_delivered": True}
+            
+            response = await test_client.patch("/api/v1/projects/services/1/delivery", json=payload)
+            
+            assert response.status_code == 200
+            data = response.json()
+            assert data["id"] == 1
+            assert data["is_delivered"] is True
+            assert data["service_name"] == "Delivered Service"

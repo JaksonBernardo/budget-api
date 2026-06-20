@@ -86,7 +86,6 @@ class MaterialRepository:
 
         return result.scalars().all()
 
-
     async def delete_by_id(self, company_id: int, material_id: int) -> None:
         query = delete(Material).where(
             and_(
@@ -105,5 +104,7 @@ class MaterialRepository:
 
         return material
     
+
+
 
 

@@ -14,7 +14,20 @@ class ProjectServiceSchema(BaseModel):
     service_name: str
     service_qtd: int
     service_value: Decimal = Field(ge = 0, max_digits = 12, decimal_places = 2)
+    is_delivered: bool = False
 
+
+
+class ProjectServiceMaterialPublicSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    service_id: int
+    material_id: Optional[int]
+    material_name: str
+    quantity: Decimal = Field(max_digits = 10, decimal_places = 2)
+    unit_cost: Decimal = Field(max_digits = 10, decimal_places = 2)
+    total_cost: Decimal = Field(max_digits = 10, decimal_places = 2)
 
 
 class ProjectServicePublicSchema(ProjectServiceSchema):
@@ -23,6 +36,12 @@ class ProjectServicePublicSchema(ProjectServiceSchema):
     service_total_value: Decimal = Field(ge = 0, max_digits = 12, decimal_places = 2)
     start_date: Optional[date] = None
     delivery_date: Optional[date] = None
+    materials: List[ProjectServiceMaterialPublicSchema] = []
+
+
+
+class ProjectServiceUpdateDeliverySchema(BaseModel):
+    is_delivered: bool
 
 
 

@@ -10,7 +10,8 @@ from api.repositories import (
     ClientRepository,
     PrecificationServiceRepository,
     ProjectRepository,
-    ProjectServiceRepository
+    ProjectServiceRepository,
+    ProjectServiceMaterialRepository
 )
 from api.schemas import (
     ProjectSchema,
@@ -18,14 +19,16 @@ from api.schemas import (
     ProjectPublicSchema,
     ProjectServicePublicSchema,
     ProjectUpdateSchema,
-    ListProjectPublicSchema
+    ListProjectPublicSchema,
+    ProjectServiceUpdateDeliverySchema
 )
 from api.exceptions import (
     ProjectInvalidOs,
     ProjectNotFound,
     CompanyNotFound,
     ClientNotFound,
-    ServiceNotFound
+    ServiceNotFound,
+    ProjectServiceNotFound
 )
 
 
@@ -38,6 +41,7 @@ class ProjectService:
         precification_repository: PrecificationServiceRepository,
         project_repository: ProjectRepository,
         project_service_repository: ProjectServiceRepository,
+        project_service_material_repository: ProjectServiceMaterialRepository,
         db: AsyncSession
     ) -> None:
         
@@ -46,6 +50,7 @@ class ProjectService:
         self.__precification_repository = precification_repository
         self.__project_repository = project_repository
         self.__project_service_repository = project_service_repository
+        self.__project_service_material_repository = project_service_material_repository
         self.__db = db
 
     
@@ -120,12 +125,62 @@ class ProjectService:
 
                 if project_services_rows:
 
-                    await self.__project_service_repository.save(project_services_rows)
+                    saved_services = await self.__project_service_repository.save(project_services_rows)
+                    
+                    project_materials_rows = []
+                    
+                    for i, serv in enumerate(project_data.services):
+                        
+                        service_entity = services_map[serv.service_id]
+                        saved_service_entity = saved_services[i]
+                        
+                        for mat in service_entity.materials:
+                            
+                            project_materials_rows.append({
+                                "project_service_id": saved_service_entity.id,
+                                "material_id": mat.material_id,
+                                "material_name": mat.material.name,
+                                "quantity": mat.qtd_material * serv.service_qtd,
+                                "unit_cost": mat.material.unit_cost,
+                                "total_cost": (mat.qtd_material * serv.service_qtd) * mat.material.unit_cost
+                            })
+                            
+                    if project_materials_rows:
+                        
+                        await self.__project_service_material_repository.save(project_materials_rows)
 
                 await self.__db.commit()
 
                 return await self.__project_repository.get_by_id(project.company_id, project.id)
 
+
+        except Exception as ex:
+
+            await self.__db.rollback()
+
+            raise
+
+
+    async def update_service_delivery(
+        self, 
+        service_id: int, 
+        delivery_data: ProjectServiceUpdateDeliverySchema
+    ) -> ProjectServiceModel:
+
+        try:
+
+            service = await self.__project_service_repository.get_service_by_id(service_id)
+
+            if not service: raise ProjectServiceNotFound()
+
+            updated_service = await self.__project_service_repository.update_delivery_status(
+                service_id, 
+                delivery_data.is_delivered
+            )
+
+            await self.__db.commit()
+
+            return updated_service
 
         except Exception as ex:
 

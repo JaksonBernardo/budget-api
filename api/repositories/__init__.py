@@ -24,7 +24,8 @@ from api.repositories.budgets import (
 )
 from api.repositories.projects import (
     ProjectRepository, 
-    ProjectServiceRepository
+    ProjectServiceRepository,
+    ProjectServiceMaterialRepository
 )
 
 __all__ = [
@@ -49,5 +50,6 @@ __all__ = [
     "BudgetRepository",
     "BudgetServiceRepository",
     "ProjectRepository", 
-    "ProjectServiceRepository"
+    "ProjectServiceRepository",
+    "ProjectServiceMaterialRepository"
 ]

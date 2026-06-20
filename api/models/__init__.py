@@ -13,7 +13,7 @@ from api.models.status_budget import StatusBudget
 from api.models.status_project import StatusProject
 from api.models.payment_conditions import PaymentCondition, PaymentInstallment
 from api.models.budgets import Budget, BudgetService, TypeDiscount
-from api.models.projects import Project, ProjectService, ProjectOrigin
+from api.models.projects import Project, ProjectService, ProjectOrigin, ProjectServiceMaterial
 
 __all__ = [
     "Base",
@@ -52,5 +52,6 @@ __all__ = [
     "TypeDiscount",
     "Project",
     "ProjectService",
-    "ProjectOrigin"
+    "ProjectOrigin",
+    "ProjectServiceMaterial"
 ]

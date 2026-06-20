@@ -200,6 +200,10 @@ def map_exception(exception: Exception) -> HTTPException:
         ProjectInvalidOs: lambda e: HTTPException(
             status_code = getattr(e, "status_code"),
             detail = str(e)
+        ),
+        ProjectServiceNotFound: lambda e: HTTPException(
+            status_code = getattr(e, "status_code"),
+            detail = str(e)
         )
     }
 

@@ -17,7 +17,7 @@ from api.models import Base
 
 if TYPE_CHECKING:
 
-    from api.models import Company, ServiceMaterial, Supplier
+    from api.models import Company, ServiceMaterial, Supplier, ProjectServiceMaterial
 
 class Classificate(str, Enum):
     DIRECT = "DIRECT"
@@ -65,11 +65,17 @@ class Material(Base):
 
     services: Mapped[List["ServiceMaterial"]] = relationship(
         "ServiceMaterial",
-        back_populates = "material"
+        back_populates = "material",
+        lazy = "selectin"
     )
 
     movementations: Mapped[List["Movementation"]] = relationship(
         "Movementation",
+        back_populates = "material"
+    )
+
+    project_service_materials: Mapped[List["ProjectServiceMaterial"]] = relationship(
+        "ProjectServiceMaterial",
         back_populates = "material"
     )
 

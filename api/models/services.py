@@ -14,7 +14,8 @@ if TYPE_CHECKING:
         Employee,
         Price,
         Segment,
-        BudgetService
+        BudgetService,
+        ProjectService
     )
 
 
@@ -55,7 +56,8 @@ class Service(Base):
 
     materials: Mapped[List["ServiceMaterial"]] = relationship(
         "ServiceMaterial",
-        back_populates = "service"
+        back_populates = "service",
+        lazy = "selectin"
     )
 
     employees: Mapped[List["ServiceEmployee"]] = relationship(
@@ -108,7 +110,8 @@ class ServiceMaterial(Base):
 
     material: Mapped["Material"] = relationship(
         "Material",
-        back_populates = "services"
+        back_populates = "services",
+        lazy = "selectin"
     )
 
 

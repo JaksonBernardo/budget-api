@@ -10,4 +10,10 @@ class ProjectNotFound(Exception):
         super().__init__(message)
         self.status_code = 404
 
+class ProjectServiceNotFound(Exception):
+
+    def __init__(self, message: str = "Servico do projeto nao encontrado"):
+        super().__init__(message)
+        self.status_code = 404
+
 

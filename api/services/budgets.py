@@ -9,7 +9,8 @@ from api.models import (
     BudgetService as BS,
     Project,
     ProjectOrigin,
-    ProjectService
+    ProjectService,
+    ProjectServiceMaterial
 )
 from api.repositories import (
     CompanyRepository,
@@ -21,7 +22,8 @@ from api.repositories import (
     StatusBudgetRepository,
     PaymentConditionRepository,
     ProjectRepository,
-    ProjectServiceRepository
+    ProjectServiceRepository,
+    ProjectServiceMaterialRepository
 )
 from api.schemas import (
     BudgetPublicSchema,
@@ -57,6 +59,7 @@ class BudgetService:
         payment_condition_repository: PaymentConditionRepository,
         project_repository: ProjectRepository,
         project_service_repository: ProjectServiceRepository,
+        project_service_material_repository: ProjectServiceMaterialRepository,
         db: AsyncSession
     ) -> None:
         
@@ -70,6 +73,7 @@ class BudgetService:
         self.__payment_condition_repository = payment_condition_repository
         self.__project_repository = project_repository
         self.__project_service_repository = project_service_repository
+        self.__project_service_material_repository = project_service_material_repository
         self.__db = db
 
     async def create(self, budget_data: BudgetSchema) -> Budget:
@@ -304,60 +308,100 @@ class BudgetService:
                 self.__status_budget_repository.get_by_id(company_id, status_data.status_id)
             )
 
-            if not company: raise CompanyNotFound()
+            if not company:
+                raise CompanyNotFound()
 
-            if not budget: raise BudgetNotFound()
+            if not budget:
+                raise BudgetNotFound()
 
-            if not status_budget: raise StatusBudgetNotFound()
+            if not status_budget:
+                raise StatusBudgetNotFound()
 
             _BRAZIL_TIMEZONE_ = pytz.timezone("America/Sao_Paulo")
 
             if status_budget.is_sale and not budget.status.is_sale:
 
-                project_entity = Project(
-                    budget_id = budget.id,
-                    client_id = budget.client_id,
-                    code = f"PROJ-{datetime.now(_BRAZIL_TIMEZONE_).year}-{budget.id}",
-                    origin = ProjectOrigin.BUDGET,
-                    campaign = 1,
-                    company_id = budget.company_id,
-                    status_id = None, 
-                    start_date = budget.date_starter_services if budget.date_starter_services else datetime.now(_BRAZIL_TIMEZONE_).date(),
-                    estimated_end_date = None,
-                    end_date = None,
-                    notes = None,
-                    created_at = datetime.now(_BRAZIL_TIMEZONE_),
-                    updated_at = datetime.now(_BRAZIL_TIMEZONE_)
+                project = Project(
+                    budget_id=budget.id,
+                    client_id=budget.client_id,
+                    code=f"PROJ-{datetime.now(_BRAZIL_TIMEZONE_).year}-{budget.id}",
+                    origin=ProjectOrigin.BUDGET,
+                    campaign=1,
+                    company_id=budget.company_id,
+                    status_id=None,
+                    start_date=budget.date_starter_services if budget.date_starter_services else datetime.now(_BRAZIL_TIMEZONE_).date(),
+                    estimated_end_date=None,
+                    end_date=None,
+                    notes=None,
+                    created_at=datetime.now(_BRAZIL_TIMEZONE_),
+                    updated_at=datetime.now(_BRAZIL_TIMEZONE_),
                 )
 
-                project = await self.__project_repository.save(project_entity)
+                self.__db.add(project)
+                await self.__db.flush()
 
-                project_services_rows = []
+                project_services = []
+                project_services_materials_rows = []
 
                 for budget_service in budget.services:
 
-                    project_services_rows.append({
-                        "project_id": project.id,
-                        "service_id": budget_service.service_id,
-                        "service_name": budget_service.service.name,
-                        "service_qtd": budget_service.qtd,
-                        "service_value": budget_service.service_value,
-                        "service_total_value": budget_service.total_value
-                    })
+                    ps = ProjectService(
+                        project_id=project.id,
+                        service_id=budget_service.service_id,
+                        service_name=budget_service.service.name,
+                        service_qtd=budget_service.qtd,
+                        service_value=budget_service.service_value,
+                        service_total_value=budget_service.total_value,
+                    )
 
-                if project_services_rows:
-                    await self.__project_service_repository.save(project_services_rows)
+                    project_services.append(ps)
+
+                self.__db.add_all(project_services)
+
+                await self.__db.flush()
+
+                for ps, budget_service in zip(project_services, budget.services):
+
+                    service = await self.__precification_repository.get_by_id(
+                        budget.company_id,
+                        budget_service.service_id
+                    )
+
+                    for serv_mat in service.materials:
+
+                        project_services_materials_rows.append(
+                            ProjectServiceMaterial(
+                                project_service_id=ps.id,
+                                material_id=serv_mat.material_id,
+                                material_name=serv_mat.material.name,
+                                quantity=serv_mat.qtd_material * budget_service.qtd,
+                                unit_cost=serv_mat.material.unit_cost,
+                                total_cost=serv_mat.qtd_material * serv_mat.material.unit_cost * budget_service.qtd,
+                            )
+                        )
+
+                if project_services_materials_rows:
+                    self.__db.add_all(project_services_materials_rows)
+                    await self.__db.flush()
 
             elif not status_budget.is_sale and budget.status.is_sale:
 
-                project = await self.__project_repository.get_by_budget_id(company_id, budget_id)
+                project = await self.__project_repository.get_by_budget_id(
+                    company_id, budget_id
+                )
 
                 if project:
-                    await self.__project_service_repository.delete_by_project_id(project.id)
+                    await self.__project_service_repository.delete_by_project_id(
+                        project.id
+                    )
                     await self.__project_repository.delete(company_id, project.id)
 
-            await self.__budget_repository.update(company_id, budget_id, {"status_id": status_data.status_id})
-            
+            await self.__budget_repository.update(
+                company_id,
+                budget_id,
+                {"status_id": status_data.status_id},
+            )
+
             await self.__db.commit()
 
             return await self.__budget_repository.get_by_id(company_id, budget_id)

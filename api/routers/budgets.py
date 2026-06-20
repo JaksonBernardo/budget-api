@@ -24,7 +24,8 @@ from api.repositories import (
     BudgetServiceRepository,
     PaymentConditionRepository,
     ProjectRepository,
-    ProjectServiceRepository
+    ProjectServiceRepository,
+    ProjectServiceMaterialRepository
 )
 from api.core.database import get_session
 from api.schemas import (
@@ -84,6 +85,10 @@ def get_project_service_repository(db: AsyncSession = Depends(get_session)) -> P
 
     return ProjectServiceRepository(db)
 
+def get_project_service_material_repository(db: AsyncSession = Depends(get_session)) -> ProjectServiceMaterialRepository:
+
+    return ProjectServiceMaterialRepository(db)
+
 def get_budget_service(
     company_repository: CompanyRepository = Depends(get_company_repository),
     precification_repository: PrecificationServiceRepository = Depends(get_precification_repository),
@@ -95,6 +100,7 @@ def get_budget_service(
     payment_condition_repository: PaymentConditionRepository = Depends(get_payment_condition_repository),
     project_repository: ProjectRepository = Depends(get_project_repository),
     project_service_repository: ProjectServiceRepository = Depends(get_project_service_repository),
+    project_service_material_repository: ProjectServiceMaterialRepository = Depends(get_project_service_material_repository),
     db: AsyncSession = Depends(get_session)
 ) -> BudgetService:
     
@@ -109,6 +115,7 @@ def get_budget_service(
         payment_condition_repository,
         project_repository,
         project_service_repository,
+        project_service_material_repository,
         db
     )
 

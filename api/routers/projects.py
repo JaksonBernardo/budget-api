@@ -4,7 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.exceptions import (
     CompanyNotFound,
     ClientNotFound,
-    ServiceNotFound
+    ServiceNotFound,
+    ProjectServiceNotFound
 )
 from api.exceptions.map_exceptions import map_exception
 from api.repositories import (
@@ -12,12 +13,15 @@ from api.repositories import (
     ClientRepository,
     PrecificationServiceRepository,
     ProjectRepository,
-    ProjectServiceRepository
+    ProjectServiceRepository,
+    ProjectServiceMaterialRepository
 )
 from api.core.database import get_session
 from api.schemas import (
     ProjectSchema,
-    ProjectPublicSchema
+    ProjectPublicSchema,
+    ProjectServiceUpdateDeliverySchema,
+    ProjectServicePublicSchema
 )
 from api.services.projects import ProjectService
 from api.security.dependencies import CurrentUser
@@ -48,12 +52,17 @@ def get_project_service_repository(db: AsyncSession = Depends(get_session)) -> P
     
     return ProjectServiceRepository(db)
 
+def get_project_service_material_repository(db: AsyncSession = Depends(get_session)) -> ProjectServiceMaterialRepository:
+    
+    return ProjectServiceMaterialRepository(db)
+
 def get_project_service(
     company_repository: CompanyRepository = Depends(get_company_repository),
     client_repository: ClientRepository = Depends(get_client_repository),
     precification_repository: PrecificationServiceRepository = Depends(get_precification_repository),
     project_repository: ProjectRepository = Depends(get_project_repository),
     project_service_repository: ProjectServiceRepository = Depends(get_project_service_repository),
+    project_service_material_repository: ProjectServiceMaterialRepository = Depends(get_project_service_material_repository),
     db: AsyncSession = Depends(get_session)
 ) -> ProjectService:
     
@@ -63,6 +72,7 @@ def get_project_service(
         precification_repository,
         project_repository,
         project_service_repository,
+        project_service_material_repository,
         db
     )
 
@@ -91,4 +101,28 @@ async def create(
         ServiceNotFound
     ) as e:
         
+        raise map_exception(e)
+
+
+@project_router.patch(
+    path = "/services/{service_id}/delivery",
+    status_code = status.HTTP_200_OK,
+    summary = "Atualizando a entrega de um serviço do projeto",
+    response_model = ProjectServicePublicSchema
+)
+async def update_delivery(
+    service_id: int,
+    delivery_data: ProjectServiceUpdateDeliverySchema,
+    project_service: ProjectService = Depends(get_project_service),
+    current_user: CurrentUser = CurrentUser
+):
+    
+    try:
+
+        service = await project_service.update_service_delivery(service_id, delivery_data)
+
+        return service
+    
+    except (ProjectServiceNotFound, ) as e:
+
         raise map_exception(e)

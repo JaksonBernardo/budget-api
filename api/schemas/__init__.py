@@ -103,7 +103,8 @@ from api.schemas.projects import (
     ProjectServiceSchema,
     ProjectServicePublicSchema,
     ProjectUpdateSchema,
-    ListProjectPublicSchema
+    ListProjectPublicSchema,
+    ProjectServiceUpdateDeliverySchema
 )
 
 __all__ = [
@@ -180,5 +181,6 @@ __all__ = [
     "ProjectServiceSchema",
     "ProjectServicePublicSchema",
     "ProjectUpdateSchema",
-    "ListProjectPublicSchema"
+    "ListProjectPublicSchema",
+    "ProjectServiceUpdateDeliverySchema"
 ]

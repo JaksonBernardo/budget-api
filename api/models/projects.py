@@ -10,6 +10,7 @@ from sqlalchemy import (
     Date, 
     ForeignKey, 
     Integer, 
+    Boolean,
     func, 
     CheckConstraint
 )
@@ -19,7 +20,7 @@ from api.models import Base
 
 if TYPE_CHECKING:
 
-    from api.models import Company, Client, Service, Budget, StatusProject
+    from api.models import Company, Client, Service, Budget, StatusProject, Material
 
 
 class ProjectOrigin(str, Enum):
@@ -129,9 +130,18 @@ class ProjectService(Base):
         default = None,
         nullable = True
     )
+    is_delivered: Mapped[bool] = mapped_column(
+        Boolean,
+        default = False
+    )
 
     project: Mapped["Project"] = relationship(back_populates = "services")
     service: Mapped["Service"] = relationship(back_populates = "project_services")
+
+    materials: Mapped[List["ProjectServiceMaterial"]] = relationship(
+        back_populates = "project_service",
+        cascade = "all, delete-orphan"
+    )
 
     __table_args__ = (
         CheckConstraint(
@@ -145,5 +155,41 @@ class ProjectService(Base):
         CheckConstraint(
             "service_total_value >= 0",
             name="check_project_service_total_positive"
+        )
+    )
+
+
+class ProjectServiceMaterial(Base):
+
+    __tablename__ = "project_services_materials"
+
+    id: Mapped[int] = mapped_column(primary_key = True, autoincrement = True)
+    project_service_id: Mapped[int] = mapped_column(
+        ForeignKey('project_services.id', ondelete = "CASCADE")
+    )
+    material_id: Mapped[int] = mapped_column(
+        ForeignKey('materials.id', ondelete = "SET NULL"),
+        nullable = True
+    )
+    material_name: Mapped[str] = mapped_column(String(255))
+    quantity: Mapped[Decimal] = mapped_column(Numeric(10, 2))
+    unit_cost: Mapped[Decimal] = mapped_column(Numeric(10, 2))
+    total_cost: Mapped[Decimal] = mapped_column(Numeric(10, 2))
+
+    project_service: Mapped["ProjectService"] = relationship(back_populates = "materials")
+    material: Mapped["Material"] = relationship(back_populates = "project_service_materials")
+
+    __table_args__ = (
+        CheckConstraint(
+            "quantity > 0",
+            name="check_project_service_material_quantity_positive"
+        ),
+        CheckConstraint(
+            "unit_cost >= 0",
+            name="check_project_service_material_unit_cost_positive"
+        ),
+        CheckConstraint(
+            "total_cost >= 0",
+            name="check_project_service_material_total_cost_positive"
         )
     )

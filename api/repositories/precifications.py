@@ -32,6 +32,7 @@ class ServiceMaterialRepository:
 
         await self.__db.execute(query)
         await self.__db.flush()
+
         
 
 class ServiceEmployeeRepository:
@@ -144,7 +145,8 @@ class PrecificationServiceRepository:
             Service.company_id == company_id,
             Service.id.in_(service_ids)
         ).options(
-            selectinload(Service.prices)
+            selectinload(Service.prices),
+            selectinload(Service.materials).selectinload(ServiceMaterial.material)
         )
 
         result = await self.__db.execute(query)
