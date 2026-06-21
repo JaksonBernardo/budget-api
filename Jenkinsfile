@@ -60,18 +60,8 @@ ASAAS_ENVIRONMENT='${ASAAS_ENVIRONMENT}'
                     -v ${WORKSPACE}/reports:/app/reports \
                     -v ${WORKSPACE}/htmlcov:/app/htmlcov \
                     -w /app budget-api:latest \
-                    sh -c "pytest -v --cov=api --cov-report=xml --cov-report=html --junitxml=reports/junit.xml"
+                    sh -c "pytest -v"
                 """
-            }
-            post {
-                always {
-                    junit 'reports/junit.xml'
-                    publishHTML(target: [
-                        reportDir: 'htmlcov',
-                        reportFiles: 'index.html',
-                        reportName: 'Coverage Report'
-                    ])
-                }
             }
         }
 
