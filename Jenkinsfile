@@ -53,14 +53,21 @@ ASAAS_ENVIRONMENT='${ASAAS_ENVIRONMENT}'
 
         stage('Tests') {
             steps {
-                sh '''
-                    docker run --rm \
-                    --network host \
-                    -v $(pwd):/app \
-                    -v /var/run/docker.sock:/var/run/docker.sock \
-                    budget-api:latest \
-                    sh -c "cd /app && pytest tests/ -v"
-                '''
+                sh """
+                    mkdir -p reports
+                    docker run --rm -v ${WORKSPACE}:/app -w /app budget-api:latest \
+                    sh -c "ls -R /app && pytest tests -v --cov=app --cov-report=xml --junitxml=reports/junit.xml"
+                """
+            }
+            post {
+                always {
+                    junit 'reports/junit.xml'
+                    publishHTML(target: [
+                        reportDir: 'htmlcov',
+                        reportFiles: 'index.html',
+                        reportName: 'Coverage Report'
+                    ])
+                }
             }
         }
 
