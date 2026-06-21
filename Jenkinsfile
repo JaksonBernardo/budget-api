@@ -53,8 +53,7 @@ ASAAS_ENVIRONMENT='${ASAAS_ENVIRONMENT}'
 
         stage('Tests') {
             steps {
-                sh 'docker run --rm budget-api:latest pip install -e .[dev]'
-                sh 'docker run --rm budget-api:latest pytest'
+                sh 'docker run --rm -v $(pwd):/app budget-api:latest sh -c "cd /app && pip install -e .[dev] && pytest"'
             }
             post {
                 always {
