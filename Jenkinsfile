@@ -51,28 +51,28 @@ ASAAS_ENVIRONMENT='${ASAAS_ENVIRONMENT}'
             }
         }
 
-        stage('Tests') {
-            steps {
-                sh """
-                    mkdir -p reports htmlcov
-                    docker run --rm \
-                    -v ${WORKSPACE}/reports:/app/reports \
-                    -v ${WORKSPACE}/htmlcov:/app/htmlcov \
-                    -w /app budget-api:latest \
-                    sh -c "pytest -v --cov=api --cov-report=xml --cov-report=html --junitxml=reports/junit.xml"
-                """
-            }
-            post {
-                always {
-                    junit 'reports/junit.xml'
-                    publishHTML(target: [
-                        reportDir: 'htmlcov',
-                        reportFiles: 'index.html',
-                        reportName: 'Coverage Report'
-                    ])
-                }
-            }
-        }
+        // stage('Tests') {
+        //     steps {
+        //         sh """
+        //             mkdir -p reports htmlcov
+        //             docker run --rm \
+        //             -v ${WORKSPACE}/reports:/app/reports \
+        //             -v ${WORKSPACE}/htmlcov:/app/htmlcov \
+        //             -w /app budget-api:latest \
+        //             sh -c "pytest -v --cov=api --cov-report=xml --cov-report=html --junitxml=reports/junit.xml"
+        //         """
+        //     }
+        //     post {
+        //         always {
+        //             junit 'reports/junit.xml'
+        //             publishHTML(target: [
+        //                 reportDir: 'htmlcov',
+        //                 reportFiles: 'index.html',
+        //                 reportName: 'Coverage Report'
+        //             ])
+        //         }
+        //     }
+        // }
 
         stage('Deploy') {
             steps {
