@@ -189,4 +189,16 @@ class ProjectService:
             raise
 
 
+    async def get(self, company_id: int, project_id: int) -> Project | None:
+
+        company, project = await asyncio.gather(
+            self.__company_repository.get_by_id(company_id),
+            self.__project_repository.get_by_id(company_id, project_id)
+        )
+
+        if not company: raise CompanyNotFound()
+
+        if not project: raise ProjectNotFound()
+
+        return project
 

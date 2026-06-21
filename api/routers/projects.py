@@ -1,10 +1,11 @@
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, status, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.exceptions import (
     CompanyNotFound,
     ClientNotFound,
     ServiceNotFound,
+    ProjectNotFound,
     ProjectServiceNotFound
 )
 from api.exceptions.map_exceptions import map_exception
@@ -21,7 +22,8 @@ from api.schemas import (
     ProjectSchema,
     ProjectPublicSchema,
     ProjectServiceUpdateDeliverySchema,
-    ProjectServicePublicSchema
+    ProjectServicePublicSchema,
+    ListProjectPublicSchema
 )
 from api.services.projects import ProjectService
 from api.security.dependencies import CurrentUser
@@ -102,6 +104,61 @@ async def create(
     ) as e:
         
         raise map_exception(e)
+
+
+@project_router.get(
+    path = "/{company_id}/{project_id}",
+    status_code = status.HTTP_200_OK,
+    summary = "Selecionando um projeto especifico",
+    response_model = ProjectPublicSchema
+)
+async def get_project(
+    company_id: int,
+    project_id: int,
+    project_service: ProjectService = Depends(get_project_service),
+    current_user: CurrentUser = CurrentUser
+):
+    
+    try:
+
+        project = await project_service.get(company_id, project_id)
+
+        return project
+
+    except (
+        CompanyNotFound,
+        ProjectNotFound
+    ) as e:
+        
+        raise map_exception(e)
+
+
+@project_router.get(
+    path = "/{company_id}",
+    status_code = status.HTTP_200_OK,
+    summary = "Listando os projetos por company_id",
+    response_model = ListProjectPublicSchema
+)
+async def list_projects(
+    company_id: int,
+    limit: int = Query(default = 20, ge = 1, le = 20, description = "Qtd maxima de registro por pagina"),
+    offset: int = Query(default = 0, ge = 0, description = "Qtd de registros a serem pulados"),
+    client: str = Query(None, description = "Pesquisar pelo cliente do projeto"),
+    code: str = Query(None, description = "Pesquisar pelo codigo do projeto"),
+    origin: str = Query(None, description = "Pesquisar pelo tipo de origem do projeto"),
+    project_service: ProjectService = Depends(get_project_service),
+    current_user:  CurrentUser = CurrentUser
+):
+    
+    try:
+
+        pass
+
+
+    except (CompanyNotFound, ) as e:
+
+        raise map_exception(e)
+
 
 
 @project_router.patch(

@@ -22,7 +22,6 @@ class ProjectServiceMaterialPublicSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    service_id: int
     material_id: Optional[int]
     material_name: str
     quantity: Decimal = Field(max_digits = 10, decimal_places = 2)
@@ -53,7 +52,7 @@ class ProjectSchema(BaseModel):
     origin: ProjectOrigin
     campaign: Optional[int] = 1
     company_id: int
-    status_id: int
+    status_id: Optional[int] = None
     start_date: date
     estimated_end_date: Optional[date] = None
     end_date: Optional[date] = None
