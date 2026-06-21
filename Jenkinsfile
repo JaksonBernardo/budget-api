@@ -57,8 +57,6 @@ ASAAS_ENVIRONMENT='${ASAAS_ENVIRONMENT}'
                     mkdir -p reports htmlcov
                     docker run --rm \
                     -v ${WORKSPACE}/.env:/app/.env \
-                    -v ${WORKSPACE}/reports:/app/reports \
-                    -v ${WORKSPACE}/htmlcov:/app/htmlcov \
                     -w /app budget-api:latest \
                     sh -c "pytest -v"
                 """
