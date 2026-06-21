@@ -54,8 +54,12 @@ ASAAS_ENVIRONMENT='${ASAAS_ENVIRONMENT}'
         stage('Tests') {
             steps {
                 sh """
-                    mkdir -p reports
-                    docker run --rm -v ${WORKSPACE}:/app -w /app budget-api:latest \
+                    mkdir -p reports htmlcov
+                    docker run --rm \
+                    -v ${WORKSPACE}/.env:/app/.env \
+                    -v ${WORKSPACE}/reports:/app/reports \
+                    -v ${WORKSPACE}/htmlcov:/app/htmlcov \
+                    -w /app budget-api:latest \
                     sh -c "pytest -v --cov=api --cov-report=xml --cov-report=html --junitxml=reports/junit.xml"
                 """
             }
