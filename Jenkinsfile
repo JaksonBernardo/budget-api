@@ -53,7 +53,7 @@ ASAAS_ENVIRONMENT='${ASAAS_ENVIRONMENT}'
 
         stage('Tests') {
             steps {
-                sh 'docker run --rm -v $(pwd):/app budget-api:latest sh -c "cd /app && pytest -v --cov"'
+                sh 'docker run --rm -v $(pwd):/app budget-api:latest sh -c "cd /app && pytest tests/ -v --cov=app --cov-report=html --cov-report=xml --junitxml=reports/junit.xml"'
             }
             post {
                 always {

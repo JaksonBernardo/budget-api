@@ -46,6 +46,18 @@ def mock_payment_condition_repository():
     return MagicMock()
 
 @pytest.fixture
+def mock_project_repository():
+    return MagicMock()
+
+@pytest.fixture
+def mock_project_service_repository():
+    return MagicMock()
+
+@pytest.fixture
+def mock_project_service_material_repository():
+    return MagicMock()
+
+@pytest.fixture
 def mock_db_session():
     session = MagicMock()
     session.commit = AsyncMock()
@@ -62,6 +74,9 @@ def budget_service(
     mock_budget_service_repository,
     mock_status_budget_repository,
     mock_payment_condition_repository,
+    mock_project_repository,
+    mock_project_service_repository,
+    mock_project_service_material_repository,
     mock_db_session
 ):
     return BudgetService(
@@ -73,6 +88,9 @@ def budget_service(
         mock_budget_service_repository,
         mock_status_budget_repository,
         mock_payment_condition_repository,
+        mock_project_repository,
+        mock_project_service_repository,
+        mock_project_service_material_repository,
         mock_db_session
     )
 
