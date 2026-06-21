@@ -56,7 +56,7 @@ ASAAS_ENVIRONMENT='${ASAAS_ENVIRONMENT}'
                 sh """
                     mkdir -p reports
                     docker run --rm -v ${WORKSPACE}:/app -w /app budget-api:latest \
-                    sh -c "ls -R /app && pytest -v --cov=app --cov-report=xml --junitxml=reports/junit.xml"
+                    sh -c "pytest -v --cov=api --cov-report=xml --cov-report=html --junitxml=reports/junit.xml"
                 """
             }
             post {
